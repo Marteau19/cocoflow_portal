@@ -150,9 +150,12 @@ export const legacy: Brand = {
   },
 
   logo: {
-    wordmark: '/brand/legacy/ecoflo-wordmark.svg',
-    wordmarkOnDark: '/brand/legacy/ecoflo-wordmark-light.svg',
-    mark: '/brand/legacy/ecoflo-mark.svg',
+    // PNG rather than SVG: the supplied asset in the reference folder is a
+    // raster logo. The extension changes here, in the token file, so no
+    // component has to know. Swap these values if a vector version lands.
+    wordmark: '/brand/legacy/ecoflo-wordmark.png',
+    wordmarkOnDark: '/brand/legacy/ecoflo-wordmark-light.png',
+    mark: '/brand/legacy/ecoflo-mark.png',
   },
 };
 

@@ -77,9 +77,15 @@ export const next: Brand = {
   },
 
   logo: {
-    // TODO point at the new brand assets once they land
-    wordmark: '/brand/next/ecoflo-wordmark.svg',
-    wordmarkOnDark: '/brand/next/ecoflo-wordmark-light.svg',
-    mark: '/brand/next/ecoflo-mark.svg',
+    // TODO point at the new brand assets once they land.
+    //
+    // Deliberately borrowing the legacy files until then. The new identity in
+    // the reference folder is a set of artboards, not an extracted wordmark, so
+    // choosing one would be a guess. Pointing at assets that do not exist would
+    // break the logo on brand switch and read as a component bug, which is the
+    // one signal this contract exists to give us honestly.
+    wordmark: '/brand/legacy/ecoflo-wordmark.png',
+    wordmarkOnDark: '/brand/legacy/ecoflo-wordmark-light.png',
+    mark: '/brand/legacy/ecoflo-mark.png',
   },
 };

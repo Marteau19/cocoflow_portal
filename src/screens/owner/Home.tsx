@@ -79,31 +79,42 @@ export const OwnerHome = () => {
           <div className="bg-forest px-gutter py-5 text-on-forest">
             <Micro className="text-on-forest opacity-70">Your next visit</Micro>
 
-            <h1 className="mt-2 text-display">
-              {when}
-              <span className="block font-normal opacity-90">
-                {timeWindow(visit.windowStart, visit.windowEnd)}
-              </span>
-            </h1>
+            {/*
+              The date leads, the window sits under it at body weight. Two lines
+              at display weight would compete with each other, and the question
+              the homeowner is asking is "when", not "how long".
+            */}
+            <h1 className="mt-2 text-display">{when}</h1>
+            <p className="mt-1 text-h2 font-normal opacity-90">
+              {timeWindow(visit.windowStart, visit.windowEnd)}
+            </p>
 
+            {/*
+              The face is the reassurance on this screen, so it is sized to be
+              seen rather than decorated with. A named person arriving at your
+              property is the whole promise the portal is making.
+            */}
             <div className="border-on-forest-soft mt-4 flex items-center gap-3 border-t pt-4">
               <Avatar
                 name={technician.name}
                 initials={technician.initials}
                 photo={technician.photo}
-                size="lg"
+                size="hero"
               />
               <div className="min-w-0">
-                <p className="text-body font-medium">{arrivalLine(visit.status, technician.name)}</p>
-                <p className="text-caption opacity-70">
+                <p className="text-h2 font-medium">{arrivalLine(visit.status, technician.name)}</p>
+                <p className="mt-1 text-caption opacity-70">
                   {technician.name}, {servicePoint.name}
+                </p>
+                <p className="text-caption opacity-70">
+                  {technician.rating.toFixed(1)} out of 5, from visits like yours
                 </p>
               </div>
             </div>
 
-            <p className="mt-3 text-caption opacity-70">
-              We are replacing the filter media, which is covered by your care plan. Nothing is
-              needed from you.
+            <p className="mt-4 text-body opacity-90">
+              We are replacing the filter media, which your care plan covers. Nothing is needed from
+              you, and you do not have to be home.
             </p>
 
             {/* The single action on this screen. */}

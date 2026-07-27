@@ -103,6 +103,24 @@
 }
 
 /**
+ * Blueprint mode.
+ *
+ * The canvas shifts a half step cooler and the hairlines gain weight, so section
+ * boundaries read as a technical drawing rather than a product surface.
+ *
+ * These land on <body> rather than :root on purpose. `applyBrand()` writes the
+ * tokens as inline styles on the root element, and an inline style outranks any
+ * stylesheet rule, so redefining a token here only works on a descendant.
+ */
+body[data-blueprint='on'] {
+  background-color: var(--color-canvas-blueprint);
+
+  /* The stated 15 percent gain, expressed against the token rather than a
+     literal, so it survives a brand switch. */
+  --color-line: color-mix(in srgb, var(--color-line-strong) 15%, var(--color-line));
+}
+
+/**
  * Respect reduced motion by disabling transitions outright. The 150ms and
  * 220ms state changes are the only motion in the system, so removing them
  * removes all of it.

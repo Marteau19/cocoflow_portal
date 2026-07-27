@@ -146,8 +146,19 @@ export default {
     backgroundImage: {},
 
     extend: {
+      // Mobile-first roles render inside a device frame above this width.
+      // Without it, a projected demo looks like a stretched phone app.
+      screens: {
+        frame: '900px',
+      },
       borderWidth: {
         rule: '3px',
+      },
+      width: {
+        device: '420px',
+      },
+      height: {
+        device: '860px',
       },
       maxWidth: {
         device: '420px',

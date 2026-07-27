@@ -158,15 +158,22 @@ export const CardHeader = ({
 /* Rows                                                               */
 /* ------------------------------------------------------------------ */
 
-/** Status is a left rule, never a coloured circle. */
-export type RuleTone = 'none' | 'neutral' | 'warn' | 'alert' | 'accent';
+/**
+ * Status is a left rule, never a coloured circle.
+ *
+ * DESIGN.md section 7 sanctions --line-strong, --warn and --alert here, and
+ * nothing else. Accent is deliberately absent: it marks the one primary action
+ * on a screen, and spending it on row state is how a screen ends up with two
+ * greens. Where a row needs emphasis without a signal, `strong` is an ink rule.
+ */
+export type RuleTone = 'none' | 'neutral' | 'strong' | 'warn' | 'alert';
 
 const ruleTones: Record<RuleTone, string> = {
   none: 'border-l-transparent',
   neutral: 'border-l-line-strong',
+  strong: 'border-l-ink',
   warn: 'border-l-warn',
   alert: 'border-l-alert',
-  accent: 'border-l-accent',
 };
 
 /**

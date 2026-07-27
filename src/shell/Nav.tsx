@@ -74,7 +74,7 @@ const NavList = ({ role, onNavigate }: { role: RoleDef; onNavigate?: () => void 
             // Active state is a left rule plus a weight change, never a fill.
             `block border-l-rule px-4 py-2 text-body transition-colors duration-state ease-ease ${
               isActive
-                ? 'border-l-accent font-medium text-ink'
+                ? 'border-l-ink font-medium text-ink'
                 : 'border-l-transparent text-ink2 hover:border-l-line-strong hover:text-ink'
             }`
           }

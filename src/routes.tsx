@@ -10,7 +10,24 @@
  */
 
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { GlobalAdoption } from './screens/global/Adoption';
+import { GlobalMix } from './screens/global/Mix';
+import { GlobalNetwork } from './screens/global/Network';
+import { ManagerDashboard } from './screens/manager/Dashboard';
+import { ManagerInventory } from './screens/manager/Inventory';
+import { ManagerLeads } from './screens/manager/Leads';
+import { ManagerMarcom } from './screens/manager/Marcom';
+import { OwnerBook } from './screens/owner/Book';
+import { OwnerHome } from './screens/owner/Home';
+import { OwnerParts } from './screens/owner/Parts';
+import { OwnerSystem } from './screens/owner/System';
 import { Placeholder } from './screens/Placeholder';
+import { ProspectQuote } from './screens/prospect/Quote';
+import { ProspectRequest } from './screens/prospect/Request';
+import { ProspectStart } from './screens/prospect/Start';
+import { Flo } from './screens/shared/Flo';
+import { TechnicianDay } from './screens/technician/Day';
+import { TechnicianWorkOrder } from './screens/technician/WorkOrder';
 import { useRole } from './shell/useRole';
 
 /**
@@ -227,53 +244,20 @@ export const AppRoutes = () => (
     <Route
       path="/start"
       element={
-        <Placeholder
-          screen="/start"
-          eyebrow="Before install"
-          title="Tell us about your property"
-          lead="Where it is, and what brings you here. You design nothing, we take it from there."
-          belongsHere={[
-            'Property address, which routes to the owning Service Point',
-            'What brings them here, as a reason code',
-            'How to reach them',
-            'Consent and purpose statement at the point of collection',
-          ]}
-        />
+        <ProspectStart />
       }
     />
     <Route
       path="/request"
       element={
-        <Placeholder
-          screen="/request"
-          eyebrow="Before install"
-          title="We have your request"
-          lead="One named team owns the whole job, and you can see who they are."
-          belongsHere={[
-            'Confirmation of what was asked for',
-            'The Service Point team assigned, with names',
-            'What happens next, and when',
-            'The account created at the moment they asked for help',
-          ]}
-        />
+        <ProspectRequest />
       }
     />
     <Route path="/soil-test" element={<Placeholder {...P2.soilTest} />} />
     <Route
       path="/quote"
       element={
-        <Placeholder
-          screen="/quote"
-          eyebrow="Before install"
-          title="The system we designed for your property"
-          lead="Here is what we recommend and why, itemised, with nothing hidden below the line."
-          belongsHere={[
-            'The recommended system, and why this one for this land',
-            'What the price includes, line by line',
-            'What is already covered by the work we have done',
-            'One action to approve',
-          ]}
-        />
+        <ProspectQuote />
       }
     />
     <Route path="/install" element={<Placeholder {...P2.install} />} />
@@ -283,33 +267,13 @@ export const AppRoutes = () => (
     <Route
       path="/home"
       element={
-        <Placeholder
-          screen="/home"
-          title="Home"
-          lead="One question answered above everything else: what happens next."
-          belongsHere={[
-            'Next visit, on the forest block: date, technician, arrival state',
-            'A single action',
-            'Quiet rows beneath: system, contract, invoices',
-            'Nothing that competes with the top block',
-          ]}
-        />
+        <OwnerHome />
       }
     />
     <Route
       path="/system"
       element={
-        <Placeholder
-          screen="/system"
-          title="My system"
-          lead="What is installed at the property, how it is doing, and everything that has happened to it."
-          belongsHere={[
-            'The system, its model and when it went in',
-            'Condition in plain language, not a health score',
-            'Service history as one timeline, visits and orders together',
-            'Warranty, and what it covers',
-          ]}
-        />
+        <OwnerSystem />
       }
     />
     <Route path="/invoices" element={<Placeholder {...P2.invoices} />} />
@@ -317,33 +281,13 @@ export const AppRoutes = () => (
     <Route
       path="/book"
       element={
-        <Placeholder
-          screen="/book"
-          title="Book a visit"
-          lead="Pick a time that works. Your Service Point team confirms it."
-          belongsHere={[
-            'What the visit is for',
-            'Real availability from the Service Point calendar',
-            'Arrival window, not a promise of a time',
-            'Confirmation, and how to change it later',
-          ]}
-        />
+        <OwnerBook />
       }
     />
     <Route
       path="/parts"
       element={
-        <Placeholder
-          screen="/parts"
-          title="Parts"
-          lead="Parts that fit the system you actually own."
-          belongsHere={[
-            'Catalogue filtered to this system model',
-            'Price, and the contract discount where it applies',
-            'Cart and checkout, behind the commerce adapter',
-            'Order history, alongside service history',
-          ]}
-        />
+        <OwnerParts />
       }
     />
     <Route path="/messages" element={<Placeholder {...P2.messages} />} />
@@ -354,35 +298,13 @@ export const AppRoutes = () => (
     <Route
       path="/day"
       element={
-        <Placeholder
-          screen="/day"
-          title="My day"
-          lead="Today's jobs, in order, readable in sunlight."
-          belongsHere={[
-            'Jobs as dense rows, status as a left rule and a label',
-            'The active job, distinguishable at a glance',
-            'What each job needs before arrival',
-            'Offline state, since a basement has no signal',
-          ]}
-        />
+        <TechnicianDay />
       }
     />
     <Route
       path="/wo/:id"
       element={
-        <Placeholder
-          screen="/wo/:id"
-          title="Work order"
-          lead="The operational credibility screen. Everything the technician records on site."
-          belongsHere={[
-            'Checklist, with required items enforced',
-            'Photo capture, before and after',
-            'Parts consumed, against truck stock',
-            'Time capture and customer signature',
-            'Offline indicator, and what happens to the record',
-            'The plain-language summary generated for the customer',
-          ]}
-        />
+        <TechnicianWorkOrder />
       }
     />
     <Route path="/route" element={<Placeholder {...P2.route} />} />
@@ -393,17 +315,7 @@ export const AppRoutes = () => (
     <Route
       path="/sp"
       element={
-        <Placeholder
-          screen="/sp"
-          title="Service Point dashboard"
-          lead="How this Service Point is doing, and what needs attention today."
-          belongsHere={[
-            'The measures this Service Point is held to',
-            'Work today, and what is at risk',
-            'Service mix against the target',
-            'What needs a decision, as rows not tiles',
-          ]}
-        />
+        <ManagerDashboard />
       }
     />
     <Route path="/sp/dispatch" element={<Placeholder {...P2.dispatch} />} />
@@ -411,49 +323,19 @@ export const AppRoutes = () => (
     <Route
       path="/sp/leads"
       element={
-        <Placeholder
-          screen="/sp/leads"
-          title="Leads"
-          lead="Who has asked for help, where they came from, and what stage they are at."
-          belongsHere={[
-            'Leads as bordered rows, with reason and source',
-            'Stage, as a text label and a left rule',
-            'Which need contacting today',
-            'Where each lead came from, for attribution',
-          ]}
-        />
+        <ManagerLeads />
       }
     />
     <Route
       path="/sp/marcom"
       element={
-        <Placeholder
-          screen="/sp/marcom"
-          title="MARCOM catalogue"
-          lead="Order local marketing, and see what it generated. Not a merch store."
-          belongsHere={[
-            'Catalogue, with custom fields per item',
-            'Price, minimum quantity and lead time',
-            'Order history and production state',
-            'Campaign results: leads generated and attributed back',
-          ]}
-        />
+        <ManagerMarcom />
       }
     />
     <Route
       path="/sp/inventory"
       element={
-        <Placeholder
-          screen="/sp/inventory"
-          title="Inventory"
-          lead="What is on the shelf, what is on the truck, and what the schedule is about to consume."
-          belongsHere={[
-            'Service Point stock and truck stock, kept separate',
-            'On hand against reserved and reorder point',
-            'Consumption forecast derived from scheduled filter media jobs',
-            'What to reorder, and when',
-          ]}
-        />
+        <ManagerInventory />
       }
     />
     <Route path="/sp/team" element={<Placeholder {...P2.team} />} />
@@ -462,17 +344,7 @@ export const AppRoutes = () => (
     <Route
       path="/flo"
       element={
-        <Placeholder
-          screen="/flo"
-          title="Flo"
-          lead="Answers grounded in the documents we actually publish, with the source cited every time."
-          belongsHere={[
-            'A question, and an answer',
-            'Inline citations to the source documents',
-            'Scope filtered to the role asking',
-            'What Flo could not answer, recorded rather than hidden',
-          ]}
-        />
+        <Flo />
       }
     />
 
@@ -480,50 +352,20 @@ export const AppRoutes = () => (
     <Route
       path="/network"
       element={
-        <Placeholder
-          screen="/network"
-          title="Network overview"
-          lead="Every region and Service Point, and how the network is performing."
-          belongsHere={[
-            'Map as hero, degrading to a ranked list below 1024px',
-            'Regions and their Service Points',
-            'The measures the network is run on',
-            'Where to drill next',
-          ]}
-        />
+        <GlobalNetwork />
       }
     />
     <Route path="/network/:regionId" element={<Placeholder {...P2.regionDrill} />} />
     <Route
       path="/mix"
       element={
-        <Placeholder
-          screen="/mix"
-          title="Strategic mix tracker"
-          lead="Service revenue share against the 35 percent target, at network, region and Service Point level."
-          belongsHere={[
-            'Network service share against the target',
-            'Trend over the last four periods',
-            'Ranking around the target line, lead against lag',
-            'Region and Service Point breakdown',
-          ]}
-        />
+        <GlobalMix />
       }
     />
     <Route
       path="/adoption"
       element={
-        <Placeholder
-          screen="/adoption"
-          title="Digital adoption and Flo analytics"
-          lead="The digital measures the VP Numeric Strategy is accountable for."
-          belongsHere={[
-            'Portal activation rate',
-            'Self-serve booking share',
-            'E-commerce attach rate',
-            'Flo usage, and the questions it could not answer',
-          ]}
-        />
+        <GlobalAdoption />
       }
     />
     <Route path="/benchmarking" element={<Placeholder {...P2.benchmarking} />} />

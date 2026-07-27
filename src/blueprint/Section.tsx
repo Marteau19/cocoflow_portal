@@ -25,10 +25,13 @@ export const Section = ({
   id,
   children,
   className = '',
+  onDark = false,
 }: {
   id: string;
   children: ReactNode;
   className?: string;
+  /** Set on the forest blocks, where the default marker would be invisible. */
+  onDark?: boolean;
 }) => {
   const { on, register, unregister, open, openId } = useBlueprint();
   const annotation = sections.find((s) => s.id === id);
@@ -78,9 +81,11 @@ export const Section = ({
           aria-label={`About this section: ${annotation.title}`}
           aria-expanded={isOpen}
           className={`absolute right-2 top-2 z-frame grid h-3 w-3 place-items-center rounded-control border text-micro transition-colors duration-state ease-ease ${
-            isOpen
-              ? 'border-ink2 text-ink'
-              : 'border-line text-ink3 hover:border-ink3 hover:text-ink2'
+            onDark
+              ? 'border-on-forest text-on-forest opacity-50 hover:opacity-100'
+              : isOpen
+                ? 'border-ink2 text-ink'
+                : 'border-line text-ink3 hover:border-ink3 hover:text-ink2'
           }`}
         >
           <span className="font-mono leading-none">{number}</span>

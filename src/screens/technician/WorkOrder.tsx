@@ -74,6 +74,35 @@ const customerSummaryFrom = (items: ChecklistItem[], assetModel: string): string
   return parts.join(' ');
 };
 
+/**
+ * The stages a visit actually runs in.
+ *
+ * Grouping lives here rather than in seedData because it is a presentation
+ * decision about this screen. If this ships, a `stage` field on ChecklistItem is
+ * the right home for it, so the field team can reorder a procedure without a
+ * release. The fallback keeps an unmapped item visible rather than dropping it.
+ */
+const STAGES = [
+  { key: 'arrival', label: 'On arrival' },
+  { key: 'work', label: 'The work' },
+  { key: 'closing', label: 'Before you leave' },
+] as const;
+
+type StageKey = (typeof STAGES)[number]['key'];
+
+const STAGE_OF: Record<string, StageKey> = {
+  'CL-1': 'arrival',
+  'CL-5': 'arrival',
+  'CL-2': 'arrival',
+  'CL-3': 'work',
+  'CL-4': 'work',
+  'CL-6': 'closing',
+  'CL-7': 'closing',
+  'CL-8': 'closing',
+};
+
+const stageOf = (itemId: string): StageKey => STAGE_OF[itemId] ?? 'work';
+
 export const TechnicianWorkOrder = () => {
   const { id } = useParams();
   const order = byId(workOrders, id ?? '') ?? byId(workOrders, 'WO-2026-0412')!;
@@ -104,11 +133,102 @@ export const TechnicianWorkOrder = () => {
     setItems((current) => current.map((i) => (i.id === itemId ? { ...i, value: true } : i)));
   };
 
-  const requiredOutstanding = items.filter((i) => i.required && !i.value).length;
+  const required = items.filter((i) => i.required);
+  const requiredCount = required.length;
+  const doneCount = required.filter((i) => Boolean(i.value)).length;
+  const requiredOutstanding = requiredCount - doneCount;
   const canClose = requiredOutstanding === 0 && signed !== null;
 
   const truckStock = inventory.filter((row) => row.location === 'truck');
   const summary = useMemo(() => customerSummaryFrom(items, asset.model), [items, asset.model]);
+
+  /** One row per checklist item, by type. Called once per stage group. */
+  const renderItem = (item: ChecklistItem) => {
+    const complete = Boolean(item.value);
+
+    if (item.type === 'photo') {
+      return (
+        <Row key={item.id} rule={complete ? 'strong' : 'neutral'}>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-body text-ink">{item.label}</p>
+              <p className="text-caption text-ink2">
+                {/*
+                  No thumbnail. There is no camera here, and showing a stock
+                  photo of somebody else's tank would be the one dishonest thing
+                  on the most credibility-sensitive screen in the build.
+                */}
+                {photos[item.id] ? 'Captured, held on this device' : 'Required'}
+              </p>
+            </div>
+            <Button variant="quiet" icon="camera" onClick={() => capture(item.id)}>
+              {complete ? 'Retake' : 'Take photo'}
+            </Button>
+          </div>
+        </Row>
+      );
+    }
+
+    if (item.type === 'measure') {
+      return (
+        <Row key={item.id} rule={complete ? 'strong' : 'neutral'}>
+          <label className="block">
+            <p className="text-body text-ink">{item.label}</p>
+            <input
+              type="text"
+              value={typeof item.value === 'string' ? item.value : ''}
+              onChange={(event) => setMeasure(item.id, event.target.value)}
+              placeholder="Clear, slight haze, cloudy"
+              className="mt-2 min-h-tap w-full rounded-control border border-line-strong bg-surface px-3 text-body text-ink placeholder:text-ink3"
+            />
+          </label>
+        </Row>
+      );
+    }
+
+    if (item.type === 'note') {
+      return (
+        <Row key={item.id}>
+          <label className="block">
+            <p className="text-body text-ink">{item.label}</p>
+            <p className="text-caption text-ink2">Optional</p>
+            <textarea
+              rows={3}
+              value={typeof item.value === 'string' ? item.value : ''}
+              onChange={(event) => setMeasure(item.id, event.target.value)}
+              placeholder="Anything the next visit should know"
+              className="mt-2 w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-body text-ink placeholder:text-ink3"
+            />
+          </label>
+        </Row>
+      );
+    }
+
+    // Plain check. The whole row is the control, at a 48px target.
+    return (
+      <button
+        key={item.id}
+        type="button"
+        onClick={() => toggle(item.id)}
+        aria-pressed={complete}
+        className={`flex min-h-tap w-full items-center justify-between gap-3 border-l-rule px-4 py-3 text-left transition-colors duration-state ease-ease ${
+          complete ? 'border-l-ink' : 'border-l-line-strong'
+        }`}
+      >
+        <div className="min-w-0">
+          <p className={`text-body text-ink ${complete ? 'font-medium' : ''}`}>{item.label}</p>
+          {item.required && !complete && <p className="text-caption text-ink2">Required</p>}
+        </div>
+        <span
+          className={`grid h-4 w-4 shrink-0 place-items-center rounded-control border ${
+            complete ? 'border-ink bg-ink text-canvas' : 'border-line-strong text-transparent'
+          }`}
+        >
+          <Icon name="check" />
+        </span>
+      </button>
+    );
+  };
 
   return (
     <>
@@ -165,12 +285,18 @@ export const TechnicianWorkOrder = () => {
                         : 'No signal in this basement. Everything you record is saved on the device and syncs when you are back in range.'}
                     </p>
                   </div>
+                  {/*
+                    A demo control, not a product feature, and labelled as one so
+                    nobody in the room mistakes it for something a technician
+                    would tap. Real offline state comes from the device.
+                  */}
                   <button
                     type="button"
                     onClick={() => setOnline((v) => !v)}
-                    className="shrink-0 text-caption text-accent-ink underline"
+                    title="Demo control"
+                    className="shrink-0 rounded-control border border-line px-2 py-1 font-mono text-micro text-ink3 transition-colors duration-state ease-ease hover:text-ink2"
                   >
-                    {online ? 'Simulate offline' : 'Simulate online'}
+                    {online ? 'demo: go offline' : 'demo: go online'}
                   </button>
                 </div>
 
@@ -183,103 +309,41 @@ export const TechnicianWorkOrder = () => {
                         eyebrow={
                           requiredOutstanding === 0
                             ? 'All required items done'
-                            : `${requiredOutstanding} required outstanding`
+                            : `${doneCount} of ${requiredCount} required done`
                         }
                       />
-                      <RowList>
-                        {items.map((item) => {
-                          const complete = Boolean(item.value);
 
-                          if (item.type === 'photo') {
-                            return (
-                              <Row key={item.id} rule={complete ? 'strong' : 'neutral'}>
-                                <div className="flex items-center justify-between gap-3">
-                                  <div className="min-w-0">
-                                    <p className="text-body text-ink">{item.label}</p>
-                                    <p className="text-caption text-ink2">
-                                      {photos[item.id] ? 'Captured on device' : 'Required'}
-                                    </p>
-                                  </div>
-                                  <Button
-                                    variant={complete ? 'quiet' : 'quiet'}
-                                    icon="camera"
-                                    onClick={() => capture(item.id)}
-                                  >
-                                    {complete ? 'Retake' : 'Take photo'}
-                                  </Button>
-                                </div>
-                              </Row>
-                            );
-                          }
+                      {/*
+                        Grouped in the order the job actually happens, so the
+                        technician reads down the screen as they work rather than
+                        hunting for the next item. Eight flat rows is a form; three
+                        short stages is a procedure.
+                      */}
+                      {STAGES.map((stage) => {
+                        const stageItems = items.filter(
+                          (item) => stageOf(item.id) === stage.key,
+                        );
+                        if (stageItems.length === 0) return null;
+                        const stageDone = stageItems.every((item) => !item.required || item.value);
 
-                          if (item.type === 'measure') {
-                            return (
-                              <Row key={item.id} rule={complete ? 'strong' : 'neutral'}>
-                                <label className="block">
-                                  <p className="text-body text-ink">{item.label}</p>
-                                  <input
-                                    type="text"
-                                    value={typeof item.value === 'string' ? item.value : ''}
-                                    onChange={(event) => setMeasure(item.id, event.target.value)}
-                                    placeholder="Clear, slight haze, cloudy"
-                                    className="mt-2 min-h-tap w-full rounded-control border border-line-strong bg-surface px-3 text-body text-ink placeholder:text-ink3"
-                                  />
-                                </label>
-                              </Row>
-                            );
-                          }
-
-                          if (item.type === 'note') {
-                            return (
-                              <Row key={item.id}>
-                                <label className="block">
-                                  <p className="text-body text-ink">{item.label}</p>
-                                  <p className="text-caption text-ink2">Optional</p>
-                                  <textarea
-                                    rows={3}
-                                    value={typeof item.value === 'string' ? item.value : ''}
-                                    onChange={(event) => setMeasure(item.id, event.target.value)}
-                                    placeholder="Anything the next visit should know"
-                                    className="mt-2 w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-body text-ink placeholder:text-ink3"
-                                  />
-                                </label>
-                              </Row>
-                            );
-                          }
-
-                          // Plain check. 48px target, whole row is the control.
-                          return (
-                            <button
-                              key={item.id}
-                              type="button"
-                              onClick={() => toggle(item.id)}
-                              aria-pressed={complete}
-                              className={`flex w-full min-h-tap items-center justify-between gap-3 border-l-rule px-4 py-3 text-left transition-colors duration-state ease-ease ${
-                                complete ? 'border-l-ink' : 'border-l-line-strong'
-                              }`}
-                            >
-                              <div className="min-w-0">
-                                <p className={`text-body text-ink ${complete ? 'font-medium' : ''}`}>
-                                  {item.label}
-                                </p>
-                                {item.required && !complete && (
-                                  <p className="text-caption text-ink2">Required</p>
-                                )}
-                              </div>
-                              <span
-                                className={`grid h-4 w-4 shrink-0 place-items-center rounded-control border ${
-                                  complete
-                                    ? 'border-ink bg-ink text-canvas'
-                                    : 'border-line-strong text-transparent'
-                                }`}
-                              >
-                                <Icon name="check" />
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </RowList>
+                        return (
+                          <div key={stage.key}>
+                            <div className="flex items-center justify-between gap-3 border-y border-line bg-surface-sunk px-4 py-2">
+                              <Micro>{stage.label}</Micro>
+                              {stageDone && (
+                                <span className="text-ink2">
+                                  <Icon name="check" />
+                                </span>
+                              )}
+                            </div>
+                            <RowList>
+                              {stageItems.map((item) => renderItem(item))}
+                            </RowList>
+                          </div>
+                        );
+                      })}
                     </Card>
+
 
                     {/* Parts consumed, against what is on the truck. */}
                     <Card>

@@ -55,8 +55,11 @@ export const Identifier = ({ children, className = 'text-ink2' }: { children: st
 
 type ButtonVariant = 'primary' | 'quiet' | 'plain';
 
+// `whitespace-nowrap` is load bearing: an action label that wraps to two lines
+// inside a 48px control is the first thing a reviewer notices, and it happens at
+// phone width wherever a button sits beside content.
 const buttonBase =
-  'inline-flex min-h-tap items-center justify-center gap-2 rounded-control px-4 text-body font-medium transition-colors duration-state ease-ease disabled:opacity-40';
+  'inline-flex min-h-tap items-center justify-center gap-2 whitespace-nowrap rounded-control px-4 text-body font-medium transition-colors duration-state ease-ease disabled:opacity-40';
 
 const buttonVariants: Record<ButtonVariant, string> = {
   // The accent fill. One per screen: a screen with two of these is a bug.
@@ -360,9 +363,11 @@ export const Avatar = ({
   name: string;
   initials: string;
   photo: string | null;
-  size?: 'md' | 'lg';
+  /** `hero` is for the client home only, where the face is the reassurance. */
+  size?: 'md' | 'lg' | 'hero';
 }) => {
-  const dimensions = size === 'lg' ? 'h-6 w-6' : 'h-5 w-5';
+  const dimensions =
+    size === 'hero' ? 'h-[72px] w-[72px]' : size === 'lg' ? 'h-6 w-6' : 'h-5 w-5';
 
   if (photo) {
     return (

@@ -20,7 +20,6 @@ import {
   Card,
   CardHeader,
   Identifier,
-  Kpi,
   Micro,
   PageHead,
   Row,
@@ -62,18 +61,40 @@ export const GlobalMix = () => {
             {/* The headline. One figure, and the distance still to travel. */}
             {/* ---------------------------------------------------------- */}
             <Card>
-              <div className="grid gap-4 border-b border-line px-4 py-4 lg:grid-cols-[1.6fr_1fr_1fr]">
-                <Kpi
-                  label="Network service share"
-                  value={percent(current)}
-                  note={`${percent(gap)} short of the ${target}% target`}
-                />
-                <Kpi label="Target" value={percent(target)} note="Strategic plan" />
-                <Kpi
-                  label="Service Points above the line"
-                  value={`${leading.length} of ${servicePoints.length}`}
-                  tone={leading.length > lagging.length ? 'accent' : 'ink'}
-                />
+              {/*
+                One dominant figure, two supporting ones. The hierarchy comes
+                from the existing type scale, display against h2, rather than
+                from inventing a larger step: three figures at display size in a
+                row is the tile wall DESIGN.md section 9 rules out.
+              */}
+              <div className="grid gap-5 border-b border-line px-4 py-5 lg:grid-cols-[1.8fr_1fr] lg:gap-6">
+                <div>
+                  <Micro>Network service revenue share</Micro>
+                  <p className="mt-2 text-display text-ink">{percent(current)}</p>
+                  <p className="mt-2 max-w-reading text-body text-ink2">
+                    {percent(gap)} short of the {target} percent target. Service revenue as a
+                    proportion of everything the network earns.
+                  </p>
+                </div>
+
+                <dl className="divide-y divide-line border-t border-line lg:border-l lg:border-t-0 lg:pl-4">
+                  <div className="flex items-baseline justify-between gap-3 py-3 lg:pt-0">
+                    <dt className="text-caption text-ink2">Target</dt>
+                    <dd className="text-h2 text-ink">{percent(target)}</dd>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-3 py-3">
+                    <dt className="text-caption text-ink2">Above the line</dt>
+                    <dd className="text-h2 text-ink">
+                      {leading.length} of {servicePoints.length}
+                    </dd>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-3 py-3 lg:pb-0">
+                    <dt className="text-caption text-ink2">Gained since {network.history[0].period}</dt>
+                    <dd className="text-h2 text-accent-ink">
+                      {percent(current - network.history[0].servicePct)}
+                    </dd>
+                  </div>
+                </dl>
               </div>
 
               {/* Trend, with the target as a reference line rather than a series. */}

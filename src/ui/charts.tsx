@@ -126,14 +126,63 @@ export const TrendAgainstTarget = ({
   const theme = useChartTheme();
   if (!theme) return <div style={{ height }} />;
 
+  /**
+   * Domain fitted to the data and the target, not anchored at zero.
+   *
+   * Anchoring at zero is the honest default when a bar's length carries the
+   * value. Here the question is movement against a line a few points above the
+   * data, and a zero baseline squashes four periods of real change into the top
+   * third of the plot. The axis labels stay visible, so the scale is never
+   * hidden.
+   */
+  const values = data.map((row) => Number(row[yKey])).filter((n) => Number.isFinite(n));
+  const lowest = Math.min(...values, target ?? Infinity);
+  const highest = Math.max(...values, target ?? -Infinity);
+  const pad = Math.max(2, (highest - lowest) * 0.35);
+  const domain: [number, number] = [
+    Math.max(0, Math.floor((lowest - pad) / 5) * 5),
+    Math.ceil((highest + pad / 2) / 5) * 5,
+  ];
+
+  const lastIndex = data.length - 1;
+
+  /**
+   * Series labelled inline at the end of the line rather than in a legend box.
+   * Recharts calls the renderer once per point, so it draws only at the last.
+   */
+  const endLabel = (props: { index?: number; x?: number | string; y?: number | string; value?: number | string }) => {
+    if (props.index !== lastIndex) return <g />;
+    return (
+      <text
+        x={Number(props.x) + 8}
+        // Clear of the target rule: the final point sits just under it, and two
+        // labels on the same baseline read as one string.
+        y={Number(props.y) + 18}
+        fill={theme['color-accent-ink']}
+        fontSize={13}
+        fontWeight={500}
+        fontFamily={theme['font-sans']}
+        style={{ fontVariantNumeric: 'tabular-nums' }}
+      >
+        {`${props.value}${suffix}`}
+      </text>
+    );
+  };
+
   return (
     <div style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 8, right: 44, bottom: 0, left: 0 }}>
+        <LineChart data={data} margin={{ top: 12, right: 56, bottom: 0, left: 0 }}>
           {/* No gridlines. The baseline is the only rule. */}
           <CartesianGrid horizontal={false} vertical={false} />
           <XAxis dataKey={xKey} {...axisProps(theme)} axisLine={{ stroke: theme['color-line-strong'] }} />
-          <YAxis {...axisProps(theme)} axisLine={false} width={36} />
+          <YAxis
+            {...axisProps(theme)}
+            axisLine={false}
+            width={36}
+            domain={domain}
+            tickFormatter={(value: number) => `${value}`}
+          />
           {target !== undefined && (
             <ReferenceLine
               y={target}
@@ -154,8 +203,9 @@ export const TrendAgainstTarget = ({
             dataKey={yKey}
             stroke={theme['color-accent']}
             strokeWidth={2}
-            dot={{ r: 2, fill: theme['color-accent'], stroke: theme['color-accent'] }}
-            activeDot={{ r: 3 }}
+            dot={{ r: 2.5, fill: theme['color-accent'], stroke: theme['color-accent'] }}
+            activeDot={{ r: 4 }}
+            label={endLabel}
             // No entrance animation. Staggered load-in is one of the strongest
             // tells of generated UI.
             isAnimationActive={false}
@@ -232,7 +282,7 @@ export const RankedRows = ({
           </div>
           <p className="shrink-0 text-h2 text-ink">
             {row.value.toFixed(1)}
-            {row.suffix && <span className="ml-1 text-caption text-ink2">{row.suffix}</span>}
+            {row.suffix && <span className="text-caption text-ink2">{row.suffix}</span>}
           </p>
         </div>
       );

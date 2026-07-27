@@ -270,9 +270,9 @@ export const territories: ServiceTerritory[] = [
 ];
 
 export const resources: ServiceResource[] = [
-  { id: 'RES-001', territoryId: 'SP-QC-EST', name: 'Marc Bouchard', role: 'technician', initials: 'MB', photo: null, rating: 4.9 },
-  { id: 'RES-002', territoryId: 'SP-QC-EST', name: 'Priya Nadeau', role: 'technician', initials: 'PN', photo: null, rating: 4.8 },
-  { id: 'RES-003', territoryId: 'SP-QC-EST', name: 'Louis Tremblay', role: 'manager', initials: 'LT', photo: null, rating: 0 },
+  { id: 'RES-001', territoryId: 'SP-QC-EST', name: 'Marc Bouchard', role: 'technician', initials: 'MB', photo: '/img/person-1.jpg', rating: 4.9 },
+  { id: 'RES-002', territoryId: 'SP-QC-EST', name: 'Priya Nadeau', role: 'technician', initials: 'PN', photo: '/img/person-5.jpg', rating: 4.8 },
+  { id: 'RES-003', territoryId: 'SP-QC-EST', name: 'Louis Tremblay', role: 'manager', initials: 'LT', photo: '/img/person-2.jpg', rating: 0 },
   { id: 'RES-004', territoryId: 'SP-QC-EST', name: 'Amélie Roy', role: 'installer', initials: 'AR', photo: null, rating: 4.7 },
 ];
 

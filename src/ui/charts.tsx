@@ -220,7 +220,7 @@ export const RankedRows = ({
     {rows.map((row) => {
       const tone =
         row.standing === 'lead'
-          ? 'border-l-accent'
+          ? 'border-l-ink'
           : row.standing === 'lag'
             ? 'border-l-warn'
             : 'border-l-line-strong';

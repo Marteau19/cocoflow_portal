@@ -102,6 +102,20 @@
   }
 }
 
+@layer components {
+  /**
+   * A hairline on a forest ground.
+   *
+   * The --line token is tuned for warm paper and vanishes against forest, and
+   * Tailwind cannot append an alpha channel to a hex-valued custom property, so
+   * the divider is mixed from the on-forest text colour instead. Still no hex,
+   * and still survives a brand switch.
+   */
+  .border-on-forest-soft {
+    border-color: color-mix(in srgb, var(--color-on-forest) 20%, transparent);
+  }
+}
+
 /**
  * Blueprint mode.
  *

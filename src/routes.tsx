@@ -11,221 +11,40 @@
 
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { GlobalAdoption } from './screens/global/Adoption';
+import { GlobalBenchmarking } from './screens/global/Benchmarking';
 import { GlobalMix } from './screens/global/Mix';
 import { GlobalNetwork } from './screens/global/Network';
+import { GlobalReadiness } from './screens/global/Readiness';
+import { GlobalRegionDrill } from './screens/global/RegionDrill';
+import { ManagerCustomers } from './screens/manager/Customers';
 import { ManagerDashboard } from './screens/manager/Dashboard';
+import { ManagerDispatch } from './screens/manager/Dispatch';
 import { ManagerInventory } from './screens/manager/Inventory';
 import { ManagerLeads } from './screens/manager/Leads';
 import { ManagerMarcom } from './screens/manager/Marcom';
+import { ManagerTeam } from './screens/manager/Team';
 import { OwnerBook } from './screens/owner/Book';
+import { OwnerContract } from './screens/owner/Contract';
 import { OwnerHome } from './screens/owner/Home';
+import { OwnerInvoices } from './screens/owner/Invoices';
+import { OwnerMessages } from './screens/owner/Messages';
 import { OwnerParts } from './screens/owner/Parts';
+import { OwnerRecommended } from './screens/owner/Recommended';
 import { OwnerSystem } from './screens/owner/System';
-import { Placeholder } from './screens/Placeholder';
+import { OwnerTransfer } from './screens/owner/Transfer';
+import { ProspectHandover } from './screens/prospect/Handover';
+import { ProspectInstall } from './screens/prospect/Install';
 import { ProspectQuote } from './screens/prospect/Quote';
 import { ProspectRequest } from './screens/prospect/Request';
+import { ProspectSoilTest } from './screens/prospect/SoilTest';
 import { ProspectStart } from './screens/prospect/Start';
 import { Flo } from './screens/shared/Flo';
 import { TechnicianDay } from './screens/technician/Day';
+import { TechnicianFieldQuote } from './screens/technician/FieldQuote';
+import { TechnicianRoute } from './screens/technician/Route';
+import { TechnicianSafety } from './screens/technician/Safety';
 import { TechnicianWorkOrder } from './screens/technician/WorkOrder';
 import { useRole } from './shell/useRole';
-
-/**
- * Pass 2 fills these in. Each entry carries what belongs on the screen, so the
- * skeleton says something useful rather than "coming soon".
- */
-const P2 = {
-  soilTest: {
-    screen: '/soil-test',
-    title: 'Your soil test and what we found',
-    eyebrow: 'Before install',
-    lead: 'We assess the land and publish the findings in plain language. No jargon, no PDF to decode.',
-    belongsHere: [
-      'Visit date, and who came to the property',
-      'What the soil test measured, in plain language',
-      'What it means for the system we can install',
-      'The report itself, readable on the phone',
-    ],
-  },
-  install: {
-    screen: '/install',
-    title: 'Your installation',
-    eyebrow: 'Before install',
-    lead: 'Where the project stands, what happens next, and who is on site.',
-    belongsHere: [
-      'Project stage, as a sequence rather than a progress bar',
-      'Permit status, filed on the customer behalf',
-      'Scheduled install dates and the crew assigned',
-      'Photos from site as the work proceeds',
-    ],
-  },
-  handover: {
-    screen: '/handover',
-    title: 'Your system is live',
-    eyebrow: 'Before install',
-    lead: 'The moment the prospect becomes an owner. Everything moves into one place they can return to.',
-    belongsHere: [
-      'What was installed, and the warranty that now applies',
-      'The care contract offer, and what it covers',
-      'First maintenance visit, already scheduled',
-      'Handover to the owner view of the portal',
-    ],
-  },
-  invoices: {
-    screen: '/invoices',
-    title: 'Invoices and payment',
-    lead: 'What is owed, what is paid, and what is on autopay.',
-    belongsHere: [
-      'Outstanding balance, and the single action to settle it',
-      'Invoice history, each one downloadable',
-      'Payment method on file, and autopay state',
-      'Which visit or order each invoice relates to',
-    ],
-  },
-  contract: {
-    screen: '/contract',
-    title: 'Your care contract',
-    lead: 'What the contract covers, when it renews, and what it has saved.',
-    belongsHere: [
-      'Cover, listed as plain entitlements',
-      'Renewal date and price',
-      'Visits included, and visits used this term',
-      'How to change or end the contract',
-    ],
-  },
-  messages: {
-    screen: '/messages',
-    title: 'Messages',
-    lead: 'One thread with the Service Point team. No ticket numbers, no queue names.',
-    belongsHere: [
-      'Conversation with the Service Point team',
-      'Attachments, including photos from the property',
-      'Which system or visit a thread relates to',
-      'Response time the customer can expect',
-    ],
-  },
-  transfer: {
-    screen: '/system/transfer',
-    title: 'Transfer ownership',
-    lead: 'Selling the property. The system, its history and its contract move to the new owner.',
-    belongsHere: [
-      'Who the system is transferring to',
-      'What history transfers, and what stays private',
-      'What happens to the care contract',
-      'Confirmation, and the consent this requires',
-    ],
-  },
-  recommended: {
-    screen: '/recommended',
-    title: 'Recommended for your property',
-    lead: 'Suggestions grounded in this system, its age and its service history. Never a generic upsell.',
-    belongsHere: [
-      'Why each item is recommended, tied to a real record',
-      'What it costs and what it prevents',
-      'Which are due now and which are worth knowing about',
-      'A clear way to decline without being asked again',
-    ],
-  },
-  route: {
-    screen: '/route',
-    title: 'Route and schedule',
-    lead: 'The day as a sequence of stops, with travel between them.',
-    belongsHere: [
-      'Stops in order, with drive time between',
-      'Map of the run, degrading to a list on a small screen',
-      'What is fixed and what can move',
-      'Offline state, since coverage is not guaranteed',
-    ],
-  },
-  fieldQuote: {
-    screen: '/wo/:id/quote',
-    title: 'Field quote',
-    lead: 'Quoting extra work while standing at the system, before leaving site.',
-    belongsHere: [
-      'What was found that is outside the contract',
-      'Parts and labour, priced from the ERP',
-      'Customer approval captured on site',
-      'What happens if they decline',
-    ],
-  },
-  safety: {
-    screen: '/wo/:id/safety',
-    title: 'Pre-job safety check',
-    lead: 'Completed before work starts. Blocking, not advisory.',
-    belongsHere: [
-      'Site hazards specific to this property',
-      'Confined space and gas checks',
-      'Equipment condition confirmation',
-      'Sign off, and what happens when a check fails',
-    ],
-  },
-  dispatch: {
-    screen: '/sp/dispatch',
-    title: 'Dispatch board',
-    lead: 'Who is going where, and what is still unassigned.',
-    belongsHere: [
-      'Unassigned work, and why each one is waiting',
-      'Technicians against the day, as bordered rows',
-      'Capacity and travel conflicts made visible',
-      'Reassignment, and what the customer sees when it happens',
-    ],
-  },
-  customers: {
-    screen: '/sp/customers',
-    title: 'Customers',
-    lead: 'Every account this Service Point holds, searchable.',
-    belongsHere: [
-      'Account list with system, contract and open work',
-      'Search and filter, table forward',
-      'One account drill showing the unified timeline',
-      'Which records are read only from the master system',
-    ],
-  },
-  team: {
-    screen: '/sp/team',
-    title: 'Team and capacity',
-    lead: 'Who is available, what they are qualified for, and where the week is tight.',
-    belongsHere: [
-      'Technicians, with qualifications and current load',
-      'Capacity against booked work for the coming weeks',
-      'Where the constraint actually is',
-      'Absence and its effect on committed visits',
-    ],
-  },
-  regionDrill: {
-    screen: '/network/:regionId',
-    title: 'Region detail',
-    lead: 'One region, its Service Points, and how they compare.',
-    belongsHere: [
-      'Service Points ranked within the region',
-      'Revenue, service mix and contract base per Service Point',
-      'Which Service Points lead and which lag the target',
-      'Drill into a single Service Point',
-    ],
-  },
-  benchmarking: {
-    screen: '/benchmarking',
-    title: 'Benchmarking and alerts',
-    lead: 'Where a Service Point is out of line with its peers, and worth a conversation.',
-    belongsHere: [
-      'Peer comparison on the measures that matter',
-      'Alerts, as text and a left rule, never a coloured dot',
-      'What good looks like, sourced from the network',
-      'What action each alert implies',
-    ],
-  },
-  readiness: {
-    screen: '/readiness',
-    title: 'Service Point readiness',
-    lead: 'How prepared each Service Point is for the portal, before it is switched on for their customers.',
-    belongsHere: [
-      'Readiness by Service Point, and what is missing',
-      'Data quality gates that must pass first',
-      'Training and adoption state per team',
-      'Sequence for rollout, and what gates each wave',
-    ],
-  },
-} as const;
 
 /**
  * The role determines what `/` means. A reviewer who lands on the root should
@@ -253,15 +72,15 @@ export const AppRoutes = () => (
         <ProspectRequest />
       }
     />
-    <Route path="/soil-test" element={<Placeholder {...P2.soilTest} />} />
+    <Route path="/soil-test" element={<ProspectSoilTest />} />
     <Route
       path="/quote"
       element={
         <ProspectQuote />
       }
     />
-    <Route path="/install" element={<Placeholder {...P2.install} />} />
-    <Route path="/handover" element={<Placeholder {...P2.handover} />} />
+    <Route path="/install" element={<ProspectInstall />} />
+    <Route path="/handover" element={<ProspectHandover />} />
 
     {/* client-owner */}
     <Route
@@ -276,8 +95,8 @@ export const AppRoutes = () => (
         <OwnerSystem />
       }
     />
-    <Route path="/invoices" element={<Placeholder {...P2.invoices} />} />
-    <Route path="/contract" element={<Placeholder {...P2.contract} />} />
+    <Route path="/invoices" element={<OwnerInvoices />} />
+    <Route path="/contract" element={<OwnerContract />} />
     <Route
       path="/book"
       element={
@@ -290,9 +109,9 @@ export const AppRoutes = () => (
         <OwnerParts />
       }
     />
-    <Route path="/messages" element={<Placeholder {...P2.messages} />} />
-    <Route path="/system/transfer" element={<Placeholder {...P2.transfer} />} />
-    <Route path="/recommended" element={<Placeholder {...P2.recommended} />} />
+    <Route path="/messages" element={<OwnerMessages />} />
+    <Route path="/system/transfer" element={<OwnerTransfer />} />
+    <Route path="/recommended" element={<OwnerRecommended />} />
 
     {/* sp-technician */}
     <Route
@@ -307,9 +126,9 @@ export const AppRoutes = () => (
         <TechnicianWorkOrder />
       }
     />
-    <Route path="/route" element={<Placeholder {...P2.route} />} />
-    <Route path="/wo/:id/quote" element={<Placeholder {...P2.fieldQuote} />} />
-    <Route path="/wo/:id/safety" element={<Placeholder {...P2.safety} />} />
+    <Route path="/route" element={<TechnicianRoute />} />
+    <Route path="/wo/:id/quote" element={<TechnicianFieldQuote />} />
+    <Route path="/wo/:id/safety" element={<TechnicianSafety />} />
 
     {/* sp-manager */}
     <Route
@@ -318,8 +137,8 @@ export const AppRoutes = () => (
         <ManagerDashboard />
       }
     />
-    <Route path="/sp/dispatch" element={<Placeholder {...P2.dispatch} />} />
-    <Route path="/sp/customers" element={<Placeholder {...P2.customers} />} />
+    <Route path="/sp/dispatch" element={<ManagerDispatch />} />
+    <Route path="/sp/customers" element={<ManagerCustomers />} />
     <Route
       path="/sp/leads"
       element={
@@ -338,7 +157,7 @@ export const AppRoutes = () => (
         <ManagerInventory />
       }
     />
-    <Route path="/sp/team" element={<Placeholder {...P2.team} />} />
+    <Route path="/sp/team" element={<ManagerTeam />} />
 
     {/* shared, both Service Point roles */}
     <Route
@@ -355,7 +174,7 @@ export const AppRoutes = () => (
         <GlobalNetwork />
       }
     />
-    <Route path="/network/:regionId" element={<Placeholder {...P2.regionDrill} />} />
+    <Route path="/network/:regionId" element={<GlobalRegionDrill />} />
     <Route
       path="/mix"
       element={
@@ -368,8 +187,8 @@ export const AppRoutes = () => (
         <GlobalAdoption />
       }
     />
-    <Route path="/benchmarking" element={<Placeholder {...P2.benchmarking} />} />
-    <Route path="/readiness" element={<Placeholder {...P2.readiness} />} />
+    <Route path="/benchmarking" element={<GlobalBenchmarking />} />
+    <Route path="/readiness" element={<GlobalReadiness />} />
 
     {/* Anything else returns to the current role's home rather than dead ending. */}
     <Route path="*" element={<RootRedirect />} />

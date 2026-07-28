@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * index.css
+ *
+ * Three jobs, and nothing else:
+ *  1. Declare the layout constants the brand token object does not carry.
+ *  2. Promote the two display steps at desktop width.
+ *  3. Set the global rules from DESIGN.md that belong on the document.
+ *
+ * Colour, radius, font, spacing and motion values are written to :root at
+ * runtime by `applyBrand()`. They never appear here.
+ */
+
+:root {
+  /* Page gutter. A layout constant from DESIGN.md section 4, not a brand
+     value, which is why it lives here and not in the token object. */
+  --gutter: 20px;
+
+  /* Aliases for the two steps that change at desktop width. `applyBrand()`
+     writes --type-* as inline styles on the root element, and an inline style
+     outranks any stylesheet rule, so a media query cannot override it
+     directly. Reading through an alias declared here restores that ability. */
+  --step-display-size: var(--type-display-size);
+  --step-display-line: var(--type-display-line);
+  --step-display-tracking: var(--type-display-tracking);
+  --step-display-weight: var(--type-display-weight);
+
+  --step-h1-size: var(--type-h1-size);
+  --step-h1-line: var(--type-h1-line);
+  --step-h1-tracking: var(--type-h1-tracking);
+  --step-h1-weight: var(--type-h1-weight);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 32px;
+
+    /* Display and h1 step up one notch. Nothing else changes. */
+    --step-display-size: var(--type-display-lg-size);
+    --step-display-line: var(--type-display-lg-line);
+    --step-display-tracking: var(--type-display-lg-tracking);
+    --step-display-weight: var(--type-display-lg-weight);
+
+    --step-h1-size: var(--type-h1-lg-size);
+    --step-h1-line: var(--type-h1-lg-line);
+    --step-h1-tracking: var(--type-h1-lg-tracking);
+    --step-h1-weight: var(--type-h1-lg-weight);
+  }
+}
+
+@layer base {
+  html {
+    /* Every numeral in the app is tabular. Numbers in a column must align. */
+    font-variant-numeric: tabular-nums;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-weight: var(--type-body-weight);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Identifiers are always mono and uppercase. DESIGN.md section 7. */
+  code,
+  kbd,
+  samp {
+    font-family: var(--font-mono);
+  }
+
+  /* Visible keyboard focus is part of the accessible floor. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent-ink);
+    outline-offset: 2px;
+  }
+
+  /* Headings carry no default margin: spacing is the layout's job. */
+  h1,
+  h2,
+  h3,
+  p,
+  figure,
+  blockquote {
+    margin: 0;
+  }
+
+  /* Body copy is left aligned, ragged right. Never centred. */
+  p {
+    text-align: left;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+  }
+}
+
+@layer components {
+  /**
+   * A hairline on a forest ground.
+   *
+   * The --line token is tuned for warm paper and vanishes against forest, and
+   * Tailwind cannot append an alpha channel to a hex-valued custom property, so
+   * the divider is mixed from the on-forest text colour instead. Still no hex,
+   * and still survives a brand switch.
+   */
+  .border-on-forest-soft {
+    border-color: color-mix(in srgb, var(--color-on-forest) 20%, transparent);
+  }
+}
+
+/**
+ * Blueprint mode.
+ *
+ * The canvas shifts a half step cooler and the hairlines gain weight, so section
+ * boundaries read as a technical drawing rather than a product surface.
+ *
+ * These land on <body> rather than :root on purpose. `applyBrand()` writes the
+ * tokens as inline styles on the root element, and an inline style outranks any
+ * stylesheet rule, so redefining a token here only works on a descendant.
+ */
+body[data-blueprint='on'] {
+  background-color: var(--color-canvas-blueprint);
+
+  /* The stated 15 percent gain, expressed against the token rather than a
+     literal, so it survives a brand switch. */
+  --color-line: color-mix(in srgb, var(--color-line-strong) 15%, var(--color-line));
+}
+
+/**
+ * Respect reduced motion by disabling transitions outright. The 150ms and
+ * 220ms state changes are the only motion in the system, so removing them
+ * removes all of it.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

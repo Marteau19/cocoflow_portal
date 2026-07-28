@@ -85,7 +85,7 @@ export const TechnicianDay = () => {
 
         {/* Offline state. The field audience checks for this first. */}
         <div className="flex items-center gap-2 rounded-control border border-line bg-surface px-3 py-2">
-          <span className="text-accent-ink">
+          <span className="text-positive">
             <Icon name="check" />
           </span>
           <p className="text-caption text-ink2">

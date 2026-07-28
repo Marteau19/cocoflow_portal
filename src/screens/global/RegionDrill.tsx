@@ -53,7 +53,7 @@ const Compare = ({
         {value.toFixed(1)}
         {suffix}
       </p>
-      <p className={`mt-1 text-caption ${meaningful ? (good ? 'text-accent-ink' : 'text-warn') : 'text-ink3'}`}>
+      <p className={`mt-1 text-caption ${meaningful ? (good ? 'text-positive' : 'text-warn') : 'text-ink3'}`}>
         {meaningful
           ? `${delta > 0 ? '+' : ''}${delta.toFixed(1)}${suffix} against region`
           : 'At the region average'}

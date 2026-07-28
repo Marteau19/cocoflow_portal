@@ -24,10 +24,13 @@ export const ScreenBody = ({
   // The technician works one-handed in a basement; the global surface is read
   // across a boardroom. Neither wants the client's airiness.
   const density =
-    role.key === 'sp-technician' ? 'py-3' : role.viewport === 'desktop' ? 'py-4' : 'py-5';
+    role.key === 'sp-technician' ? 'pt-3' : role.viewport === 'desktop' ? 'pt-4' : 'pt-5';
 
+  // A flush screen opens with a full-bleed inverted panel, so it gets no top
+  // padding at all. A strip of canvas above the panel reads as a rendering fault
+  // rather than as breathing room, and it is the first thing the eye lands on.
   return (
-    <div className={`${flush ? '' : 'px-gutter'} ${density} pb-6`}>
+    <div className={`${flush ? '' : `px-gutter ${density}`} pb-6`}>
       <div className={role.viewport === 'desktop' ? 'mx-auto max-w-shell' : ''}>{children}</div>
     </div>
   );

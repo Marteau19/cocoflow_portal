@@ -27,6 +27,7 @@ import {
   RowList,
   Stack,
   Status,
+  Tabs,
   type RuleTone,
   type StatusTone,
 } from '../../ui/primitives';
@@ -97,22 +98,15 @@ export const ManagerLeads = () => {
 
         <Section id="leads">
           <Stack gap="4">
-            <div className="flex flex-wrap items-center gap-2">
-              {filters.map((chip) => (
-                <button
-                  key={chip.key}
-                  type="button"
-                  onClick={() => setFilter(chip.key)}
-                  className={`min-h-tap rounded-pill border px-3 text-caption transition-colors duration-state ease-ease ${
-                    filter === chip.key
-                      ? 'border-ink bg-ink text-canvas'
-                      : 'border-line-strong bg-surface text-ink2 hover:text-ink'
-                  }`}
-                >
-                  {chip.label} {chip.count}
-                </button>
-              ))}
-            </div>
+            <Tabs
+              label="Filter leads"
+              value={filter}
+              onChange={setFilter}
+              options={filters.map((chip) => ({
+                value: chip.key,
+                label: `${chip.label} ${chip.count}`,
+              }))}
+            />
 
             <Card>
               <CardHeader

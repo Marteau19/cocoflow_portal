@@ -75,7 +75,7 @@ export const ManagerDispatch = () => {
         <PageHead
           eyebrow={territory.name}
           title="Dispatch"
-          lead={`${dayAndDate(TODAY)}. ${today.length} jobs across ${assignedIds.size} technicians.`}
+          lead={`${dayAndDate(TODAY)}. ${today.length} ${today.length === 1 ? 'job' : 'jobs'} across ${assignedIds.size} ${assignedIds.size === 1 ? 'technician' : 'technicians'}.`}
         />
 
         <Section id="dispatch">
@@ -110,7 +110,13 @@ export const ManagerDispatch = () => {
                               <Identifier>{job.id}</Identifier>
                             </div>
                           </div>
-                          <Button variant="quiet">Confirm</Button>
+                          {/*
+                            The one accent fill on this screen. Confirming a
+                            window with the customer is the action the board
+                            exists to prompt, and every other control here moves
+                            work around rather than resolving anything.
+                          */}
+                          <Button variant="primary">Confirm</Button>
                         </div>
                       </Row>
                     );

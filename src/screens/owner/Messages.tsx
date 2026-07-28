@@ -211,7 +211,7 @@ export const OwnerMessages = () => {
 
             {/* Context the team already has, so the customer need not repeat it. */}
             <Card>
-              <CardHeader eyebrow="What we already know" title="Attached to this conversation" />
+              <CardHeader icon="file-text" iconTone="neutral" eyebrow="What we already know" title="Attached to this conversation" />
               <RowList>
                 <Row>
                   <div className="flex items-baseline justify-between gap-3">

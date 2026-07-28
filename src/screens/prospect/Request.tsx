@@ -76,7 +76,7 @@ export const ProspectRequest = () => {
           <Card>
             <div className="px-4 py-3">
               <div className="flex items-start gap-3">
-                <span className="mt-1 shrink-0 text-accent-ink">
+                <span className="mt-1 shrink-0 text-positive">
                   <Icon name="check" />
                 </span>
                 <div className="min-w-0">

@@ -251,7 +251,7 @@ export const GlobalBenchmarking = () => {
                                 <Micro>{m.label}</Micro>
                               </div>
                               <p
-                                className={`text-h2 ${isBest ? 'text-accent-ink' : 'text-ink'}`}
+                                className={`text-h2 ${isBest ? 'text-positive' : 'text-ink'}`}
                               >
                                 {m.pick(sp).toFixed(1)}
                                 {m.unit && <span className="text-caption text-ink2">{m.unit}</span>}

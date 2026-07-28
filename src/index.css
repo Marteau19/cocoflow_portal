@@ -114,6 +114,23 @@
   .border-on-forest-soft {
     border-color: color-mix(in srgb, var(--color-on-forest) 20%, transparent);
   }
+
+  /**
+   * The same problem, for a fill: an icon chip or an active nav pill on a dark
+   * ground, where none of the light `-soft` tints read. Mixed from the on-dark
+   * text colour so it tracks whichever dark ground it is sitting on.
+   */
+  .bg-on-dark-soft {
+    background-color: color-mix(in srgb, var(--color-on-forest) 12%, transparent);
+  }
+
+  .bg-on-sidebar-soft {
+    background-color: color-mix(in srgb, var(--color-on-sidebar) 12%, transparent);
+  }
+
+  .border-on-sidebar-soft {
+    border-color: color-mix(in srgb, var(--color-on-sidebar) 18%, transparent);
+  }
 }
 
 /**

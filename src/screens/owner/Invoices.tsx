@@ -11,6 +11,7 @@
  * measures the network is held to.
  */
 
+import { useState } from 'react';
 import { Section } from '../../blueprint/Section';
 import {
   GOLDEN,
@@ -32,6 +33,7 @@ import {
   RowList,
   Stack,
   Status,
+  Toggle,
 } from '../../ui/primitives';
 import { ScreenBody } from '../ScreenBody';
 
@@ -89,6 +91,11 @@ const invoicesFor = (accountId: string) => {
 export const OwnerInvoices = () => {
   const contract = byId(contracts, GOLDEN.contractId)!;
   const invoices = invoicesFor(GOLDEN.accountId);
+
+  // Local to the screen, seeded from the contract. The prototype has no backend,
+  // so a customer can flip this and see the copy and the row state follow, which
+  // is the part reviewers ask about.
+  const [autopay, setAutopay] = useState(contract.autopay);
 
   const outstanding = invoices.filter((i) => !i.paid);
   const owed = outstanding.reduce((sum, i) => sum + i.amount, 0);
@@ -155,22 +162,24 @@ export const OwnerInvoices = () => {
                     <span className="shrink-0 text-caption text-accent-ink">Change</span>
                   </div>
                 </Row>
-                <Row rule={contract.autopay ? 'strong' : 'warn'}>
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <Status tone={contract.autopay ? 'good' : 'warn'}>
-                        {contract.autopay ? 'AUTOPAY ON' : 'AUTOPAY OFF'}
-                      </Status>
-                      <p className="mt-1 text-caption text-ink2">
-                        {contract.autopay
-                          ? 'Your care plan renews and pays itself. We email you a week before.'
-                          : 'You will be asked to pay each renewal.'}
-                      </p>
-                    </div>
-                    <span className="shrink-0 text-caption text-accent-ink">
-                      {contract.autopay ? 'Turn off' : 'Turn on'}
-                    </span>
-                  </div>
+                {/*
+                  A real switch rather than a "Turn off" link. Autopay is the one
+                  setting on this screen a customer changes, and a link that says
+                  "Turn off" makes them read the sentence twice to work out which
+                  state they are currently in. The switch shows the state and the
+                  action at once.
+                */}
+                <Row rule={autopay ? 'positive' : 'warn'}>
+                  <Toggle
+                    label={autopay ? 'Autopay is on' : 'Autopay is off'}
+                    checked={autopay}
+                    onChange={setAutopay}
+                    hint={
+                      autopay
+                        ? 'Your care plan renews and pays itself. We email you a week before.'
+                        : 'You will be asked to pay each renewal.'
+                    }
+                  />
                 </Row>
               </RowList>
             </Card>

@@ -134,8 +134,11 @@ const SchematicMap = () => (
               y={y - 5}
               width={10}
               height={10}
-              fill={above ? 'var(--color-accent)' : 'var(--color-surface)'}
-              stroke={above ? 'var(--color-accent-ink)' : 'var(--color-ink2)'}
+              // Above target is a positive outcome, not the primary action, so
+              // it is the positive token. Under the new brand the accent is
+              // orange, and an orange marker for "doing well" reads as a warning.
+              fill={above ? 'var(--color-positive)' : 'var(--color-surface)'}
+              stroke={above ? 'var(--color-positive)' : 'var(--color-ink2)'}
               strokeWidth={1.5}
             />
             <text

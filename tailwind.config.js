@@ -171,20 +171,11 @@ export default {
       borderWidth: {
         rule: '3px',
       },
-      // Device dimensions, including the bezel radii. These are physical
-      // measurements of a handset, not brand values, which is why they sit here
-      // with the other layout constants rather than in the token object.
-      borderRadius: {
-        bezel: '44px',
-        screen: '32px',
-      },
-      width: {
-        device: '420px',
-      },
-      height: {
-        device: '860px',
-      },
       maxWidth: {
+        // The width of the device screen. Panels that mirror the phone, the role
+        // menu and the Blueprint sheet, are held to it so they line up with the
+        // frame. The frame's own dimensions live in the `.device-*` block in
+        // index.css, with the rest of its physical measurements.
         device: '420px',
         reading: '68ch',
         shell: '1440px',

@@ -77,7 +77,7 @@ export const OwnerHome = () => {
         {/* The dominant block. Nothing else on this screen competes with it. */}
         {/* ---------------------------------------------------------------- */}
         <Section id="next-visit" onDark>
-          <div className="bg-forest px-gutter py-5 text-on-forest">
+          <div className="bg-forest px-gutter pb-5 pt-[calc(var(--safe-top)+var(--space-4))] text-on-forest">
             <Micro className="text-on-forest opacity-70">Your next visit</Micro>
 
             {/*

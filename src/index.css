@@ -19,6 +19,10 @@
      value, which is why it lives here and not in the token object. */
   --gutter: 20px;
 
+  /* The status bar inset. Zero below the frame breakpoint, because there is no
+     frame and therefore no camera to clear. See the .device-* block below. */
+  --safe-top: 0px;
+
   /* Aliases for the two steps that change at desktop width. `applyBrand()`
      writes --type-* as inline styles on the root element, and an inline style
      outranks any stylesheet rule, so a media query cannot override it
@@ -130,6 +134,165 @@
 
   .border-on-sidebar-soft {
     border-color: color-mix(in srgb, var(--color-on-sidebar) 18%, transparent);
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* The device frame                                                       */
+  /* ---------------------------------------------------------------------- */
+
+  /**
+   * A handset, drawn rather than photographed.
+   *
+   * The literal colours below are the only ones in the codebase that are not
+   * tokens, and that is deliberate: they are photographic properties of a
+   * physical object, not brand values. A titanium rail is the same grey in both
+   * brands, and a brand switch that tinted the phone would be a bug. This is
+   * also why they live here rather than in the token object, alongside the
+   * device dimensions, which are physical measurements for the same reason.
+   *
+   * Drawn rather than photographed because it is resolution independent, it
+   * carries no asset weight, and the screen corner can be a real clipping
+   * boundary rather than a rectangle positioned over a picture and hoping the
+   * insets were measured right.
+   *
+   * Below 900px every rule here is inert: the app is the whole viewport and
+   * there is no frame at all.
+   */
+  .device-stage {
+    display: grid;
+    align-items: start;
+    justify-items: center;
+  }
+
+  .device-shell {
+    position: relative;
+    display: flex;
+    min-height: calc(100vh - var(--space-6));
+    flex-direction: column;
+  }
+
+  .device-bezel {
+    position: relative;
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .device-screen {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--color-canvas);
+  }
+
+  /* Inert until there is a frame to sit in. */
+  .device-island,
+  .device-button {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) {
+  :root {
+    /**
+     * Clears the camera.
+     *
+     * The island runs from 11px to 44px down the screen, so anything a user has
+     * to read starts below that. This is the same reason a real app insets its
+     * content: the hardware is in the way, and a header that runs under it is
+     * correct only as long as its text does not.
+     */
+    --safe-top: 46px;
+  }
+
+  .device-stage {
+    padding: var(--space-1) var(--gutter) var(--space-4);
+  }
+
+  .device-shell {
+    /* 420px screen, plus 14px of bezel and 5px of rail on each side. */
+    width: 458px;
+    height: 860px;
+    /* Capped to the viewport as well, so a 1440x900 projector shows the whole
+       phone including the bottom of the nav rather than clipping the labels. */
+    max-height: calc(100vh - var(--space-6) - var(--space-5));
+    min-height: 0;
+    padding: 5px;
+    border-radius: 60px;
+    /* The titanium rail. */
+    background-color: #c9cacd;
+    /* Three cast layers, plus an inset hairline for the bright machined edge the
+       rail catches along its outside. */
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.55),
+      0 1px 2px rgba(16, 18, 20, 0.24),
+      0 10px 22px -10px rgba(16, 18, 20, 0.22),
+      0 34px 60px -18px rgba(16, 18, 20, 0.34);
+  }
+
+  .device-bezel {
+    padding: 14px;
+    border-radius: 55px;
+    background-color: #0b0c0d;
+  }
+
+  .device-screen {
+    border-radius: 42px;
+  }
+
+  /**
+   * The camera, over the app rather than beside it.
+   *
+   * A sibling of the screen rather than a child, so the screen keeps its
+   * overflow clip and the island is never cut by it. `pointer-events: none`
+   * because it is hardware: it must not eat a tap meant for the app beneath.
+   */
+  .device-island {
+    display: block;
+    position: absolute;
+    z-index: 12;
+    /* 14px of bezel, then 11px into the screen. */
+    top: 25px;
+    left: 50%;
+    width: 130px;
+    height: 33px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background-color: #0b0c0d;
+    pointer-events: none;
+  }
+
+  .device-lens {
+    position: absolute;
+    top: 50%;
+    right: 15%;
+    width: 12px;
+    height: 12px;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background-color: #1c2537;
+    box-shadow: inset 0 0 0 1.5px #05070c;
+  }
+
+  /* Side buttons, as a fraction of the shell so they hold when it is capped. */
+  .device-button {
+    display: block;
+    position: absolute;
+    width: 3px;
+    background-color: #b3b5b9;
+  }
+
+  .device-button--left {
+    left: -1px;
+    border-radius: 2px 0 0 2px;
+  }
+
+  .device-button--right {
+    right: -1px;
+    border-radius: 0 2px 2px 0;
   }
 }
 

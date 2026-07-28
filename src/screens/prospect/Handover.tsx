@@ -17,19 +17,17 @@ import { Section } from '../../blueprint/Section';
 import { GOLDEN, byId, contracts, leads, quotes, territories } from '../../data/seedData';
 import { longDate, money } from '../../lib/format';
 import {
-  Card,
-  CardHeader,
+  Band,
+  BandHead,
   Icon,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
 import { useRole } from '../../shell/useRole';
 import { Button } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** What the customer now owns, stated as things rather than records. */
 const WHAT_YOU_HAVE = [
@@ -47,27 +45,33 @@ export const ProspectHandover = () => {
   const { setRole } = useRole();
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      {/* Masthead. The hero is a dark field: the statement itself. */}
+      <Section id="handover" onDark>
+        <Masthead
           eyebrow="Handover"
-          title="Your system is live"
+          subject="Your system is live"
           lead={`Commissioned and running. ${servicePoint.name} looks after it from here.`}
-        />
+        >
+          <div className="mt-4">
+            <Status tone="good" dot>
+              COMMISSIONED
+            </Status>
+          </div>
+        </Masthead>
+      </Section>
 
-        <Section id="handover">
-          <Stack gap="4">
-            <Card>
-              <div className="px-4 py-3">
-                <Status tone="good">COMMISSIONED</Status>
-                <p className="mt-2 max-w-reading text-body text-ink">
-                  We ran the system, checked the flow and confirmed the treatment is working. The
-                  yard is levelled and seeded, and the permit is closed with the municipality.
-                </p>
-              </div>
+      {/* Data. What the customer now owns, stated as things rather than records. */}
+      <Band kind="data" flush>
+            <div className="px-gutter">
+              <p className="max-w-reading py-4 text-body text-ink2">
+                We ran the system, checked the flow and confirmed the treatment is working. The yard
+                is levelled and seeded, and the permit is closed with the municipality.
+              </p>
+            </div>
               <RowList className="border-t border-line">
                 {WHAT_YOU_HAVE.map((item) => (
-                  <Row key={item.label}>
+                  <Row key={item.label} gutter>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-positive">
                         <Icon name="check" />
@@ -80,21 +84,24 @@ export const ProspectHandover = () => {
                   </Row>
                 ))}
               </RowList>
-            </Card>
 
-            {/* The care plan offer, stated as cover rather than as a product. */}
-            <Card>
-              <CardHeader eyebrow="Keeping it that way" title={contract.name} />
-              <div className="px-4 py-3">
-                <p className="max-w-reading text-body text-ink2">
-                  A system like yours needs the filter media replaced every few years and a check up
-                  once a year. The care plan covers both, and it means we come to you before
-                  something goes wrong rather than after.
-                </p>
-              </div>
+      </Band>
+
+      {/* Rail. The care plan offer, stated as cover rather than as a product. */}
+      <Band kind="rail" flush>
+            <div className="px-gutter">
+              <BandHead eyebrow="Keeping it that way" title={contract.name} />
+            </div>
+            <div className="px-gutter pb-4">
+              <p className="max-w-reading text-body text-ink2">
+                A system like yours needs the filter media replaced every few years and a check up
+                once a year. The care plan covers both, and it means we come to you before something
+                goes wrong rather than after.
+              </p>
+            </div>
               <RowList className="border-t border-line">
                 {contract.entitlements.map((entitlement) => (
-                  <Row key={entitlement}>
+                  <Row key={entitlement} gutter>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-ink3">
                         <Icon name="check" />
@@ -104,22 +111,25 @@ export const ProspectHandover = () => {
                   </Row>
                 ))}
               </RowList>
-              <div className="flex items-baseline justify-between gap-3 border-t border-line px-4 py-3">
+              <div className="flex items-baseline justify-between gap-3 border-t border-line px-gutter py-4">
                 <div>
                   <Micro>Per year</Micro>
                   <p className="mt-1 text-caption text-ink2">Cancel whenever you like</p>
                 </div>
-                <p className="text-h1 text-ink">
+                <p className="text-display text-ink">
                   {money(contract.annualPrice_jde, contract.currency)}
                 </p>
               </div>
-            </Card>
 
-            {/* First visit already booked. The promise made concrete. */}
-            <Card>
-              <CardHeader icon="calendar" eyebrow="Already booked" title="Your first check up" />
-              <RowList>
-                <Row tone="strong">
+      </Band>
+
+      {/* Data. First visit already booked. The promise made concrete. */}
+      <Band kind="data" flush>
+            <div className="px-gutter">
+              <BandHead icon="calendar" eyebrow="Already booked" title="Your first check up" />
+            </div>
+              <RowList className="border-t border-line">
+                <Row gutter>
                   <div className="flex items-baseline justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-body text-ink">Annual inspection</p>
@@ -131,40 +141,35 @@ export const ProspectHandover = () => {
                   </div>
                 </Row>
               </RowList>
-            </Card>
 
-            {/* The handover itself. One login, nothing re-entered. */}
-            <Card>
-              <CardHeader icon="user" eyebrow="What changes for you" title="Same login, new view" />
-              <div className="px-4 py-3">
-                <p className="max-w-reading text-body text-ink2">
+      </Band>
+
+      {/*
+        Closing, dark. The handover itself, and the hinge of the whole prototype:
+        one login, nothing re-entered. It takes the second dark band because it is
+        the argument the screen exists to make.
+      */}
+      <Band kind="closing" alt>
+              <Micro className="text-on-band-muted">What changes for you</Micro>
+              <p className="mt-1 text-h1 text-on-band">Same login, new view</p>
+              <div className="mt-3">
+                <p className="max-w-reading text-body text-on-band opacity-90">
                   Nothing to sign up for and nothing to re-enter. The account you have been using to
                   follow the project becomes the account you use to run the system. Your soil test,
                   your design and your permit stay with it.
                 </p>
               </div>
-              <div className="border-t border-line px-4 py-3">
-                <Button
-                  variant="primary"
-                  icon="home"
-                  block
-                  onClick={() => setRole('client-owner')}
-                >
+              <div className="mt-4">
+                <Button variant="primary" icon="home" onClick={() => setRole('client-owner')}>
                   Go to my system
                 </Button>
-                <p className="mt-2 text-caption text-ink3">
+                <p className="mt-3 max-w-reading text-caption text-on-band opacity-70">
                   In the prototype this switches the role. For a real customer it is the same screen
-                  they were already on.
+                  they were already on. Installed against {quote.id}. Warranty and documents live
+                  under My system.
                 </p>
               </div>
-            </Card>
-
-            <p className="text-caption text-ink3">
-              Installed against {quote.id}. Warranty and documents live under My system.
-            </p>
-          </Stack>
-        </Section>
-      </Stack>
-    </ScreenBody>
+      </Band>
+    </>
   );
 };

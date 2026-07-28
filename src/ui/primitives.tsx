@@ -715,6 +715,50 @@ export const Hero = ({
 };
 
 /**
+ * The standard Masthead contents.
+ *
+ * Every screen's dark band is the same three parts: an eyebrow, the screen's
+ * subject, and the hero. Writing that out thirty-four times is how thirty-four
+ * slightly different mastheads happen, so it lives here once.
+ *
+ * `hero` is a `Hero` element for a number, or omitted when the subject itself is
+ * the hero, in which case the subject renders at the hero step. That is the "dark
+ * field" hero type in the table in DESIGN.md section 7.
+ */
+export const Masthead = ({
+  eyebrow,
+  subject,
+  hero,
+  lead,
+  alt = false,
+  children,
+}: {
+  eyebrow: string;
+  subject: string;
+  hero?: ReactNode;
+  lead?: string;
+  alt?: boolean;
+  children?: ReactNode;
+}) => (
+  <Band kind="masthead" alt={alt}>
+    <Micro className="text-on-band-muted">{eyebrow}</Micro>
+    {hero ? (
+      <>
+        <p className="mt-1 text-h1 text-on-band">{subject}</p>
+        <div className="mt-5">{hero}</div>
+      </>
+    ) : (
+      /* The subject is the hero. No second figure competes with it. */
+      <p className="mt-2 text-hero text-on-band">{subject}</p>
+    )}
+    {lead && (
+      <p className="mt-3 max-w-reading text-body text-on-band opacity-90">{lead}</p>
+    )}
+    {children}
+  </Band>
+);
+
+/**
  * A band heading. Sits at the top of a Data or Rail band, on the band's own
  * ground, with no box around it.
  *

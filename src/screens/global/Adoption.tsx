@@ -151,7 +151,7 @@ export const GlobalAdoption = () => {
                           </Status>
                         </p>
                       </div>
-                      <p className="shrink-0 text-h2 text-ink">{percent(sp.readiness, 0)}</p>
+                      <p className="shrink-0 text-body font-medium text-ink">{percent(sp.readiness, 0)}</p>
                     </div>
                   </Row>
                 ))}
@@ -207,7 +207,7 @@ export const GlobalAdoption = () => {
                           {Math.round((unansweredCount * gap.share) / 100)} questions
                         </p>
                       </div>
-                      <p className="shrink-0 text-h2 text-ink">{percent(gap.share, 0)}</p>
+                      <p className="shrink-0 text-body font-medium text-ink">{percent(gap.share, 0)}</p>
                     </div>
                   </Row>
                 ))}

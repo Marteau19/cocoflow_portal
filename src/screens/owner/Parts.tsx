@@ -130,7 +130,7 @@ export const OwnerParts = () => {
                             </div>
 
                             <div className="mt-2 flex items-center justify-between gap-3">
-                              <p className="text-h2 text-ink">
+                              <p className="text-body font-medium text-ink">
                                 {money(item.price_jde, item.currency)}
                               </p>
 
@@ -214,7 +214,7 @@ export const OwnerParts = () => {
                   </div>
                   <div className="flex items-baseline justify-between gap-3 bg-surface-sunk px-4 py-3">
                     <dt className="text-body font-medium text-ink">Total</dt>
-                    <dd className="text-h2 text-ink">{money(totals.total)}</dd>
+                    <dd className="text-body font-medium text-ink">{money(totals.total)}</dd>
                   </div>
                 </dl>
 

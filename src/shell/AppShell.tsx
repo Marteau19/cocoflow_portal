@@ -59,8 +59,21 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <TopBar />
-      {/* Offset for the fixed top bar. */}
-      <main className="pt-6">
+      {/*
+        `data-register` decides the type register, and it is an attribute rather
+        than a media query on purpose. A framed role keeps the framed column at
+        every browser width, so a 72px hero cannot land inside a 420px handset.
+        See DESIGN.md section 5 and the `[data-register='full']` rule in
+        index.css. It sits on a descendant of <html> because `applyBrand()`
+        writes --type-* inline on the root, and an inline style outranks a
+        stylesheet rule.
+
+        `key` on the register wrapper is what gives the role switch its
+        transition: changing role remounts the subtree, so the Masthead ground
+        cross fades and the hero re-counts. That transition is the architectural
+        argument made visible, which is why it is the longest in the app.
+      */}
+      <main className="pt-6" data-register={framed ? 'framed' : 'full'} key={role.key}>
         {framed ? <FramedRole>{children}</FramedRole> : <FullBleedRole>{children}</FullBleedRole>}
       </main>
       <BlueprintPanel />

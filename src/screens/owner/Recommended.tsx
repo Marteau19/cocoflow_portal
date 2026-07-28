@@ -114,7 +114,7 @@ export const OwnerRecommended = () => {
       <div className="min-w-0">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <p className="text-body text-ink">{item.label}</p>
-          <p className="shrink-0 text-h2 text-ink">
+          <p className="shrink-0 text-body font-medium text-ink">
             {item.price === null ? 'No charge' : money(item.price)}
           </p>
         </div>

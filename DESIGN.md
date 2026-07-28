@@ -541,10 +541,19 @@ This section is where it becomes a rule with a per-screen answer.
 |---|---|
 | Minimum per screen | One dark band, the Masthead |
 | Masthead minimum height | 200px mobile, 260px desktop |
-| Maximum dark share of the first viewport | 40%. Above that the reading surface is losing |
+| Maximum dark share of the first viewport | **65% framed, 40% full bleed.** See the note below |
 | Dark on every role's main screen | `/home`, `/day`, `/sp`, `/network`, `/start`. Non negotiable |
 | Second dark band per screen | Permitted once, as a Closing band |
 | Inverted content areas | Banned. Tables, prose and forms stay on light |
+
+**Corrected while building the client home.** The first draft of this table set a
+single 40% ceiling. Building the screen showed that is wrong for the framed
+register: on a 790px handset screen, 40% is 316px, and a Masthead that carries the
+hero, the technician's face, the arrival sentence and the one action legitimately
+wants more than that. A phone is one column and the Masthead is the entire answer
+to "what happens next". The ceiling is now 65% framed and stays 40% full bleed,
+where the viewport is wide enough that a dark half-screen really is the reading
+surface losing.
 
 `--band-deep-alt` is the second dark, for a hero field that must separate from the
 Masthead. In legacy it is a deeper green, because legacy has one dark hue and the
@@ -726,10 +735,17 @@ Required:
    `--field-line`, full plot width, with the target value in a `micro` chip pinned
    at the right end on `--surface-sunk`. It is not dashed and not faint. Every
    chart in this app has one, and a chart with no target does not belong here.
-2. **The gap is filled and labelled.** The area between the series and the
-   reference line carries a 12% fill: `--positive` where the series is on the good
-   side, `--warn` where it is not. The size of that shaded wedge is the answer the
-   viewer came for, and it should be readable with the numbers covered.
+2. **The gap is filled.** The area between the series and the reference line
+   carries a 14% fill in the **series colour**, `--data-1`. The size of that shaded
+   wedge is the answer the viewer came for, and it should be readable with the
+   numbers covered.
+
+   **Revised after building it.** This rule first said to tone the wedge
+   `--positive` or `--warn` by which side of the target the series sits on. In
+   practice `--warn` is a brown, and a brown at low opacity over a warm canvas is a
+   muddy wash that reads as a rendering artefact rather than a signal. The verdict
+   is carried by the signed endpoint label in rule 5 instead, which states it in
+   words and cannot be misread.
 3. **A ground.** Plot area on `--surface` inside a Data band, or on `--band-deep`
    when the chart is the hero. Never floating on canvas.
 4. **A baseline.** 1px `--line-strong`, full plot width, always drawn.
@@ -740,8 +756,12 @@ Required:
    debug output. Prefer none, plus the endpoint and target labels.
 7. **Minimum plot height 240px.** Below that a line has no room to have a shape,
    and the gap to the target has no room to be a visible quantity.
-8. **Series colours from the Data role**, never `--accent`. Inline labels at the
-   line end, no legend box.
+8. **Headroom above the target.** The domain extends past the reference line by at
+   least half the data spread. With the target at the top of the domain the rule
+   renders flush to the plot edge and reads as a border.
+9. **Series colours from the Data role**, never `--accent`. Inline labels at the
+   line end, no legend box. The target label sits at the **left**, because the
+   right end is where the endpoint value and its signed distance already are.
 
 Sparklines are exempt and are permitted only where the direction of travel, not
 the distance from target, is the point.

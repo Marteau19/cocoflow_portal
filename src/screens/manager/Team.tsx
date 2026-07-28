@@ -141,17 +141,17 @@ export const ManagerTeam = () => {
                           <div className="mt-2 flex flex-wrap items-baseline gap-4">
                             <div>
                               <Micro>Booked today</Micro>
-                              <p className="mt-1 text-h2 text-ink">{duration(load)}</p>
+                              <p className="mt-1 text-body font-medium text-ink">{duration(load)}</p>
                             </div>
                             <div>
                               <Micro>Free</Micro>
-                              <p className="mt-1 text-h2 text-ink">
+                              <p className="mt-1 text-body font-medium text-ink">
                                 {free > 0 ? duration(free) : 'None'}
                               </p>
                             </div>
                             <div>
                               <Micro>Rating</Micro>
-                              <p className="mt-1 text-h2 text-ink">
+                              <p className="mt-1 text-body font-medium text-ink">
                                 {person.rating > 0 ? person.rating.toFixed(1) : 'n/a'}
                               </p>
                             </div>

@@ -138,7 +138,7 @@ export const OwnerInvoices = () => {
               <dl className="divide-y divide-line border-t border-line">
                 <div className="flex items-baseline justify-between gap-3 px-4 py-3">
                   <dt className="text-caption text-ink2">Paid this year</dt>
-                  <dd className="text-h2 text-ink">{money(paidThisYear)}</dd>
+                  <dd className="text-body font-medium text-ink">{money(paidThisYear)}</dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-3 px-4 py-3">
                   <dt className="text-caption text-ink2">Next charge</dt>
@@ -213,7 +213,7 @@ export const OwnerInvoices = () => {
                           </span>
                         </div>
                       </div>
-                      <p className="shrink-0 text-h2 text-ink">{money(invoice.amount)}</p>
+                      <p className="shrink-0 text-body font-medium text-ink">{money(invoice.amount)}</p>
                     </div>
                   </Row>
                 ))}

@@ -127,7 +127,7 @@ export const TechnicianRoute = () => {
 
                           <div className="min-w-0 flex-1">
                             <div className="flex flex-wrap items-baseline gap-2">
-                              <p className="text-h2 text-ink">
+                              <p className="text-body font-medium text-ink">
                                 {timeWindow(job.windowStart, job.windowEnd)}
                               </p>
                               <Status tone={active ? 'good' : 'neutral'}>

@@ -18,8 +18,8 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  ComposedChart,
   Line,
-  LineChart,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
@@ -38,8 +38,13 @@ const TOKENS = [
   'color-surface-sunk',
   'color-accent',
   'color-accent-ink',
-  // Available to any chart where the point is which side of a line a value
-  // falls on. The series itself stays accent: it is the brand line.
+  // The Data role. Chart series never use the accent: the accent is an
+  // invitation to click and a chart line is not clickable. DESIGN.md section 4.
+  'color-data-1',
+  'color-data-2',
+  'color-data-3',
+  'color-field-line',
+  // Which side of the target a value falls on tones the wedge.
   'color-positive',
   'color-negative',
   'color-warn',
@@ -110,6 +115,24 @@ const ChartTooltip = ({ theme, suffix }: { theme: ChartTheme; suffix?: string })
  * a second series, because the question the chart answers is "are we above the
  * line".
  */
+/**
+ * A figure against a target, over time.
+ *
+ * Every chart in this product has the same subject: distance from a target.
+ * Service revenue share against 35 percent. Portal activation against a rollout
+ * plan. Readiness against a gate. Nobody opens this to discover a trend, they open
+ * it to see how far off they are.
+ *
+ * So the target is not an annotation here. **The target is the chart and the
+ * series is the distance from it.** DESIGN.md section 12. Concretely:
+ *
+ *  - the reference line is drawn solid at 2px, not dashed and faint
+ *  - the wedge between the series and the target is filled and toned, so the
+ *    answer is readable with the numbers covered
+ *  - the endpoint carries its value at `display` size and the signed distance
+ *    beneath it
+ *  - no y ticks: fitted values like "40, 29, 22, 15" read as debug output
+ */
 export const TrendAgainstTarget = ({
   data,
   xKey,
@@ -117,7 +140,10 @@ export const TrendAgainstTarget = ({
   target,
   targetLabel,
   suffix = '',
-  height = 200,
+  /** Floor is 240. Below that the wedge has no room to be a visible quantity. */
+  height = 260,
+  /** Which side of the target is the good side. Sets the wedge colour. */
+  goodSide = 'above',
 }: {
   data: Array<Record<string, string | number>>;
   xKey: string;
@@ -126,9 +152,12 @@ export const TrendAgainstTarget = ({
   targetLabel?: string;
   suffix?: string;
   height?: number;
+  goodSide?: 'above' | 'below';
 }) => {
   const theme = useChartTheme();
-  if (!theme) return <div style={{ height }} />;
+  if (!theme) return <div style={{ height: Math.max(height, 240) }} />;
+
+  const plotHeight = Math.max(height, 240);
 
   /**
    * Domain fitted to the data and the target, not anchored at zero.
@@ -136,91 +165,154 @@ export const TrendAgainstTarget = ({
    * Anchoring at zero is the honest default when a bar's length carries the
    * value. Here the question is movement against a line a few points above the
    * data, and a zero baseline squashes four periods of real change into the top
-   * third of the plot. The axis labels stay visible, so the scale is never
-   * hidden.
+   * third of the plot.
    */
   const values = data.map((row) => Number(row[yKey])).filter((n) => Number.isFinite(n));
   const lowest = Math.min(...values, target ?? Infinity);
   const highest = Math.max(...values, target ?? -Infinity);
-  const pad = Math.max(2, (highest - lowest) * 0.35);
+  const spread = Math.max(highest - lowest, 1);
   const domain: [number, number] = [
-    Math.max(0, Math.floor((lowest - pad) / 5) * 5),
-    Math.ceil((highest + pad / 2) / 5) * 5,
+    Math.max(0, Math.floor((lowest - spread * 0.25) / 5) * 5),
+    // Real headroom above the target. With the target at the top of the domain it
+    // renders flush to the plot edge and reads as a border rather than a line.
+    Math.ceil((highest + spread * 0.55) / 5) * 5,
   ];
 
   const lastIndex = data.length - 1;
+  const last = values[lastIndex];
+  const gap = target === undefined ? 0 : last - target;
+  const onGoodSide = goodSide === 'above' ? gap >= 0 : gap <= 0;
 
   /**
-   * Series labelled inline at the end of the line rather than in a legend box.
-   * Recharts calls the renderer once per point, so it draws only at the last.
+   * The wedge takes the series colour, not the verdict colour.
+   *
+   * Revised after building it. DESIGN.md section 12 originally said to tone the
+   * wedge positive or warn by which side of the target the series sits. In
+   * practice `--warn` is a brown, and a brown at 12 percent over a warm canvas is
+   * a muddy wash that reads as a rendering artefact rather than as a signal. The
+   * verdict is carried by the signed endpoint label instead, which states it in
+   * words and cannot be misread. The wedge's job is to make the gap legible as a
+   * quantity, and the series colour does that without staining the plot.
    */
-  const endLabel = (props: { index?: number; x?: number | string; y?: number | string; value?: number | string }) => {
+  const wedge = theme['color-data-1'];
+
+  /**
+   * The endpoint. Value at display size, signed distance beneath it.
+   *
+   * Recharts calls a label renderer once per point, so this draws only at the
+   * last one. The distance is the sentence the viewer came for, which is why it
+   * is rendered rather than left to be worked out from two numbers.
+   */
+  const endLabel = (props: {
+    index?: number;
+    x?: number | string;
+    y?: number | string;
+    value?: number | string;
+  }) => {
     if (props.index !== lastIndex) return <g />;
+    const x = Number(props.x) + 10;
+    const y = Number(props.y);
     return (
-      <text
-        x={Number(props.x) + 8}
-        // Clear of the target rule: the final point sits just under it, and two
-        // labels on the same baseline read as one string.
-        y={Number(props.y) + 18}
-        fill={theme['color-accent-ink']}
-        fontSize={13}
-        fontWeight={500}
-        fontFamily={theme['font-sans']}
-        style={{ fontVariantNumeric: 'tabular-nums' }}
-      >
-        {`${props.value}${suffix}`}
-      </text>
+      <g>
+        <text
+          x={x}
+          y={y + 2}
+          fill={theme['color-ink']}
+          fontSize={26}
+          fontWeight={700}
+          fontFamily={theme['font-sans']}
+          style={{ fontVariantNumeric: 'tabular-nums' }}
+        >
+          {`${props.value}${suffix}`}
+        </text>
+        {target !== undefined && (
+          <text
+            x={x}
+            y={y + 22}
+            fill={onGoodSide ? theme['color-positive'] : theme['color-warn']}
+            fontSize={13}
+            fontWeight={500}
+            fontFamily={theme['font-sans']}
+            style={{ fontVariantNumeric: 'tabular-nums' }}
+          >
+            {`${Math.abs(gap).toFixed(1)}${suffix} ${gap >= 0 ? 'above' : 'below'} target`}
+          </text>
+        )}
+      </g>
     );
   };
 
   return (
-    <div style={{ height }}>
+    <div style={{ height: plotHeight }}>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 12, right: 56, bottom: 0, left: 0 }}>
-          {/* No gridlines. The baseline is the only rule. */}
+        <ComposedChart data={data} margin={{ top: 16, right: 132, bottom: 0, left: 0 }}>
+          {/* No gridlines. The baseline and the target rule are the only rules. */}
           <CartesianGrid horizontal={false} vertical={false} />
-          <XAxis dataKey={xKey} {...axisProps(theme)} axisLine={{ stroke: theme['color-line-strong'] }} />
-          <YAxis
+          <XAxis
+            dataKey={xKey}
             {...axisProps(theme)}
-            axisLine={false}
-            width={36}
-            domain={domain}
-            tickFormatter={(value: number) => `${value}`}
+            axisLine={{ stroke: theme['color-line-strong'] }}
           />
+          {/*
+            No ticks: fitted values read as debug output. `hide` rather than
+            `width={0}`, because a zero-width axis is dropped entirely and takes
+            the domain with it, which leaves the target rule flush to the plot
+            edge where it reads as a border.
+          */}
+          <YAxis hide type="number" domain={domain} allowDataOverflow={false} />
+
+          {/*
+            The wedge. `baseValue` is the target, so the fill measures the gap
+            rather than the absolute quantity, which is the whole point.
+          */}
+          {target !== undefined && (
+            <Area
+              type="linear"
+              dataKey={yKey}
+              baseValue={target}
+              stroke="none"
+              fill={wedge}
+              fillOpacity={0.16}
+              isAnimationActive={false}
+            />
+          )}
+
           {target !== undefined && (
             <ReferenceLine
               y={target}
-              stroke={theme['color-ink3']}
-              strokeDasharray="3 3"
+              stroke={theme['color-field-line']}
+              strokeWidth={2}
+              // Left, not right: the right end is where the endpoint value and
+              // its signed distance sit, and two labels on one baseline read as
+              // a single string.
               label={{
-                value: targetLabel ?? `${target}${suffix}`,
-                position: 'right',
+                value: targetLabel ?? `Target ${target}${suffix}`,
+                position: 'insideTopLeft',
                 fill: theme['color-ink2'],
                 fontSize: 11,
+                fontWeight: 500,
                 fontFamily: theme['font-sans'],
               }}
             />
           )}
+
           <ChartTooltip theme={theme} suffix={suffix} />
           <Line
             type="linear"
             dataKey={yKey}
-            stroke={theme['color-accent']}
-            strokeWidth={2}
-            dot={{ r: 2.5, fill: theme['color-accent'], stroke: theme['color-accent'] }}
-            activeDot={{ r: 4 }}
+            stroke={theme['color-data-1']}
+            strokeWidth={2.5}
+            dot={{ r: 3, fill: theme['color-data-1'], stroke: theme['color-data-1'] }}
+            activeDot={{ r: 5 }}
             label={endLabel}
-            // No entrance animation. Staggered load-in is one of the strongest
-            // tells of generated UI.
             isAnimationActive={false}
           />
-        </LineChart>
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );
 };
 
-/** Used only where the shape of the trend is itself the message. */
 export const Sparkline = ({
   data,
   yKey,
@@ -284,7 +376,7 @@ export const RankedRows = ({
             <p className="text-body text-ink">{row.label}</p>
             {row.detail && <div className="mt-1 text-caption text-ink2">{row.detail}</div>}
           </div>
-          <p className="shrink-0 text-h2 text-ink">
+          <p className="shrink-0 text-body font-medium text-ink">
             {row.value.toFixed(1)}
             {row.suffix && <span className="text-caption text-ink2">{row.suffix}</span>}
           </p>

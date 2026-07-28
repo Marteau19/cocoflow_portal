@@ -33,13 +33,20 @@ export default {
       ink3: 'var(--color-ink3)',
       line: 'var(--color-line)',
       'line-strong': 'var(--color-line-strong)',
-      forest: 'var(--color-forest)',
-      'on-forest': 'var(--color-on-forest)',
+      'field-line': 'var(--color-field-line)',
+      'band-deep': 'var(--color-band-deep)',
+      'band-deep-alt': 'var(--color-band-deep-alt)',
+      'on-band': 'var(--color-on-band)',
+      'on-band-muted': 'var(--color-on-band-muted)',
       accent: 'var(--color-accent)',
       'accent-hover': 'var(--color-accent-hover)',
       'on-accent': 'var(--color-on-accent)',
       'accent-ink': 'var(--color-accent-ink)',
       'accent-soft': 'var(--color-accent-soft)',
+      'accent-on-band': 'var(--color-accent-on-band)',
+      'data-1': 'var(--color-data-1)',
+      'data-2': 'var(--color-data-2)',
+      'data-3': 'var(--color-data-3)',
       positive: 'var(--color-positive)',
       'on-positive': 'var(--color-on-positive)',
       'positive-soft': 'var(--color-positive-soft)',
@@ -63,7 +70,11 @@ export default {
       4: 'var(--space-4)',
       5: 'var(--space-5)',
       6: 'var(--space-6)',
+      7: 'var(--space-7)',
+      8: 'var(--space-8)',
       gutter: 'var(--gutter)',
+      /* The status bar inset. Zero outside the device frame. */
+      safe: 'var(--safe-top)',
       full: '100%',
     },
 
@@ -92,6 +103,14 @@ export default {
     // Each step carries its own line height, tracking and weight, so one
     // utility sets the whole role and the scale cannot be recombined by hand.
     fontSize: {
+      hero: [
+        'var(--step-hero-size)',
+        {
+          lineHeight: 'var(--step-hero-line)',
+          letterSpacing: 'var(--step-hero-tracking)',
+          fontWeight: 'var(--step-hero-weight)',
+        },
+      ],
       display: [
         'var(--step-display-size)',
         {
@@ -106,14 +125,6 @@ export default {
           lineHeight: 'var(--step-h1-line)',
           letterSpacing: 'var(--step-h1-tracking)',
           fontWeight: 'var(--step-h1-weight)',
-        },
-      ],
-      h2: [
-        'var(--type-h2-size)',
-        {
-          lineHeight: 'var(--type-h2-line)',
-          letterSpacing: 'var(--type-h2-tracking)',
-          fontWeight: 'var(--type-h2-weight)',
         },
       ],
       body: [
@@ -152,10 +163,14 @@ export default {
     transitionDuration: {
       state: 'var(--motion-state)',
       sheet: 'var(--motion-sheet)',
+      route: 'var(--motion-route)',
+      role: 'var(--motion-role)',
+      count: 'var(--motion-count)',
     },
 
     transitionTimingFunction: {
       ease: 'var(--motion-ease)',
+      out: 'var(--motion-ease-out)',
     },
 
     // Emptied rather than disabled: this removes every `bg-gradient-*` utility

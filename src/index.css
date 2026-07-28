@@ -23,10 +23,24 @@
      frame and therefore no camera to clear. See the .device-* block below. */
   --safe-top: 0px;
 
-  /* Aliases for the two steps that change at desktop width. `applyBrand()`
-     writes --type-* as inline styles on the root element, and an inline style
-     outranks any stylesheet rule, so a media query cannot override it
-     directly. Reading through an alias declared here restores that ability. */
+  /**
+   * Aliases for the three steps that change between registers.
+   *
+   * `applyBrand()` writes --type-* as inline styles on the root element, and an
+   * inline style outranks any stylesheet rule, so nothing can override --type-*
+   * directly. Reading through an alias declared here restores that ability.
+   *
+   * The base values are the FRAMED register. That is the important part: the
+   * promotion below is keyed to the shell's register attribute, not to viewport
+   * width, so a client screen inside the handset keeps the framed column even on
+   * a 1920px projector. Keying it to a media query is how a 72px hero ends up
+   * inside a 420px phone.
+   */
+  --step-hero-size: var(--type-hero-size);
+  --step-hero-line: var(--type-hero-line);
+  --step-hero-tracking: var(--type-hero-tracking);
+  --step-hero-weight: var(--type-hero-weight);
+
   --step-display-size: var(--type-display-size);
   --step-display-line: var(--type-display-line);
   --step-display-tracking: var(--type-display-tracking);
@@ -38,11 +52,21 @@
   --step-h1-weight: var(--type-h1-weight);
 }
 
-@media (min-width: 1024px) {
-  :root {
-    --gutter: 32px;
+/**
+ * The full-bleed register: manager and global. Set by AppShell as
+ * data-register="full" on a descendant of <html>, which is what lets it win
+ * against the inline --type-* values on the root.
+ *
+ * Gated on width as well, so a manager screen on a phone still gets the smaller
+ * column. A framed role never reaches this rule at any width.
+ */
+@media (min-width: 900px) {
+  [data-register='full'] {
+    --step-hero-size: var(--type-hero-lg-size);
+    --step-hero-line: var(--type-hero-lg-line);
+    --step-hero-tracking: var(--type-hero-lg-tracking);
+    --step-hero-weight: var(--type-hero-lg-weight);
 
-    /* Display and h1 step up one notch. Nothing else changes. */
     --step-display-size: var(--type-display-lg-size);
     --step-display-line: var(--type-display-lg-line);
     --step-display-tracking: var(--type-display-lg-tracking);
@@ -52,6 +76,12 @@
     --step-h1-line: var(--type-h1-lg-line);
     --step-h1-tracking: var(--type-h1-lg-tracking);
     --step-h1-weight: var(--type-h1-lg-weight);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 32px;
   }
 }
 
@@ -108,24 +138,19 @@
 
 @layer components {
   /**
-   * A hairline on a forest ground.
+   * Hairlines and tints on a dark band.
    *
-   * The --line token is tuned for warm paper and vanishes against forest, and
+   * The --line token is tuned for paper and vanishes against a dark ground, and
    * Tailwind cannot append an alpha channel to a hex-valued custom property, so
-   * the divider is mixed from the on-forest text colour instead. Still no hex,
-   * and still survives a brand switch.
+   * these are mixed from the on-band text colour instead. Still no hex, still
+   * survives a brand switch, and they track whichever dark ground they sit on.
    */
-  .border-on-forest-soft {
-    border-color: color-mix(in srgb, var(--color-on-forest) 20%, transparent);
+  .border-on-band-soft {
+    border-color: color-mix(in srgb, var(--color-on-band) 22%, transparent);
   }
 
-  /**
-   * The same problem, for a fill: an icon chip or an active nav pill on a dark
-   * ground, where none of the light `-soft` tints read. Mixed from the on-dark
-   * text colour so it tracks whichever dark ground it is sitting on.
-   */
-  .bg-on-dark-soft {
-    background-color: color-mix(in srgb, var(--color-on-forest) 12%, transparent);
+  .bg-on-band-soft {
+    background-color: color-mix(in srgb, var(--color-on-band) 12%, transparent);
   }
 
   .bg-on-sidebar-soft {

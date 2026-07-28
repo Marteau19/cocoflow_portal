@@ -99,7 +99,7 @@ export const ManagerDashboard = () => {
                 ].map((item) => (
                   <div key={item.label} className="flex items-baseline justify-between gap-3 px-4 py-3">
                     <dt className="text-caption text-ink2">{item.label}</dt>
-                    <dd className="text-h2 text-ink">{item.value}</dd>
+                    <dd className="text-body font-medium text-ink">{item.value}</dd>
                   </div>
                 ))}
               </dl>

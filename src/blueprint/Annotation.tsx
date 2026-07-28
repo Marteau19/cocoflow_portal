@@ -39,7 +39,7 @@ export const Annotation = ({
       <div className="px-4 py-3">
         <div className="flex items-baseline gap-2">
           <Identifier className="text-ink3">{number}</Identifier>
-          <h3 className="text-h2 text-ink">{section.title}</h3>
+          <h3 className="text-body font-medium text-ink">{section.title}</h3>
         </div>
 
         {/* The business register. Always visible. */}

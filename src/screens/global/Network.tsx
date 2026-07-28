@@ -262,7 +262,7 @@ export const GlobalNetwork = () => {
                           </p>
                         </div>
                         <div className="shrink-0 text-right">
-                          <p className="text-h2 text-ink">{percent(sp.servicePct)}</p>
+                          <p className="text-body font-medium text-ink">{percent(sp.servicePct)}</p>
                           <p className="text-caption text-ink2">service</p>
                         </div>
                       </div>

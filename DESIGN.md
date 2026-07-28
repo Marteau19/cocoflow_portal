@@ -21,7 +21,7 @@ are the evidence the rest of the document answers to.
 | Finding | Measured |
 |---|---|
 | Canvas against surface | **1.16:1**, invisible. Hairline against canvas **1.14:1** |
-| `--surface-sunk` was **lighter** than `--canvas` | L\* 88.0 against 85.5, so it floated instead of sinking |
+| `--surface-sunk` was **lighter** than `--canvas` | L\* **95.2** against **94.1**, so it floated instead of sinking |
 | Every container the same width | `/sp` and `/readiness`: **one** distinct card width, 1060px, for every card |
 | Type scale collapsed | `/readiness`: **93% of all characters** render at 13px or 15px |
 | No dominant element | `/readiness` largest type 26px carrying 23 characters, against 1251 characters at 13px |
@@ -43,6 +43,41 @@ Three findings the brief did not name, added here because they change the fix:
 3. **The numbers are the smallest thing on their row.** "84% ready", "78% ready",
    "71% ready" render as 13px right-aligned captions. On a readiness screen the
    readiness figure is the content.
+
+### Correction to the first draft of this section
+
+The first draft reported `--surface-sunk` at "L\* 88.0 against 85.5". **Those were
+relative luminance figures multiplied by 100, not L\*.** The audit script printed
+`Y`, and I transcribed `Y × 100` into a column headed L\* without applying the
+cube-root transform. The correct values for the same two colours are L\* 95.2 and
+94.1. The table above is fixed.
+
+The conclusion did not change, and the sign did not change: sunk was lighter than
+canvas, which is the wrong direction for a token named "sunk". But the units were
+wrong and anything built on them would have been built on a wrong number, so here
+is the full reconciliation, computed from the files rather than remembered.
+
+| Palette | canvas | sunk | sunk minus canvas | canvas / surface |
+|---|---|---|---|---|
+| **Committed legacy**, `#F1EEE5` / `#F4F1E9` | L\* 94.1 | L\* 95.2 | **+1.1, sunk lighter** | ΔL\* 5.9 |
+| **Committed next**, `#F0F2EC` / `#F2F4EE` | L\* 95.2 | L\* 95.9 | **+0.7, sunk lighter** | ΔL\* 4.8 |
+| **Pre-Console legacy**, `#FAF8F3` / `#F2EFE7` | L\* 97.6 | L\* 94.5 | -3.1, sunk darker | ΔL\* 2.4 |
+
+**Yes, the tokens changed during the Console round.** Commit `37513b6`, which is
+PR #6, moved legacy canvas from `#FAF8F3` to `#F1EEE5` and sunk from `#F2EFE7` to
+`#F4F1E9`. Before that change sunk was correctly darker than canvas, by ΔL\* 3.1.
+**I inverted it in that commit**, then described the inversion correctly in the
+audit while getting its units wrong, and did not notice I had caused it.
+
+The reviewer's figures, legacy 94.5 against 97.6 with ΔL\* 3.1 and next canvas
+96.4, are the **pre-Console** legacy palette and the `ASSETS.md` canvas proposal
+`#F4F5F1` respectively. Both are correct readings of those sources. They do not
+match `src/brands/*.ts` on `main`, which is the discrepancy recorded in
+`ASSETS.md` section 8.
+
+Every other number in this document was computed by script in the units it claims,
+and `scripts/audit-contrast.mjs` now prints both `Y` and `L\*` with the column
+headed by the metric, so this class of transcription error cannot recur silently.
 
 ---
 
@@ -71,6 +106,33 @@ useful.
 Dark is a compositional device, not a theme. Dark bands, dark chrome, dark hero
 fields. **The reading surface stays light.** No dark mode, no toggle, no inverted
 content areas. If a whole screen has gone dark, it is wrong.
+
+### The limit of the metaphor
+
+**Broadsheet is a compositional metaphor, not a visual style.** It is borrowed for
+four things and nothing else:
+
+- bands of unequal weight in vertical sequence
+- one lead item that dominates without argument
+- photography large and rare
+- a front page and an appendix in one object
+
+It does **not** license the visual vocabulary of newsprint. Specifically banned as
+misreadings of this section:
+
+| Not licensed | Because |
+|---|---|
+| Serif or slab display type | The brand is geometric sans. Plus Jakarta Sans stays for both brands |
+| Zero border radius | The radius tokens stay. Bands are full bleed so they have no corners to round, but every object inside a band keeps `--radius-card`, `--radius-control` and `--radius-pill` |
+| Hairline rules as decoration | A rule separates two things that need separating. Section 3 sets a ΔL\* floor precisely so rules stop being wallpaper |
+| Multi-column body text | Single column, measure capped at 68ch. Newspaper columns exist because paper is wide and fixed, and a phone is neither |
+| Ink-on-newsprint colour | The palette is a saturated brand palette, green or orange. Nothing here is desaturated toward grey |
+| Rules, dividers and ornament between every element | Ground separation does this job. See section 3 |
+
+That combination, serif display plus zero radius plus hairlines plus columns, is a
+recognisable generic look in its own right, and adopting it would fight the brand
+rather than serve it. If a section of this document reads as newspaper *styling*
+rather than newspaper *structure*, the section is wrong and the styling loses.
 
 ---
 
@@ -319,19 +381,51 @@ a whole screen. Six steps, two doing work.
 
 ### The scale
 
-Six steps. Every gap widened, `h2` deleted.
+Six steps. Every gap widened, `h2` deleted. Two registers, and **which register
+applies is decided by the frame, not by the browser window.** See below.
 
-| Role | Mobile | Desktop | Tracking | Weight | Job |
+| Role | Framed | Full bleed | Tracking | Weight | Job |
 |---|---|---|---|---|---|
-| **hero** | 52 / 48 | 76 / 72 | -0.035em | 700 | One per screen. Section 7. |
-| display | 34 / 36 | 42 / 44 | -0.02em | 700 | Secondary figures, band subjects |
+| **hero** | 48 / 46 | 72 / 68 | -0.035em | 700 | One per screen. Section 7. |
+| display | 32 / 34 | 42 / 44 | -0.02em | 700 | Secondary figures, band subjects |
 | h1 | 24 / 30 | 28 / 34 | -0.015em | 700 | Band headings |
 | body | 16 / 25 | 16 / 25 | 0 | 400 | All prose. 500 for emphasis |
 | caption | 13 / 19 | 13 / 19 | 0 | 400 | Metadata, secondary row detail |
 | micro | 11 / 14 | 11 / 14 | +0.08em | 500, upper | Eyebrows and labels above values. Four words maximum |
 
-Steps mobile: 52, 34, 24, 16, 13, 11. Ratios 1.53, 1.42, 1.50, 1.23, 1.18. Three
+Framed steps: 48, 32, 24, 16, 13, 11. Ratios 1.50, 1.33, 1.50, 1.23, 1.18. Three
 wide gaps at the top where drama lives, two narrow at the bottom where labels sit.
+
+### Type size keys off the frame, never off the viewport
+
+**This is a correctness rule, not a preference.** Client and technician are
+mobile-first roles rendered inside a device frame with a 420px screen. The shipped
+build promotes `--step-display` and `--step-h1` at `@media (min-width: 1024px)` on
+`:root`, which means a framed client screen in a 1440px browser gets the desktop
+step inside a 420px box. With `display` at 38px that was merely loose. **With
+`hero` at 72px it breaks out of the handset in exactly the projected demo this is
+built for.**
+
+So the promotion is scoped to the register, not to the window:
+
+- The base `--step-*` values in `index.css` are the **framed** column.
+- The **full bleed** column is applied by a selector on the shell,
+  `[data-register='full']`, and only additionally gated on viewport width.
+- `AppShell` sets `data-register="framed"` for `client-prospect`, `client-owner`
+  and `sp-technician`, and `data-register="full"` for `sp-manager` and
+  `ptwe-global`.
+- A framed role therefore renders the framed column at every width, from a 390px
+  phone to a 1920px projector. The frame is the viewport as far as type is
+  concerned.
+
+The override lands on a descendant of `<html>` rather than on `:root` because
+`applyBrand()` writes `--type-*` as inline styles on the root element, and an
+inline style outranks any stylesheet rule. This is the same constraint that made
+the `--step-*` aliases necessary in the first place.
+
+**A framed hero must fit two lines at 420px.** At 48px that is roughly 11
+characters per line. "Today", "3 jobs", "$2.1M" and "12 ppm" fit on one. A hero
+that needs three lines is not a hero, it is a heading, and it belongs at `h1`.
 
 **`h2` is deleted.** At 17px between 22 and 15 it was doing no distinct work. Its
 current call sites re-point: a card or group heading becomes `body` at weight 500
@@ -387,6 +481,10 @@ A hero is one of three things, and only these three:
   line of `body` beneath.
 - **A photograph**, full bleed across its band, 240px minimum height.
 - **A dark field**, a Masthead carrying a state or a date as its subject.
+
+**The hero renders at the `hero` step of its register**, framed or full bleed, per
+section 5. On a framed role that is 48px at every browser width. A hero is never
+sized from the window.
 
 Competing means: no other element on the screen uses the `hero` step, and at most
 one other uses `display`. A screen with two 38px figures side by side, which is
@@ -787,14 +885,37 @@ forest block was always the Masthead, it just had no name for what it was.
 on the switch has a hardcoded value, and that is a bug in the component, not in the
 brand. This check is the whole point of the contract, so run it deliberately.
 
-**A note on `ASSETS.md`.** The brief asks me to reconcile per-brand notes with
-`ASSETS.md`. There is no `ASSETS.md` in the repository. The nearest document is
-`REFERENCES.md`, which describes an expected `/reference` folder layout that does
-not match what actually landed: the real folder is `references/brandings/{New,Old}`
-and `references/visual assets/`. `REFERENCES.md` is therefore stale and should
-either be updated to the real layout or replaced by the `ASSETS.md` it sounds like
-you already have. Flagging rather than guessing, since which of those it is
-changes what the file should say.
+### Reconciliation with `ASSETS.md`
+
+`ASSETS.md` now exists and `REFERENCES.md` has been folded into it and deleted, so
+there is one asset document rather than two, one of which described a folder layout
+that never landed.
+
+**Where the two documents disagree on colour, this one wins.** `ASSETS.md` section
+8 records every disagreement individually. The summary: it specifies a next-brand
+palette that was never implemented in `src/brands/next.ts`, including canvas
+`#F4F5F1` and plum `#472836` as body ink, and its ratios are correct arithmetic on
+values the running app does not hold. Section 4 here is computed against the
+Broadsheet surface levels, which are darker than anything `ASSETS.md` assumed.
+
+Two questions `ASSETS.md` raises are genuinely open and are the owner's call, not
+mine:
+
+1. **Plum as body ink, or plum as the second dark field.** It cannot be both
+   without the page reading as a single hue. This document gives plum to
+   `--band-deep-alt` and uses a neutral teal-black for ink. A large dark plum band
+   earns more than plum body text does, but the call is yours.
+2. **The next brand typeface is unspecified.** Plus Jakarta Sans is a placeholder
+   in both brands and is the highest-value missing asset. Section 1 of this
+   document explicitly bans substituting a serif on the strength of the Broadsheet
+   metaphor, so the placeholder is safe until a type spec arrives.
+
+What `ASSETS.md` contributes that this document defers to entirely: the handset
+photograph geometry, measured in its section 7, the product-render-on-white
+treatment rule, the photography scarcity rule, and the flag on the two portrait
+contact sheets showing identifiable third-party people in another company's
+branded shirts. That last one is a judgement to keep, not a constraint to work
+around.
 
 ---
 

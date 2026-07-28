@@ -276,6 +276,40 @@ Five roles. A token belongs to exactly one.
 7. `--ink-3` is metadata only, held to 3:1. Never used for anything a person must
    read in order to act.
 
+### How status is shown
+
+Any of these, and at least one that is not colour alone:
+
+- A pill: solid signal colour on the matching `-soft` ground
+- A dot plus a label
+- **A tinted row ground**: `--warn-soft`, `--alert-soft`, `--positive-soft`
+- A text label in `micro`
+
+A dot with no label is banned. Colour alone is not an accessible signal.
+
+**The 3px left rule is banned.** It was a status treatment in both previous
+directions, and it is out for two reasons found in the build.
+
+It never actually worked. `RowList` used `divide-y divide-line`, and Tailwind's
+`divide-{color}` sets `border-color` on **all four sides** of every child after the
+first, through a selector specific enough to beat a plain `border-l-transparent`
+utility on the child. So a row asked for a transparent 3px left border and got one
+in the hairline colour, on every row except the first, whether or not it carried a
+state. Those marks appeared on nearly every screen and had no logic, because they
+were an accident rather than a rule.
+
+And working correctly it would still have been the weakest of the treatments. The
+audit finding on `/readiness` was that a passing gate and a failing gate read as
+identical, because the only difference was a thin marker at the row edge. Ground
+carries state. A 3px edge does not.
+
+`neutral` and `strong` row tones paint nothing. They were emphasis rather than
+signal, and emphasis on a row is the job of its type weight.
+
+**Never use Tailwind `divide-{color}`.** Use
+`[&>*+*]:border-t [&>*+*]:border-t-line`, which sets only the top colour and leaves
+a child's own borders alone. The whole codebase is on that form.
+
 ### Palette, legacy
 
 Legacy is the default and the demo brand, and it has green plus a dark green.
@@ -850,6 +884,8 @@ in prose.
 | Banned | Instead |
 |---|---|
 | Emoji, anywhere, including in data | Nothing, or a budgeted icon |
+| A 3px left rule as a status device | A tinted row ground. Section 4 |
+| Tailwind `divide-{color}` | `[&>*+*]:border-t [&>*+*]:border-t-line`. Section 4 |
 | A coloured dot with no label | Dot plus label, or a pill |
 | Gradients in the interface | Flat fills. The wordmark is an asset, not chrome |
 | Glassmorphism, blur panels | Flat fills |

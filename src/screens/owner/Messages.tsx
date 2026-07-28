@@ -26,18 +26,16 @@ import {
 import { longDate, shortDate } from '../../lib/format';
 import {
   Avatar,
+  Band,
+  BandHead,
   Button,
-  Card,
-  CardHeader,
   Icon,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 interface Message {
   from: 'you' | 'team';
@@ -99,19 +97,19 @@ export const OwnerMessages = () => {
   };
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Messages"
-          title={servicePoint.name}
+          subject={servicePoint.name}
           lead="One conversation with the team who looks after your system."
         />
 
         <Section id="messages">
-          <Stack gap="4">
+          <div className="contents">
             {/* What they can expect, before they have to ask. */}
-            <Card>
-              <div className="flex items-center justify-between gap-3 px-4 py-3">
+            <Band kind="data" flush>
+              <div className="flex items-center justify-between gap-3 px-gutter py-3">
                 <div className="flex min-w-0 items-center gap-2">
                   <span className="shrink-0 text-ink3">
                     <Icon name="message-square" />
@@ -121,11 +119,11 @@ export const OwnerMessages = () => {
                   </p>
                 </div>
               </div>
-            </Card>
+            </Band>
 
             {/* The thread. */}
-            <Card>
-              <CardHeader
+            <Band kind="rail" flush>
+              <BandHead
                 eyebrow={openCase ? openCase.subject : 'Your conversation'}
                 title="Messages"
                 action={
@@ -142,7 +140,7 @@ export const OwnerMessages = () => {
                   const mine = message.from === 'you';
 
                   return (
-                    <div key={`${message.at}-${index}`} className="px-4 py-3">
+                    <div key={`${message.at}-${index}`} className="px-gutter py-3">
                       <div className="flex items-start gap-3">
                         {mine ? (
                           <Avatar
@@ -179,7 +177,7 @@ export const OwnerMessages = () => {
               </div>
 
               {/* Compose. */}
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <label className="block">
                   <Micro>Write a message</Micro>
                   <textarea
@@ -207,25 +205,25 @@ export const OwnerMessages = () => {
                   A photo of what you are seeing usually saves a visit.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             {/* Context the team already has, so the customer need not repeat it. */}
-            <Card>
-              <CardHeader icon="file-text" iconTone="neutral" eyebrow="What we already know" title="Attached to this conversation" />
+            <Band kind="data" flush>
+              <BandHead icon="file-text" iconTone="neutral" eyebrow="What we already know" title="Attached to this conversation" />
               <RowList>
-                <Row>
+                <Row gutter>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Your system</p>
                     <p className="text-caption text-ink">Ecoflo compact biofilter, EC-5</p>
                   </div>
                 </Row>
-                <Row>
+                <Row gutter>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Next visit</p>
                     <p className="text-caption text-ink">{longDate(visit.scheduledFor)}</p>
                   </div>
                 </Row>
-                <Row>
+                <Row gutter>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Winter access</p>
                     <p className="text-right text-caption text-ink">
@@ -234,16 +232,16 @@ export const OwnerMessages = () => {
                   </div>
                 </Row>
               </RowList>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <p className="text-caption text-ink2">
                   Whoever replies can see all of this. You should never have to explain your property
                   twice.
                 </p>
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

@@ -25,20 +25,18 @@ import {
 } from '../../data/seedData';
 import { longDate, money, shortDate } from '../../lib/format';
 import {
+  Band,
+  BandHead,
   ButtonLink,
-  Card,
-  CardHeader,
   Field,
   Icon,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** Condition in words. The status enum never reaches the customer. */
 const CONDITION: Record<string, { line: string; detail: string; tone: 'good' | 'warn' | 'alert' }> = {
@@ -67,17 +65,17 @@ export const OwnerSystem = () => {
   const timeline = customerTimeline(account.id);
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Your system"
-          title={asset.product}
+          subject={asset.product}
           lead={`At ${account.address}, ${account.city}.`}
         />
 
         {/* ---------------------------------------------------------------- */}
         <Section id="system-info">
-          <Card className="overflow-hidden">
+          <Band kind="rail" flush>
             {/* Real content: the property this system is installed at. */}
             <img
               src="/img/property.jpg"
@@ -85,7 +83,7 @@ export const OwnerSystem = () => {
               className="h-[160px] w-full border-b border-line object-cover"
             />
 
-            <div className="px-4 py-3">
+            <div className="px-gutter py-3">
               <Status tone={condition.tone}>{condition.line}</Status>
               <p className="mt-2 text-body text-ink">{condition.detail}</p>
             </div>
@@ -97,15 +95,15 @@ export const OwnerSystem = () => {
               <Field label="Last visit" value={longDate(asset.lastServiceOn)} />
               <Field label="Warranty until" value={longDate(asset.warrantyEndsOn)} />
             </dl>
-          </Card>
+          </Band>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
         {/* One timeline. Visits and orders together, newest first.          */}
         {/* ---------------------------------------------------------------- */}
         <Section id="system-history">
-          <Card>
-            <CardHeader
+          <Band kind="data" flush>
+            <BandHead
               eyebrow="Everything that has happened"
               title="Service history"
               action={<Identifier className="text-ink3">{`${timeline.length} entries`}</Identifier>}
@@ -117,7 +115,7 @@ export const OwnerSystem = () => {
                 const visit = isVisit ? byId(workOrders, entry.id) : undefined;
 
                 return (
-                  <Row key={entry.id} tone={isVisit ? 'neutral' : 'none'}>
+                  <Row gutter key={entry.id} tone={isVisit ? 'neutral' : 'none'}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-ink3">
                         <Icon name={isVisit ? 'calendar' : 'package'} />
@@ -149,13 +147,13 @@ export const OwnerSystem = () => {
                 );
               })}
             </RowList>
-          </Card>
+          </Band>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
         <Section id="system-documents">
-          <Card>
-            <CardHeader icon="file-text" eyebrow="Yours to keep" title="Documents" />
+          <Band kind="rail" flush>
+            <BandHead icon="file-text" eyebrow="Yours to keep" title="Documents" />
             <RowList>
               {[
                 { label: 'Installation certificate', detail: longDate(asset.installedOn) },
@@ -163,7 +161,7 @@ export const OwnerSystem = () => {
                 { label: 'Care plan', detail: contract.name },
                 { label: 'Owner guide', detail: `For the ${asset.model}` },
               ].map((document) => (
-                <Row key={document.label}>
+                <Row gutter key={document.label}>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <span className="shrink-0 text-ink3">
@@ -181,11 +179,11 @@ export const OwnerSystem = () => {
                 </Row>
               ))}
             </RowList>
-          </Card>
+          </Band>
         </Section>
 
-        <Card>
-          <div className="px-4 py-3">
+        <Band kind="data" flush>
+          <div className="px-gutter py-3">
             <Micro>Moving out</Micro>
             <p className="mt-1 text-caption text-ink2">
               Selling the property? The system, its history and its care plan can move to the new
@@ -195,8 +193,8 @@ export const OwnerSystem = () => {
               Transfer to a new owner
             </ButtonLink>
           </div>
-        </Card>
-      </Stack>
-    </ScreenBody>
+        </Band>
+      </div>
+    </>
   );
 };

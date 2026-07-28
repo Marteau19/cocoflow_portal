@@ -22,20 +22,18 @@ import {
 } from '../../data/seedData';
 import { longDate, money, shortDate } from '../../lib/format';
 import {
-  Card,
-  CardHeader,
+  Band,
+  BandHead,
   Icon,
   Identifier,
   Kpi,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
   Toggle,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /**
  * Invoices are derived from the records that caused them rather than typed as a
@@ -104,19 +102,19 @@ export const OwnerInvoices = () => {
     .reduce((sum, i) => sum + i.amount, 0);
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Billing"
-          title="Invoices and payment"
+          subject="Invoices and payment"
           lead="Everything you have been charged, and what it was for."
         />
 
         <Section id="invoices">
-          <Stack gap="4">
+          <div className="contents">
             {/* The one question first: do I owe anything. */}
-            <Card>
-              <div className="px-4 py-4">
+            <Band kind="data" flush>
+              <div className="px-gutter py-4">
                 {owed > 0 ? (
                   <Kpi
                     label="Outstanding"
@@ -136,24 +134,24 @@ export const OwnerInvoices = () => {
               </div>
 
               <dl className="[&>*+*]:border-t [&>*+*]:border-t-line border-t border-line">
-                <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
                   <dt className="text-caption text-ink2">Paid this year</dt>
                   <dd className="text-body font-medium text-ink">{money(paidThisYear)}</dd>
                 </div>
-                <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
                   <dt className="text-caption text-ink2">Next charge</dt>
                   <dd className="text-right text-caption text-ink">
                     {money(contract.annualPrice_jde)} on {shortDate(contract.renewsOn)}
                   </dd>
                 </div>
               </dl>
-            </Card>
+            </Band>
 
             {/* Payment method and autopay state. */}
-            <Card>
-              <CardHeader eyebrow="How you pay" title="Payment method" />
+            <Band kind="rail" flush>
+              <BandHead eyebrow="How you pay" title="Payment method" />
               <RowList>
-                <Row>
+                <Row gutter>
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-body text-ink">Card ending 4417</p>
@@ -169,7 +167,7 @@ export const OwnerInvoices = () => {
                   state they are currently in. The switch shows the state and the
                   action at once.
                 */}
-                <Row tone={autopay ? 'positive' : 'warn'}>
+                <Row gutter tone={autopay ? 'positive' : 'warn'}>
                   <Toggle
                     label={autopay ? 'Autopay is on' : 'Autopay is off'}
                     checked={autopay}
@@ -182,18 +180,18 @@ export const OwnerInvoices = () => {
                   />
                 </Row>
               </RowList>
-            </Card>
+            </Band>
 
             {/* History, each row traceable to what caused it. */}
-            <Card>
-              <CardHeader
+            <Band kind="data" flush>
+              <BandHead
                 eyebrow="Everything so far"
                 title="Invoice history"
                 action={<Identifier className="text-ink3">{`${invoices.length} invoices`}</Identifier>}
               />
               <RowList>
                 {invoices.map((invoice) => (
-                  <Row key={invoice.id} to={invoice.relatesTo.to}>
+                  <Row gutter key={invoice.id} to={invoice.relatesTo.to}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-baseline gap-2">
@@ -218,16 +216,16 @@ export const OwnerInvoices = () => {
                   </Row>
                 ))}
               </RowList>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <p className="text-caption text-ink2">
                   Every invoice points at the visit or the order that caused it. Tap one to see what
                   happened.
                 </p>
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

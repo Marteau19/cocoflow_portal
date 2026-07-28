@@ -30,19 +30,17 @@ import {
 import { TODAY, dayAndDate, duration, window as timeWindow } from '../../lib/format';
 import {
   Avatar,
+  Band,
+  BandHead,
   Button,
-  Card,
-  CardHeader,
   Icon,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 const STATUS_LABEL: Record<WorkOrder['status'], string> = {
   booked: 'NOT CONFIRMED',
@@ -70,24 +68,24 @@ export const ManagerDispatch = () => {
   const DAY_MINUTES = 8 * 60;
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow={territory.name}
-          title="Dispatch"
+          subject="Dispatch"
           lead={`${dayAndDate(TODAY)}. ${today.length} ${today.length === 1 ? 'job' : 'jobs'} across ${assignedIds.size} ${assignedIds.size === 1 ? 'technician' : 'technicians'}.`}
         />
 
         <Section id="dispatch">
-          <Stack gap="4">
+          <div className="contents">
             {/* What is waiting, and why. Never just a count. */}
-            <Card>
-              <CardHeader
+            <Band kind="data" flush>
+              <BandHead
                 title="Needs attention"
                 eyebrow={unconfirmed.length === 0 ? 'Nothing waiting' : `${unconfirmed.length} waiting`}
               />
               {unconfirmed.length === 0 ? (
-                <div className="px-4 py-6">
+                <div className="px-gutter py-6">
                   <p className="text-body text-ink2">
                     Every job today is confirmed with its customer.
                   </p>
@@ -97,7 +95,7 @@ export const ManagerDispatch = () => {
                   {unconfirmed.map((job) => {
                     const account = byId(accounts, job.accountId)!;
                     return (
-                      <Row key={job.id} tone="warn">
+                      <Row gutter key={job.id} tone="warn">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <Status tone="warn">NOT CONFIRMED</Status>
@@ -123,11 +121,11 @@ export const ManagerDispatch = () => {
                   })}
                 </RowList>
               )}
-            </Card>
+            </Band>
 
             {/* Technicians against the day. */}
-            <Card>
-              <CardHeader title="Today" eyebrow="By technician" />
+            <Band kind="rail" flush>
+              <BandHead title="Today" eyebrow="By technician" />
               <div className="[&>*+*]:border-t [&>*+*]:border-t-line">
                 {technicians.map((person) => {
                   const jobs = workOrdersForResource(person.id, TODAY).sort((a, b) =>
@@ -138,7 +136,7 @@ export const ManagerDispatch = () => {
 
                   return (
                     <div key={person.id}>
-                      <div className="flex items-center justify-between gap-3 bg-surface-sunk px-4 py-2">
+                      <div className="flex items-center justify-between gap-3 bg-surface-sunk px-gutter py-2">
                         <div className="flex min-w-0 items-center gap-2">
                           <Avatar
                             name={person.name}
@@ -154,7 +152,7 @@ export const ManagerDispatch = () => {
                       </div>
 
                       {jobs.length === 0 ? (
-                        <div className="px-4 py-3">
+                        <div className="px-gutter py-3">
                           <p className="text-caption text-ink2">
                             Nothing booked. Available for anything that needs moving.
                           </p>
@@ -169,7 +167,7 @@ export const ManagerDispatch = () => {
                             const isMoving = moving === job.id;
 
                             return (
-                              <Row
+                              <Row gutter
                                 key={job.id}
                                 tone={
                                   job.status === 'booked'
@@ -251,15 +249,15 @@ export const ManagerDispatch = () => {
                   );
                 })}
               </div>
-            </Card>
+            </Band>
 
             <p className="text-caption text-ink3">
               Capacity is measured against an eight hour day and does not include travel. Travel sits
               on the technician route screen, where it belongs.
             </p>
-          </Stack>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

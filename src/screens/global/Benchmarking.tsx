@@ -18,19 +18,17 @@ import { Section } from '../../blueprint/Section';
 import { network, regions, servicePoints } from '../../data/seedData';
 import { millions, percent } from '../../lib/format';
 import {
+  Band,
+  BandHead,
   ButtonLink,
-  Card,
-  CardHeader,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
   type RowTone,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 interface Measure {
   key: string;
@@ -117,25 +115,25 @@ export const GlobalBenchmarking = () => {
       : { tone: 'warn', rule: 'warn', label: 'WORTH A LOOK' };
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Benchmarking"
-          title="Where the network disagrees with itself"
+          subject="Where the network disagrees with itself"
           lead="Every alert below is a gap against something another Service Point is already doing."
         />
 
         <Section id="benchmarking">
-          <Stack gap="4">
+          <div className="contents">
             {/* What good looks like, sourced from the network itself. */}
-            <Card>
-              <CardHeader title="What good looks like" eyebrow="Best in network, per measure" />
+            <Band kind="data" flush>
+              <BandHead title="What good looks like" eyebrow="Best in network, per measure" />
               <RowList>
                 {MEASURES.map((measure) => {
                   const best = bestFor(measure);
                   const region = regions.find((r) => r.id === best.regionId);
                   return (
-                    <Row key={measure.key}>
+                    <Row gutter key={measure.key}>
                       <div className="flex items-baseline justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-body text-ink">{measure.label}</p>
@@ -154,24 +152,24 @@ export const GlobalBenchmarking = () => {
                   );
                 })}
               </RowList>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <p className="text-caption text-ink2">
                   These are not targets set centrally. They are what a Service Point in this network
                   is achieving right now, which is what makes them hard to argue with.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             {/* The alerts. Text and a left rule. */}
-            <Card>
-              <CardHeader
+            <Band kind="rail" flush>
+              <BandHead
                 title="Alerts"
                 eyebrow={alerts.length === 0 ? 'Nothing out of line' : `${alerts.length} worth raising`}
                 action={<Identifier className="text-ink3">{`${servicePoints.length} points`}</Identifier>}
               />
 
               {alerts.length === 0 ? (
-                <div className="px-4 py-6">
+                <div className="px-gutter py-6">
                   <p className="text-body text-ink2">
                     No Service Point is far enough from its peers to be worth a conversation.
                   </p>
@@ -182,7 +180,7 @@ export const GlobalBenchmarking = () => {
                     const ratio = alert.gap / alert.measure.tolerance;
                     const level = severity(ratio);
                     return (
-                      <Row
+                      <Row gutter
                         key={`${alert.measure.key}-${alert.sp.id}`}
                         tone={level.rule}
                         to={`/network/${alert.sp.regionId}`}
@@ -223,12 +221,12 @@ export const GlobalBenchmarking = () => {
                   })}
                 </RowList>
               )}
-            </Card>
+            </Band>
 
             {/* The comparison table behind the alerts. */}
-            <Card>
-              <CardHeader title="All measures" eyebrow="Every Service Point" />
-              <div className="hidden border-b border-line bg-surface-sunk px-4 py-2 md:grid md:grid-cols-[1.4fr_repeat(5,minmax(0,1fr))] md:gap-3">
+            <Band kind="data" flush>
+              <BandHead title="All measures" eyebrow="Every Service Point" />
+              <div className="hidden border-b border-line bg-surface-sunk px-gutter py-2 md:grid md:grid-cols-[1.4fr_repeat(5,minmax(0,1fr))] md:gap-3">
                 <Micro>Service Point</Micro>
                 {MEASURES.map((m) => (
                   <div key={m.key} className="text-right">
@@ -238,7 +236,7 @@ export const GlobalBenchmarking = () => {
               </div>
               <RowList>
                 {servicePoints.map((sp) => (
-                  <Row key={sp.id}>
+                  <Row gutter key={sp.id}>
                     <div className="md:grid md:grid-cols-[1.4fr_repeat(5,minmax(0,1fr))] md:items-baseline md:gap-3">
                       <p className="text-body text-ink">{sp.name}</p>
                       <div className="mt-2 grid grid-cols-3 gap-3 md:contents">
@@ -264,21 +262,21 @@ export const GlobalBenchmarking = () => {
                   </Row>
                 ))}
               </RowList>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <p className="text-caption text-ink2">
                   Best in network shown in the accent colour. Network service share is currently{' '}
                   {percent(network.currentServicePct)} against a {network.serviceTargetPct} percent
                   target.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             <ButtonLink to="/mix" variant="quiet" icon="chevron-right">
               See the mix tracker
             </ButtonLink>
-          </Stack>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

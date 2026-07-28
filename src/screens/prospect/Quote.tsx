@@ -19,20 +19,18 @@ import { GOLDEN, byId, leads, quotes, resources, territories } from '../../data/
 import { daysFromToday, longDate, money } from '../../lib/format';
 import {
   Avatar,
+  Band,
+  BandHead,
   Button,
-  Card,
-  CardHeader,
   Flag,
   Icon,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** Why this system, for this land. The credibility of the reveal lives here. */
 const REASONS = [
@@ -70,60 +68,60 @@ export const ProspectQuote = () => {
   /* ------------------------------------------------------------------ */
   if (approved) {
     return (
-      <ScreenBody>
-        <Stack gap="4">
-          <PageHead
+      <>
+        <div className="contents">
+          <Masthead
             eyebrow="Quote approved"
-            title="We are booking your installation"
+            subject="We are booking your installation"
             lead={`${manager.name} will call you within a working day to agree dates.`}
           />
-          <Card>
+          <Band kind="data" flush>
             <RowList>
-              <Row>
+              <Row gutter>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Approved</p>
                   <p className="text-caption text-ink">{money(quote.total_jde, quote.currency)}</p>
                 </div>
               </Row>
-              <Row>
+              <Row gutter>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Reference</p>
                   <Identifier>{quote.id}</Identifier>
                 </div>
               </Row>
             </RowList>
-            <div className="border-t border-line px-4 py-3">
+            <div className="border-t border-line px-gutter py-3">
               <p className="text-caption text-ink2">
                 Nothing is charged yet. We file the permits first, and you will see each stage as it
                 happens.
               </p>
             </div>
-          </Card>
-        </Stack>
-      </ScreenBody>
+          </Band>
+        </div>
+      </>
     );
   }
 
   /* ------------------------------------------------------------------ */
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Your solution"
-          title="The system we designed for your property"
+          subject="The system we designed for your property"
           lead={`Based on what we found at ${lead.city}. Here is why this one, and what it costs.`}
         />
 
         <Section id="quote-reveal">
-          <Stack gap="4">
+          <div className="contents">
             {/* The recommendation, with real imagery of the thing itself. */}
-            <Card className="overflow-hidden">
+            <Band kind="data" flush>
               <img
                 src="/img/system.jpg"
                 alt="An Ecoflo compact biofilter installed at a property"
                 className="h-[180px] w-full border-b border-line object-cover"
               />
-              <div className="px-4 py-3">
+              <div className="px-gutter py-3">
                 <Micro>Recommended</Micro>
                 <h2 className="mt-1 text-h1 text-ink">Ecoflo compact biofilter</h2>
                 <p className="mt-2 text-body text-ink2">
@@ -131,14 +129,14 @@ export const ProspectQuote = () => {
                   moving parts to fail, and it sits low enough to keep your view.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             {/* Why this one. Three reasons, tied to the soil test. */}
-            <Card>
-              <CardHeader eyebrow="Why this system" title="Three reasons" />
+            <Band kind="rail" flush>
+              <BandHead eyebrow="Why this system" title="Three reasons" />
               <RowList>
                 {REASONS.map((reason, index) => (
-                  <Row key={reason.label}>
+                  <Row gutter key={reason.label}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 font-mono text-caption text-ink3">
                         {String(index + 1).padStart(2, '0')}
@@ -151,11 +149,11 @@ export const ProspectQuote = () => {
                   </Row>
                 ))}
               </RowList>
-            </Card>
+            </Band>
 
             {/* Itemised. Included lines shown as included, not omitted. */}
-            <Card>
-              <CardHeader
+            <Band kind="data" flush>
+              <BandHead
                 eyebrow="What it costs"
                 title="Itemised"
                 action={
@@ -165,12 +163,12 @@ export const ProspectQuote = () => {
                 }
               />
 
-              <div className="border-b border-line bg-surface-sunk px-4 py-2">
+              <div className="border-b border-line bg-surface-sunk px-gutter py-2">
                 <Micro>Already done, at no cost</Micro>
               </div>
               <RowList>
                 {included.map((line) => (
-                  <Row key={line.label}>
+                  <Row gutter key={line.label}>
                     <div className="flex items-baseline justify-between gap-3">
                       <p className="min-w-0 text-caption text-ink">{line.label}</p>
                       <span className="shrink-0 text-caption text-positive">Included</span>
@@ -179,12 +177,12 @@ export const ProspectQuote = () => {
                 ))}
               </RowList>
 
-              <div className="border-y border-line bg-surface-sunk px-4 py-2">
+              <div className="border-y border-line bg-surface-sunk px-gutter py-2">
                 <Micro>To be quoted</Micro>
               </div>
               <RowList>
                 {priced.map((line) => (
-                  <Row key={line.label}>
+                  <Row gutter key={line.label}>
                     <div className="flex items-baseline justify-between gap-3">
                       <p className="min-w-0 text-caption text-ink">{line.label}</p>
                       <p className="shrink-0 text-caption text-ink">
@@ -195,18 +193,18 @@ export const ProspectQuote = () => {
                 ))}
               </RowList>
 
-              <div className="flex items-baseline justify-between gap-3 border-t border-line px-4 py-4">
+              <div className="flex items-baseline justify-between gap-3 border-t border-line px-gutter py-4">
                 <div>
                   <Micro>Total</Micro>
                   <p className="mt-1 text-caption text-ink2">Taxes calculated on the invoice</p>
                 </div>
                 <p className="text-display text-ink">{money(quote.total_jde, quote.currency)}</p>
               </div>
-            </Card>
+            </Band>
 
             {/* Who to ask. A named human, not a form. */}
-            <Card>
-              <div className="flex items-center gap-3 px-4 py-3">
+            <Band kind="rail" flush>
+              <div className="flex items-center gap-3 px-gutter py-3">
                 <Avatar
                   name={manager.name}
                   initials={manager.initials}
@@ -220,7 +218,7 @@ export const ProspectQuote = () => {
                   </p>
                 </div>
               </div>
-            </Card>
+            </Band>
 
             {/* One action. */}
             <Button variant="primary" icon="check" block onClick={() => setApproved(true)}>
@@ -231,8 +229,8 @@ export const ProspectQuote = () => {
               before work starts.
             </p>
 
-            <Card>
-              <div className="px-4 py-3">
+            <Band kind="data" flush>
+              <div className="px-gutter py-3">
                 <Flag tone="warn" icon="alert-triangle">
                   How this quote is assembled is undecided
                 </Flag>
@@ -249,10 +247,10 @@ export const ProspectQuote = () => {
                   <Identifier className="text-ink3">{`${quote.id}, issued ${longDate(quote.issuedOn)}`}</Identifier>
                 </p>
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

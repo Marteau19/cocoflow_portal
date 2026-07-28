@@ -18,19 +18,17 @@ import { Section } from '../../blueprint/Section';
 import { GOLDEN, accounts, assets, byId, contracts, territories } from '../../data/seedData';
 import { dayAndDate, daysFromToday, TODAY } from '../../lib/format';
 import {
+  Band,
+  BandHead,
   Button,
-  Card,
-  CardHeader,
   Flag,
   Icon,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** Reasons map to a routable code. Free text cannot be dispatched. */
 const REASONS = [
@@ -77,21 +75,21 @@ export const OwnerBook = () => {
   /* ------------------------------------------------------------------ */
   if (booked && slot) {
     return (
-      <ScreenBody>
-        <Stack gap="4">
-          <PageHead
+      <>
+        <div className="contents">
+          <Masthead
             eyebrow="Visit booked"
-            title="You are booked in"
+            subject="You are booked in"
             lead={`We will confirm who is coming closer to the day.`}
           />
-          <Card>
-            <div className="px-4 py-3">
+          <Band kind="data" flush>
+            <div className="px-gutter py-3">
               <Micro>When</Micro>
               <p className="mt-1 text-h1 text-ink">{dayAndDate(slot.date)}</p>
               <p className="mt-1 text-body text-ink2">{slot.window}</p>
             </div>
             <RowList className="border-t border-line">
-              <Row>
+              <Row gutter>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Reason</p>
                   <p className="text-caption text-ink">
@@ -99,7 +97,7 @@ export const OwnerBook = () => {
                   </p>
                 </div>
               </Row>
-              <Row>
+              <Row gutter>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Where</p>
                   <p className="text-right text-caption text-ink">
@@ -107,39 +105,39 @@ export const OwnerBook = () => {
                   </p>
                 </div>
               </Row>
-              <Row>
+              <Row gutter>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Team</p>
                   <p className="text-caption text-ink">{servicePoint.name}</p>
                 </div>
               </Row>
             </RowList>
-            <div className="border-t border-line px-4 py-3">
+            <div className="border-t border-line px-gutter py-3">
               <p className="text-caption text-ink2">
                 Need to change it? Message your team and we will move it.
               </p>
             </div>
-          </Card>
-        </Stack>
-      </ScreenBody>
+          </Band>
+        </div>
+      </>
     );
   }
 
   /* ------------------------------------------------------------------ */
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Book a visit"
-          title="When suits you?"
+          subject="When suits you?"
           lead={`Pick a window and ${servicePoint.name} will confirm it.`}
         />
 
         <Section id="booking">
-          <Stack gap="4">
+          <div className="contents">
             {/* What the visit is for. */}
-            <Card>
-              <CardHeader icon="message-square" eyebrow="Step one" title="What is it about?" />
+            <Band kind="rail" flush>
+              <BandHead icon="message-square" eyebrow="Step one" title="What is it about?" />
               <RowList>
                 {REASONS.map((item) => {
                   const selected = reason === item.code;
@@ -148,7 +146,7 @@ export const OwnerBook = () => {
                       key={item.code}
                       type="button"
                       onClick={() => setReason(item.code)}
-                      className={`block w-full border-l-rule px-4 py-3 text-left transition-colors duration-state ease-ease ${
+                      className={`block w-full border-l-rule px-gutter py-3 text-left transition-colors duration-state ease-ease ${
                         selected ? 'border-l-ink bg-surface-sunk' : 'border-l-transparent hover:bg-surface-sunk'
                       }`}
                     >
@@ -169,11 +167,11 @@ export const OwnerBook = () => {
                   );
                 })}
               </RowList>
-            </Card>
+            </Band>
 
             {/* Real availability, and an arrival window rather than a time. */}
-            <Card>
-              <CardHeader
+            <Band kind="data" flush>
+              <BandHead
                 icon="calendar"
                 eyebrow="Step two"
                 title="Choose an arrival window"
@@ -181,7 +179,7 @@ export const OwnerBook = () => {
               />
               <div className="[&>*+*]:border-t [&>*+*]:border-t-line">
                 {SLOTS.map((day) => (
-                  <div key={day.date} className="px-4 py-3">
+                  <div key={day.date} className="px-gutter py-3">
                     <div className="flex items-baseline justify-between gap-3">
                       <p className="text-body text-ink">{dayAndDate(day.date)}</p>
                       <p className="text-caption text-ink3">{`in ${daysFromToday(day.date)} days`}</p>
@@ -208,17 +206,17 @@ export const OwnerBook = () => {
                   </div>
                 ))}
               </div>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <p className="text-caption text-ink2">
                   A window, not a time. We would rather arrive inside two hours than miss a promise
                   by ten minutes.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             {/* What this visit costs, answered before they have to ask. */}
-            <Card>
-              <div className="px-4 py-3">
+            <Band kind="rail" flush>
+              <div className="px-gutter py-3">
                 <Flag tone="neutral" icon="info">
                   {`Covered by ${contract.name}`}
                 </Flag>
@@ -227,7 +225,7 @@ export const OwnerBook = () => {
                   nothing to pay for this visit.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             <Button
               variant="primary"
@@ -243,9 +241,9 @@ export const OwnerBook = () => {
                 Choose what it is about and pick a window to continue.
               </p>
             )}
-          </Stack>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

@@ -15,18 +15,16 @@ import { Section } from '../../blueprint/Section';
 import { byId, network, regions, resources, servicePoints, territories } from '../../data/seedData';
 import { millions, percent } from '../../lib/format';
 import {
+  Band,
+  BandHead,
   ButtonLink,
-  Card,
-  CardHeader,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** A measure, with the region average to read it against. */
 const Compare = ({
@@ -86,25 +84,25 @@ export const GlobalRegionDrill = () => {
   const ranked = [...points].sort((a, b) => b.servicePct - a.servicePct);
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
+    <>
+      <div className="contents">
         <div>
           <ButtonLink to="/network" variant="plain" icon="chevron-right">
             Back to the network
           </ButtonLink>
           <div className="mt-2">
-            <PageHead
+            <Masthead
               eyebrow={`${region.group}, ${region.currency}`}
-              title={region.name}
+              subject={region.name}
               lead={`${points.length} Service ${points.length === 1 ? 'Point' : 'Points'}, ${millions(revenue)} revenue.`}
             />
           </div>
         </div>
 
         <Section id="region-drill">
-          <Stack gap="4">
-            <Card>
-              <div className="grid gap-5 border-b border-line px-4 py-5 lg:grid-cols-[1.8fr_1fr]">
+          <div className="contents">
+            <Band kind="data" flush>
+              <div className="grid gap-5 border-b border-line px-gutter py-5 lg:grid-cols-[1.8fr_1fr]">
                 <div>
                   <Micro>Region service revenue share</Micro>
                   <p className="mt-2 text-display text-ink">{percent(share)}</p>
@@ -131,16 +129,16 @@ export const GlobalRegionDrill = () => {
                 </dl>
               </div>
 
-              <div className="px-4 py-3">
+              <div className="px-gutter py-3">
                 <p className="text-caption text-ink2">
                   Led by {region.leaders.join(' and ')}.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             {/* Each Service Point, always against the region average. */}
-            <Card>
-              <CardHeader
+            <Band kind="rail" flush>
+              <BandHead
                 title="Service Points"
                 eyebrow="Each figure against the region average"
                 action={<Identifier className="text-ink3">{`region ${percent(share)}`}</Identifier>}
@@ -152,7 +150,7 @@ export const GlobalRegionDrill = () => {
                   const above = sp.servicePct >= target;
 
                   return (
-                    <Row key={sp.id} tone={above ? 'strong' : 'warn'}>
+                    <Row gutter key={sp.id} tone={above ? 'strong' : 'warn'}>
                       <div className="flex flex-wrap items-baseline justify-between gap-2">
                         <div className="min-w-0">
                           <p className="text-body text-ink">{sp.name}</p>
@@ -196,15 +194,15 @@ export const GlobalRegionDrill = () => {
                   );
                 })}
               </RowList>
-            </Card>
+            </Band>
 
-            <Card>
-              <CardHeader title="Where to look next" eyebrow="From these figures" />
+            <Band kind="data" flush>
+              <BandHead title="Where to look next" eyebrow="From these figures" />
               <RowList>
                 {ranked
                   .filter((sp) => sp.servicePct < target)
                   .map((sp) => (
-                    <Row key={sp.id} tone="warn">
+                    <Row gutter key={sp.id} tone="warn">
                       <p className="text-body text-ink">{sp.name}</p>
                       <p className="mt-1 max-w-reading text-caption text-ink2">
                         {percent(target - sp.servicePct)} of service share to find.{' '}
@@ -215,17 +213,17 @@ export const GlobalRegionDrill = () => {
                     </Row>
                   ))}
                 {ranked.every((sp) => sp.servicePct >= target) && (
-                  <Row>
+                  <Row gutter>
                     <p className="text-body text-ink2">
                       Every Service Point in this region is at or above the target.
                     </p>
                   </Row>
                 )}
               </RowList>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

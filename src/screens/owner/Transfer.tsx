@@ -27,19 +27,17 @@ import {
 } from '../../data/seedData';
 import { longDate } from '../../lib/format';
 import {
+  Band,
+  BandHead,
   Button,
-  Card,
-  CardHeader,
   Flag,
   Icon,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /**
  * The privacy split, stated before consent is asked for. What belongs to the
@@ -76,43 +74,43 @@ export const OwnerTransfer = () => {
 
   if (submitted) {
     return (
-      <ScreenBody>
-        <Stack gap="4">
-          <PageHead
+      <>
+        <div className="contents">
+          <Masthead
             eyebrow="Transfer started"
-            title="We have what we need"
+            subject="We have what we need"
             lead={`We will contact ${name.trim()} to set up their account before ${longDate(date)}.`}
           />
-          <Card>
-            <div className="px-4 py-3">
+          <Band kind="data" flush>
+            <div className="px-gutter py-3">
               <Status tone="good">PENDING THE NEW OWNER</Status>
               <p className="mt-2 max-w-reading text-body text-ink2">
                 Nothing moves until they accept. Until then your account is unchanged and you can
                 cancel the transfer by messaging the team.
               </p>
             </div>
-          </Card>
-        </Stack>
-      </ScreenBody>
+          </Band>
+        </div>
+      </>
     );
   }
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Selling the property"
-          title="Transfer to a new owner"
+          subject="Transfer to a new owner"
           lead={`The system at ${account.address} moves to whoever buys the property. You keep everything that is about you.`}
         />
 
         <Section id="transfer">
-          <Stack gap="4">
+          <div className="contents">
             {/* What is being transferred, as a thing not a record. */}
-            <Card>
-              <CardHeader eyebrow="What is moving" title={asset.product} />
+            <Band kind="rail" flush>
+              <BandHead eyebrow="What is moving" title={asset.product} />
               <RowList>
-                <Row>
+                <Row gutter>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">At</p>
                     <p className="text-right text-caption text-ink">
@@ -120,37 +118,37 @@ export const OwnerTransfer = () => {
                     </p>
                   </div>
                 </Row>
-                <Row>
+                <Row gutter>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Installed</p>
                     <p className="text-caption text-ink">{longDate(asset.installedOn)}</p>
                   </div>
                 </Row>
-                <Row>
+                <Row gutter>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Warranty runs to</p>
                     <p className="text-caption text-ink">{longDate(asset.warrantyEndsOn)}</p>
                   </div>
                 </Row>
-                <Row>
+                <Row gutter>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Service visits on record</p>
                     <p className="text-caption text-ink">{history.length}</p>
                   </div>
                 </Row>
               </RowList>
-            </Card>
+            </Band>
 
             {/* The privacy split. Before consent, not after. */}
-            <Card>
-              <CardHeader eyebrow="Read this part" title="What transfers, and what does not" />
+            <Band kind="data" flush>
+              <BandHead eyebrow="Read this part" title="What transfers, and what does not" />
 
-              <div className="border-b border-line bg-surface-sunk px-4 py-2">
+              <div className="border-b border-line bg-surface-sunk px-gutter py-2">
                 <Micro>Goes with the property</Micro>
               </div>
               <RowList>
                 {MOVES.map((item) => (
-                  <Row key={item.label}>
+                  <Row gutter key={item.label}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-ink3">
                         <Icon name="chevron-right" />
@@ -164,12 +162,12 @@ export const OwnerTransfer = () => {
                 ))}
               </RowList>
 
-              <div className="border-y border-line bg-surface-sunk px-4 py-2">
+              <div className="border-y border-line bg-surface-sunk px-gutter py-2">
                 <Micro>Stays with you</Micro>
               </div>
               <RowList>
                 {STAYS.map((item) => (
-                  <Row key={item.label}>
+                  <Row gutter key={item.label}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-positive">
                         <Icon name="check" />
@@ -182,24 +180,24 @@ export const OwnerTransfer = () => {
                   </Row>
                 ))}
               </RowList>
-            </Card>
+            </Band>
 
             {/* What happens to the plan. A real question, answered up front. */}
-            <Card>
-              <CardHeader eyebrow="Your care plan" title={contract.name} />
-              <div className="px-4 py-3">
+            <Band kind="rail" flush>
+              <BandHead eyebrow="Your care plan" title={contract.name} />
+              <div className="px-gutter py-3">
                 <p className="max-w-reading text-body text-ink2">
                   Your plan is paid to {longDate(contract.renewsOn)}. The new owner can take it over
                   from the transfer date, or let it lapse and decide for themselves. If they take it
                   over, we refund you the unused part.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             {/* Who it is going to. */}
-            <Card>
-              <CardHeader eyebrow="The new owner" title="Who is taking it on" />
-              <div className="space-y-3 px-4 py-3">
+            <Band kind="data" flush>
+              <BandHead eyebrow="The new owner" title="Who is taking it on" />
+              <div className="space-y-3 px-gutter py-3">
                 <label className="block">
                   <span className="text-caption text-ink2">Their name</span>
                   <input
@@ -228,11 +226,11 @@ export const OwnerTransfer = () => {
                   />
                 </label>
               </div>
-            </Card>
+            </Band>
 
             {/* Consent, explicit, at the point it is needed. */}
-            <Card>
-              <div className="px-4 py-3">
+            <Band kind="rail" flush>
+              <div className="px-gutter py-3">
                 <Flag tone="warn" icon="alert-triangle">
                   This shares your system history
                 </Flag>
@@ -250,7 +248,7 @@ export const OwnerTransfer = () => {
                   </span>
                 </label>
               </div>
-            </Card>
+            </Band>
 
             <Button
               variant="primary"
@@ -265,9 +263,9 @@ export const OwnerTransfer = () => {
               Signed in as {primary.firstName} {primary.lastName}. Nothing moves until the new owner
               accepts, and you can cancel before then.
             </p>
-          </Stack>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

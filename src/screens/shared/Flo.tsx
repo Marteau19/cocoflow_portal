@@ -19,18 +19,16 @@ import { knowledgeBase, network, type KnowledgeArticle } from '../../data/seedDa
 import { shortDate } from '../../lib/format';
 import { useRole } from '../../shell/useRole';
 import {
+  Band,
+  BandHead,
   Button,
-  Card,
-  CardHeader,
   Icon,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 interface Exchange {
   question: string;
@@ -107,32 +105,32 @@ export const Flo = () => {
   };
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Flo"
-          title="Ask about the work"
+          subject="Ask about the work"
           lead={`Answers come from the ${inScope.length} documents you have access to, and each one says where it came from.`}
         />
 
         <Section id="flo">
-          <Stack gap="4">
+          <div className="contents">
             {/* The thread. */}
-            <Stack gap="3">
+            <div className="contents">
               {thread.map((exchange, index) => (
                 <div key={`${exchange.question}-${index}`}>
-                  <Card>
-                    <div className="border-b border-line px-4 py-3">
+                  <Band kind="data" flush>
+                    <div className="border-b border-line px-gutter py-3">
                       <Micro>You asked</Micro>
                       <p className="mt-1 text-body text-ink">{exchange.question}</p>
                     </div>
 
-                    <div className="px-4 py-3">
+                    <div className="px-gutter py-3">
                       <p className="text-body text-ink">{exchange.answer}</p>
                     </div>
 
                     {exchange.cites.length > 0 ? (
-                      <div className="border-t border-line px-4 py-3">
+                      <div className="border-t border-line px-gutter py-3">
                         <Micro>From</Micro>
                         <div className="mt-2 flex flex-col gap-2">
                           {exchange.cites
@@ -144,7 +142,7 @@ export const Flo = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="border-t border-line px-4 py-3">
+                      <div className="border-t border-line px-gutter py-3">
                         <p className="flex items-start gap-2 text-caption text-warn">
                           <span className="mt-1 shrink-0">
                             <Icon name="alert-triangle" />
@@ -156,14 +154,14 @@ export const Flo = () => {
                         </p>
                       </div>
                     )}
-                  </Card>
+                  </Band>
                 </div>
               ))}
-            </Stack>
+            </div>
 
             {/* Ask. */}
-            <Card>
-              <div className="px-4 py-3">
+            <Band kind="rail" flush>
+              <div className="px-gutter py-3">
                 <label className="block">
                   <Micro>Ask something</Micro>
                   <textarea
@@ -185,7 +183,7 @@ export const Flo = () => {
                 </Button>
               </div>
 
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <Micro>Try one of these</Micro>
                 <div className="mt-2 flex flex-col gap-2">
                   {CANNED.slice(1).map((item) => (
@@ -200,17 +198,17 @@ export const Flo = () => {
                   ))}
                 </div>
               </div>
-            </Card>
+            </Band>
 
             {/* What Flo can see. Scope made visible, not asserted. */}
-            <Card>
-              <CardHeader
+            <Band kind="data" flush>
+              <BandHead
                 title="What Flo can read"
                 eyebrow={`Scoped to your role, ${inScope.length} documents`}
               />
               <RowList>
                 {inScope.map((article) => (
-                  <Row key={article.id}>
+                  <Row gutter key={article.id}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-body text-ink">{article.title}</p>
@@ -223,22 +221,22 @@ export const Flo = () => {
                   </Row>
                 ))}
               </RowList>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <p className="text-caption text-ink2">
                   {knowledgeBase.length - inScope.length} further documents exist but are outside your
                   role. Flo will not answer from them.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             <p className="text-caption text-ink3">
               {network.adoption.floQueries30d.toLocaleString('en-CA')} questions asked across the
               network in the last 30 days, {network.adoption.floUnansweredPct}% of which Flo could not
               ground in a document.
             </p>
-          </Stack>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

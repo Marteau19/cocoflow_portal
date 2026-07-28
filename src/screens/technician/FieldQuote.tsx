@@ -29,19 +29,19 @@ import {
 } from '../../data/seedData';
 import { money } from '../../lib/format';
 import {
+  Band,
+  BandHead,
   Button,
-  Card,
-  CardHeader,
   Flag,
+  Hero,
   Icon,
   Identifier,
+  Masthead,
   Micro,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** Labour comes off a rate card, never off the technician's judgement. */
 const LABOUR_RATE_PER_HOUR = 95;
@@ -101,16 +101,14 @@ export const TechnicianFieldQuote = () => {
   /* ------------------------------------------------------------------ */
   if (outcome) {
     return (
-      <ScreenBody>
-        <Stack gap="3">
-          <header>
-            <Micro>{order.id}</Micro>
-            <h1 className="mt-1 text-h1 text-ink">
-              {outcome === 'approved' ? 'Quote approved on site' : 'Quote declined'}
-            </h1>
-          </header>
-          <Card>
-            <div className="px-4 py-3">
+      <>
+        <div className="contents">
+          <Masthead
+            eyebrow={order.id}
+            subject={outcome === 'approved' ? 'Quote approved on site' : 'Quote declined'}
+          />
+          <Band kind="data" flush>
+            <div className="px-gutter py-3">
               <Status tone={outcome === 'approved' ? 'good' : 'neutral'}>
                 {outcome === 'approved' ? 'APPROVED' : 'DECLINED'}
               </Status>
@@ -120,30 +118,40 @@ export const TechnicianFieldQuote = () => {
                   : `Recorded as declined, with what you found. It stays on the system record so the next visit knows to look, and nobody chases ${customer.firstName} about it.`}
               </p>
             </div>
-          </Card>
-        </Stack>
-      </ScreenBody>
+          </Band>
+        </div>
+      </>
     );
   }
 
   /* ------------------------------------------------------------------ */
   return (
-    <ScreenBody>
-      <Stack gap="3">
-        <header>
-          <Micro>{order.id}</Micro>
-          <h1 className="mt-1 text-h1 text-ink">Quote extra work</h1>
-          <p className="mt-1 text-caption text-ink2">
-            {account.name}, {asset.model}. Priced now, while you are standing at it.
-          </p>
-        </header>
+    <>
+      <div className="contents">
+        {/* Masthead. The hero is the running total, so it is never a surprise. */}
+        <Masthead
+          eyebrow={order.id}
+          subject="Quote extra work"
+          hero={
+            <Hero
+              onBand
+              label="Quote total"
+              value={money(total)}
+              delta={{
+                text: selected.length === 0 ? 'Nothing selected yet' : `${selected.length} selected`,
+                tone: 'neutral',
+              }}
+              note={`${account.name}, ${asset.model}. Priced now, while you are standing at it.`}
+            />
+          }
+        />
 
         <Section id="field-quote">
-          <Stack gap="3">
+          <div className="contents">
             {/* What is already covered, so nothing gets quoted twice. */}
             {contract && (
-              <Card>
-                <div className="px-4 py-3">
+              <Band kind="data" flush>
+                <div className="px-gutter py-3">
                   <Flag tone="neutral" icon="info">
                     {`${contract.name} is active`}
                   </Flag>
@@ -152,12 +160,12 @@ export const TechnicianFieldQuote = () => {
                     outside it.
                   </p>
                 </div>
-              </Card>
+              </Band>
             )}
 
             {/* What you found. */}
-            <Card>
-              <CardHeader
+            <Band kind="rail" flush>
+              <BandHead
                 title="What did you find?"
                 eyebrow={selected.length === 0 ? 'Nothing selected' : `${selected.length} selected`}
               />
@@ -171,7 +179,7 @@ export const TechnicianFieldQuote = () => {
                       type="button"
                       onClick={() => toggle(finding.id)}
                       aria-pressed={chosen}
-                      className={`flex min-h-tap w-full items-start justify-between gap-3 border-l-rule px-4 py-3 text-left transition-colors duration-state ease-ease ${
+                      className={`flex min-h-tap w-full items-start justify-between gap-3 border-l-rule px-gutter py-3 text-left transition-colors duration-state ease-ease ${
                         chosen ? 'border-l-ink bg-surface-sunk' : 'border-l-line-strong'
                       }`}
                     >
@@ -201,7 +209,7 @@ export const TechnicianFieldQuote = () => {
                   );
                 })}
               </div>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <Button variant="quiet" icon="camera">
                   Photograph what you found
                 </Button>
@@ -209,15 +217,15 @@ export const TechnicianFieldQuote = () => {
                   A photo of the fault is what makes the quote easy to say yes to.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             {/* The price. Parts from the ERP, labour from the rate card. */}
             {lines.length > 0 && (
-              <Card>
-                <CardHeader title="The quote" eyebrow="Parts from the ERP, labour from the rate card" />
+              <Band kind="data" flush>
+                <BandHead title="The quote" eyebrow="Parts from the ERP, labour from the rate card" />
                 <RowList>
                   {lines.map((line) => (
-                    <Row key={line.id}>
+                    <Row gutter key={line.id}>
                       <div className="min-w-0">
                         <p className="text-body text-ink">{line.product?.name ?? line.label}</p>
                         <div className="mt-1 flex flex-wrap items-baseline justify-between gap-2">
@@ -231,7 +239,7 @@ export const TechnicianFieldQuote = () => {
                   ))}
                 </RowList>
 
-                <div className="flex items-baseline justify-between gap-3 border-t border-line bg-surface-sunk px-4 py-3">
+                <div className="flex items-baseline justify-between gap-3 border-t border-line bg-surface-sunk px-gutter py-3">
                   <div>
                     <Micro>Total</Micro>
                     <p className="mt-1 text-caption text-ink2">Taxes on the invoice</p>
@@ -239,28 +247,29 @@ export const TechnicianFieldQuote = () => {
                   <p className="text-display text-ink">{money(total)}</p>
                 </div>
 
-                <div className="border-t border-line px-4 py-3">
+                <div className="border-t border-line px-gutter py-3">
                   <p className="text-caption text-ink2">
                     You cannot change these figures on the device. That is deliberate: what{' '}
                     {customer.firstName} agrees to here is exactly what the invoice will say.
                   </p>
                 </div>
-              </Card>
+              </Band>
             )}
 
             {/* Customer decision, captured on site. */}
-            <Card>
-              <CardHeader
+            <Band kind="closing" alt>
+              <BandHead
+                onBand
                 title={`Show ${customer.firstName}`}
                 eyebrow="Their decision, on your device"
               />
-              <div className="px-4 py-3">
-                <p className="text-caption text-ink2">
+              <div className="px-gutter py-3">
+                <p className="max-w-reading text-caption text-on-band opacity-80">
                   Hand them the device. Declining is a normal outcome and is recorded properly, so
                   nobody chases them about it afterwards.
                 </p>
               </div>
-              <div className="flex flex-col gap-2 border-t border-line px-4 py-3 min-[480px]:flex-row">
+              <div className="border-on-band-soft flex flex-col gap-2 border-t px-gutter py-3 min-[480px]:flex-row">
                 <Button
                   variant="primary"
                   icon="check"
@@ -279,10 +288,10 @@ export const TechnicianFieldQuote = () => {
                   Not today
                 </Button>
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

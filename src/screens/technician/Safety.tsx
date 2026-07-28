@@ -19,17 +19,16 @@ import { useParams } from 'react-router-dom';
 import { Section } from '../../blueprint/Section';
 import { accounts, byId, workOrders } from '../../data/seedData';
 import {
+  Band,
+  BandHead,
   Button,
   ButtonLink,
-  Card,
-  CardHeader,
   Flag,
+  Hero,
   Icon,
-  Micro,
-  Stack,
+  Masthead,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** Above this, in parts per million, the job does not start. */
 const H2S_LIMIT_PPM = 10;
@@ -106,22 +105,42 @@ export const TechnicianSafety = () => {
   const canStart = blockingOutstanding.length === 0 && gasSafe;
 
   return (
-    <ScreenBody>
-      <Stack gap="3">
-        <header>
-          <Micro>{order.id}</Micro>
-          <h1 className="mt-1 text-h1 text-ink">Before you start</h1>
-          <p className="mt-1 text-caption text-ink2">
-            {account.address}, {account.city}
-          </p>
-        </header>
+    <>
+      <div className="contents">
+        {/*
+          Masthead. The hero is the gas reading, and it is the one screen in the
+          build where a number has to dominate absolutely: the alternative is
+          somebody opening a lid on a confined space they have not measured.
+          Before a reading exists the hero states its own absence.
+        */}
+        <Masthead
+          eyebrow={order.id}
+          subject="Before you start"
+          alt={gasUnsafe}
+          hero={
+            <Hero
+              onBand
+              label={`Hydrogen sulphide, limit ${H2S_LIMIT_PPM} ppm`}
+              value={gasEntered ? String(gasValue) : 'Not taken'}
+              unit={gasEntered ? 'ppm' : undefined}
+              delta={
+                gasUnsafe
+                  ? { text: 'Above the limit. Do not open the lid.', tone: 'warn' }
+                  : gasSafe
+                    ? { text: 'Within the limit', tone: 'positive' }
+                    : { text: 'Take the reading before anything else', tone: 'neutral' }
+              }
+              note={`${account.address}, ${account.city}`}
+            />
+          }
+        />
 
         <Section id="safety-check">
-          <Stack gap="3">
+          <div className="contents">
             {/* The stop state is the loud one. */}
             {gasUnsafe && (
-              <Card>
-                <div className="border-l-rule border-l-alert px-4 py-3">
+              <Band kind="data" flush>
+                <div className="border-l-rule border-l-alert px-gutter py-3">
                   <Flag tone="alert" icon="alert-triangle">
                     Do not open the lid
                   </Flag>
@@ -136,12 +155,12 @@ export const TechnicianSafety = () => {
                     </Button>
                   </div>
                 </div>
-              </Card>
+              </Band>
             )}
 
             {/* The gas reading. A number off a meter, not a checkbox. */}
-            <Card>
-              <CardHeader
+            <Band kind="rail" flush>
+              <BandHead
                 title="Gas reading"
                 eyebrow={`Hydrogen sulphide, limit ${H2S_LIMIT_PPM} ppm`}
                 action={
@@ -152,7 +171,7 @@ export const TechnicianSafety = () => {
                   )
                 }
               />
-              <div className="px-4 py-3">
+              <div className="px-gutter py-3">
                 <label className="block">
                   <span className="text-caption text-ink2">Reading at the lid, in ppm</span>
                   <input
@@ -170,11 +189,11 @@ export const TechnicianSafety = () => {
                   Type what the meter says. There is no box to tick here on purpose.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             {/* The blocking checks. */}
-            <Card>
-              <CardHeader
+            <Band kind="data" flush>
+              <BandHead
                 title="Checks"
                 eyebrow={
                   blockingOutstanding.length === 0
@@ -191,7 +210,7 @@ export const TechnicianSafety = () => {
                       type="button"
                       onClick={() => toggle(check.id)}
                       aria-pressed={complete}
-                      className={`flex min-h-tap w-full items-start justify-between gap-3 border-l-rule px-4 py-3 text-left transition-colors duration-state ease-ease ${
+                      className={`flex min-h-tap w-full items-start justify-between gap-3 border-l-rule px-gutter py-3 text-left transition-colors duration-state ease-ease ${
                         complete
                           ? 'border-l-ink'
                           : check.blocking
@@ -223,12 +242,12 @@ export const TechnicianSafety = () => {
                   );
                 })}
               </div>
-            </Card>
+            </Band>
 
             {/* Sign off, and what happens when a check fails. */}
-            <Card>
-              <CardHeader title="Sign off" eyebrow="Recorded against this job" />
-              <div className="px-4 py-3">
+            <Band kind="rail" flush>
+              <BandHead title="Sign off" eyebrow="Recorded against this job" />
+              <div className="px-gutter py-3">
                 <label className="flex items-start gap-3">
                   <input
                     type="checkbox"
@@ -242,7 +261,7 @@ export const TechnicianSafety = () => {
                 </label>
               </div>
 
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 {!canStart && (
                   <p className="mb-2 text-caption text-alert">
                     {!gasEntered
@@ -273,10 +292,10 @@ export const TechnicianSafety = () => {
                   asks you to justify it.
                 </p>
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

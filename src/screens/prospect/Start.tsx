@@ -18,15 +18,13 @@ import { useState } from 'react';
 import { Section } from '../../blueprint/Section';
 import { territories } from '../../data/seedData';
 import {
+  Band,
+  BandHead,
   Button,
-  Card,
-  CardHeader,
   Icon,
+  Masthead,
   Micro,
-  PageHead,
-  Stack,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** Reason codes drive Service Point routing. Free text cannot be routed. */
 const REASONS = [
@@ -52,18 +50,18 @@ export const ProspectStart = () => {
   const ready = reason !== null && address.trim().length > 3 && consent;
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Getting started"
-          title="Tell us about your property"
+          subject="Tell us about your property"
           lead="Four questions. We do the soil test, the design and the quote from there."
         />
 
         <Section id="intake-form">
-          <Stack gap="4">
-            <Card>
-              <CardHeader eyebrow="Step one" title="What brings you here?" />
+          <div className="contents">
+            <Band kind="data" flush>
+              <BandHead eyebrow="Step one" title="What brings you here?" />
               <div className="[&>*+*]:border-t [&>*+*]:border-t-line">
                 {REASONS.map((item) => {
                   const selected = reason === item.code;
@@ -72,7 +70,7 @@ export const ProspectStart = () => {
                       key={item.code}
                       type="button"
                       onClick={() => setReason(item.code)}
-                      className={`block w-full border-l-rule px-4 py-3 text-left transition-colors duration-state ease-ease ${
+                      className={`block w-full border-l-rule px-gutter py-3 text-left transition-colors duration-state ease-ease ${
                         selected
                           ? 'border-l-ink bg-surface-sunk'
                           : 'border-l-transparent hover:bg-surface-sunk'
@@ -95,14 +93,14 @@ export const ProspectStart = () => {
                   );
                 })}
               </div>
-            </Card>
+            </Band>
 
-            <Card>
-              <CardHeader
+            <Band kind="rail" flush>
+              <BandHead
                 eyebrow="Step two"
                 title="Where is the property?"
               />
-              <div className="px-4 py-3">
+              <div className="px-gutter py-3">
                 <label className="block">
                   <span className="text-caption text-ink2">Address</span>
                   <input
@@ -123,11 +121,11 @@ export const ProspectStart = () => {
                   </span>
                 </p>
               </div>
-            </Card>
+            </Band>
 
-            <Card>
-              <CardHeader eyebrow="Step three" title="How do we reach you?" />
-              <div className="space-y-3 px-4 py-3">
+            <Band kind="data" flush>
+              <BandHead eyebrow="Step three" title="How do we reach you?" />
+              <div className="space-y-3 px-gutter py-3">
                 <label className="block">
                   <span className="text-caption text-ink2">Your name</span>
                   <input
@@ -150,11 +148,11 @@ export const ProspectStart = () => {
                   />
                 </label>
               </div>
-            </Card>
+            </Band>
 
             {/* Consent at the point of collection, not behind a link. */}
-            <Card>
-              <div className="px-4 py-3">
+            <Band kind="rail" flush>
+              <div className="px-gutter py-3">
                 <Micro>Before you send this</Micro>
                 <label className="mt-2 flex items-start gap-3">
                   <input
@@ -170,7 +168,7 @@ export const ProspectStart = () => {
                   </span>
                 </label>
               </div>
-            </Card>
+            </Band>
 
             <Button variant="primary" icon="check" block disabled={!ready}>
               Send my request
@@ -181,9 +179,9 @@ export const ProspectStart = () => {
                 above.
               </p>
             )}
-          </Stack>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

@@ -23,19 +23,18 @@ import {
 } from '../../data/seedData';
 import { TODAY, dayAndDate, duration, window as timeWindow } from '../../lib/format';
 import {
-  Avatar,
-  Card,
+  Band,
+  Hero,
   Icon,
   Identifier,
+  Masthead,
   Micro,
   Row,
   RowList,
-  Stack,
   Status,
   type RowTone,
   type StatusTone,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** The technician signed in for this prototype. */
 const ME = 'RES-001';
@@ -69,19 +68,28 @@ export const TechnicianDay = () => {
   const totalMinutes = jobs.reduce((sum, j) => sum + j.durationMin, 0);
 
   return (
-    <ScreenBody>
-      <Stack gap="3">
-        {/* Who and when, then straight into the work. */}
-        <header className="flex items-start justify-between gap-3">
-          <div>
-            <Micro>{dayAndDate(TODAY)}</Micro>
-            <h1 className="mt-1 text-h1 text-ink">My day</h1>
-            <p className="mt-1 text-caption text-ink2">
-              {jobs.length} jobs, {done} done, {duration(totalMinutes)} of work
-            </p>
-          </div>
-          <Avatar name={me.name} initials={me.initials} photo={me.photo} size="lg" />
-        </header>
+    <>
+      <div className="contents">
+        {/*
+          Masthead. The hero is what a technician wants before anything else: how
+          many jobs, and how many are behind them.
+        */}
+        <Masthead
+          eyebrow={dayAndDate(TODAY)}
+          subject="My day"
+          hero={
+            <Hero
+              onBand
+              label="Jobs today"
+              value={String(jobs.length)}
+              delta={{
+                text: done === jobs.length ? 'All done' : `${done} done, ${jobs.length - done} left`,
+                tone: done === jobs.length ? 'positive' : 'neutral',
+              }}
+              note={`${duration(totalMinutes)} of work. ${me.name}.`}
+            />
+          }
+        />
 
         {/* Offline state. The field audience checks for this first. */}
         <div className="flex items-center gap-2 rounded-control border border-line bg-surface px-3 py-2">
@@ -94,7 +102,7 @@ export const TechnicianDay = () => {
         </div>
 
         <Section id="my-day">
-          <Card>
+          <Band kind="data" flush>
             <RowList>
               {jobs.map((job) => {
                 const account = byId(accounts, job.accountId)!;
@@ -104,7 +112,7 @@ export const TechnicianDay = () => {
                 const isActive = active?.id === job.id;
 
                 return (
-                  <Row key={job.id} tone={status.rule} to={`/wo/${job.id}`}>
+                  <Row gutter key={job.id} tone={status.rule} to={`/wo/${job.id}`}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         {/* Time first: it is what orders the day. */}
@@ -153,13 +161,18 @@ export const TechnicianDay = () => {
                 );
               })}
             </RowList>
-          </Card>
+          </Band>
         </Section>
 
-        <p className="text-caption text-ink3">
-          Tap a job to open it. The active job stays at the top of the list until it is closed.
-        </p>
-      </Stack>
-    </ScreenBody>
+        {/* Closing. */}
+        <Band kind="closing">
+          <Micro>How this list works</Micro>
+          <p className="mt-1 max-w-reading text-caption text-ink2">
+            Tap a job to open it. The active job stays at the top until it is closed. Anything you
+            record stays on the device until it syncs.
+          </p>
+        </Band>
+      </div>
+    </>
   );
 };

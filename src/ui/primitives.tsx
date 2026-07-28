@@ -35,9 +35,9 @@ const chipTones: Record<ChipTone, string> = {
   warn: 'bg-warn-soft text-warn',
   alert: 'bg-alert-soft text-alert',
   // On the sidebar and the inverted feature panel, where no light tint reads.
-  // `.bg-on-dark-soft` is a component class in index.css: Tailwind cannot append
+  // `.bg-on-band-soft` is a component class in index.css: Tailwind cannot append
   // an alpha channel to a hex-valued custom property, so the tint is mixed.
-  'on-dark': 'bg-on-dark-soft text-on-forest',
+  'on-dark': 'bg-on-band-soft text-on-band',
 };
 
 /**
@@ -278,7 +278,7 @@ export const CardHeader = ({
       {icon && <IconChip name={icon} tone={iconTone} />}
       <div className="min-w-0">
         {eyebrow && <Micro>{eyebrow}</Micro>}
-        <h2 className={`text-h2 text-ink ${eyebrow ? 'mt-1' : ''}`}>{title}</h2>
+        <h2 className={`text-body font-medium text-ink ${eyebrow ? 'mt-1' : ''}`}>{title}</h2>
       </div>
     </div>
     {action}
@@ -318,13 +318,30 @@ export const Row = ({
   rule = 'none',
   children,
   className = '',
+  gutter = false,
+  density = 'client',
 }: {
   to?: string;
   rule?: RuleTone;
   children: ReactNode;
   className?: string;
+  /**
+   * Aligns the row to the page gutter instead of the card inset. Used by rows
+   * that sit directly on a band, which is now most of them.
+   */
+  gutter?: boolean;
+  /** DESIGN.md section 11. Row height is set by role, not globally. */
+  density?: 'client' | 'technician' | 'manager' | 'global';
 }) => {
-  const shell = `block w-full border-l-rule ${ruleTones[rule]} px-4 py-3 text-left transition-colors duration-state ease-ease ${className}`;
+  const pad = {
+    client: 'py-4',
+    technician: 'py-3',
+    manager: 'py-2',
+    global: 'py-3',
+  }[density];
+  const shell = `block w-full border-l-rule ${ruleTones[rule]} ${
+    gutter ? 'px-gutter' : 'px-4'
+  } ${pad} text-left transition-colors duration-state ease-ease ${className}`;
 
   if (to) {
     return (
@@ -535,6 +552,186 @@ export const Toggle = ({
 );
 
 /* ------------------------------------------------------------------ */
+/* Bands                                                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * A band. DESIGN.md section 2.
+ *
+ * The page is a vertical sequence of three to six of these, at deliberately
+ * unequal weight. A band runs the full width of the content column, edge to
+ * edge, with no radius of its own. Content sits inside its padding, not inside a
+ * box drawn on it.
+ *
+ * This primitive exists so the rhythm rules are checkable rather than aspirational:
+ * `data-band` is what `scripts/audit-design.mjs` counts, and what it uses to
+ * assert that no two adjacent bands share a ground.
+ *
+ * What is deliberately absent: any prop that would let a caller draw a border
+ * around a band, nest one inside another, or round its corners. Those are the
+ * three ways the old card stack would come back.
+ */
+export type BandKind = 'masthead' | 'lead' | 'reading' | 'data' | 'rail' | 'closing';
+
+const bandGrounds: Record<BandKind, string> = {
+  // Two dark grounds. `alt` is available via the `alt` prop on masthead only.
+  masthead: 'bg-band-deep text-on-band',
+  lead: 'bg-canvas',
+  reading: 'bg-canvas',
+  data: 'bg-surface',
+  rail: 'bg-surface-sunk',
+  closing: 'bg-surface-sunk',
+};
+
+/**
+ * Vertical padding by band and register. A Masthead is the only band that gets
+ * the 64px step, and the technician register runs everything tighter because that
+ * surface is read one-handed in a basement.
+ */
+const bandPadding: Record<BandKind, string> = {
+  masthead: 'pb-5 pt-[calc(var(--safe-top)+var(--space-4))]',
+  lead: 'py-5',
+  reading: 'py-5',
+  data: 'py-0',
+  rail: 'py-4',
+  closing: 'py-4',
+};
+
+export const Band = ({
+  kind,
+  alt = false,
+  children,
+  className = '',
+  flush = false,
+}: {
+  kind: BandKind;
+  /**
+   * The dark variant.
+   *
+   * On a Masthead it is `band-deep-alt`, the second dark ground, for a hero field
+   * that has to separate from the Masthead above it. On a Closing band it is
+   * `band-deep`, which DESIGN.md section 2 permits and section 8 counts as the
+   * one allowed second dark band on a screen. It is also the way out of the
+   * rhythm rule when a Rail band would otherwise be followed by a Closing band on
+   * the same ground.
+   */
+  alt?: boolean;
+  children: ReactNode;
+  className?: string;
+  /** Drops the horizontal gutter, for a photograph or a chart that runs edge to edge. */
+  flush?: boolean;
+}) => (
+  <section
+    data-band={kind}
+    className={`${
+      alt && kind === 'masthead'
+        ? 'bg-band-deep-alt text-on-band'
+        : alt && kind === 'closing'
+          ? 'bg-band-deep text-on-band'
+          : bandGrounds[kind]
+    } ${
+      bandPadding[kind]
+    } ${flush ? '' : 'px-gutter'} ${className}`}
+  >
+    {children}
+  </section>
+);
+
+/**
+ * The hero. One per screen, DESIGN.md section 7.
+ *
+ * A number, with its `micro` label above and at most one line of `body` beneath.
+ * The `hero` step is register-scoped, so this is 48px inside the handset and 72px
+ * on a full-bleed surface, at every browser width.
+ *
+ * `delta` is the distance from a target, which is the subject of almost every
+ * figure in this product. It renders signed and toned, because "33.1%" alone does
+ * not answer the question anyone opened the screen to ask.
+ */
+export const Hero = ({
+  label,
+  value,
+  unit,
+  note,
+  delta,
+  onBand = false,
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+  note?: string;
+  delta?: { text: string; tone: 'positive' | 'warn' | 'neutral' };
+  onBand?: boolean;
+}) => {
+  const deltaTones = {
+    positive: onBand ? 'text-on-band' : 'text-positive',
+    warn: onBand ? 'text-on-band' : 'text-warn',
+    neutral: onBand ? 'text-on-band-muted' : 'text-ink2',
+  } as const;
+
+  return (
+    <div>
+      <Micro className={onBand ? 'text-on-band-muted' : 'text-ink3'}>{label}</Micro>
+      <p className={`mt-2 text-hero ${onBand ? 'text-on-band' : 'text-ink'}`}>
+        {value}
+        {unit && <span className="ml-1 text-display">{unit}</span>}
+      </p>
+      {delta && (
+        <p className={`mt-2 text-body font-medium ${deltaTones[delta.tone]}`}>{delta.text}</p>
+      )}
+      {note && (
+        <p
+          className={`mt-1 max-w-reading text-body ${
+            onBand ? 'text-on-band opacity-80' : 'text-ink2'
+          }`}
+        >
+          {note}
+        </p>
+      )}
+    </div>
+  );
+};
+
+/**
+ * A band heading. Sits at the top of a Data or Rail band, on the band's own
+ * ground, with no box around it.
+ *
+ * This replaces most of what `CardHeader` was doing. The difference is that a
+ * CardHeader draws a bordered strip at the top of a container, and this does not:
+ * the band already provides the separation, so a rule here would be the second
+ * boundary in the same place.
+ */
+export const BandHead = ({
+  eyebrow,
+  title,
+  icon,
+  iconTone = 'accent',
+  action,
+  onBand = false,
+}: {
+  eyebrow?: string;
+  title: string;
+  /** DESIGN.md section 15: a chip is permitted in a band heading and nowhere else. */
+  icon?: IconName;
+  iconTone?: ChipTone;
+  action?: ReactNode;
+  onBand?: boolean;
+}) => (
+  <div className="flex items-end justify-between gap-3 pb-3 pt-4">
+    <div className="flex min-w-0 items-center gap-3">
+      {icon && <IconChip name={icon} tone={onBand ? 'on-dark' : iconTone} />}
+      <div className="min-w-0">
+        {eyebrow && <Micro className={onBand ? 'text-on-band-muted' : 'text-ink3'}>{eyebrow}</Micro>}
+        <h2 className={`text-h1 ${onBand ? 'text-on-band' : 'text-ink'} ${eyebrow ? 'mt-1' : ''}`}>
+          {title}
+        </h2>
+      </div>
+    </div>
+    {action}
+  </div>
+);
+
+/* ------------------------------------------------------------------ */
 /* Numbers                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -553,25 +750,25 @@ export const Kpi = ({
   value: string;
   unit?: string;
   note?: string;
-  tone?: 'ink' | 'accent' | 'positive' | 'negative' | 'on-forest';
+  tone?: 'ink' | 'accent' | 'positive' | 'negative' | 'on-band';
 }) => {
   const tones = {
     ink: 'text-ink',
     accent: 'text-accent-ink',
     positive: 'text-positive',
     negative: 'text-negative',
-    'on-forest': 'text-on-forest',
+    'on-band': 'text-on-band',
   } as const;
-  const onDark = tone === 'on-forest';
+  const onDark = tone === 'on-band';
   return (
     <div>
-      <Micro className={onDark ? 'text-on-forest opacity-70' : 'text-ink3'}>{label}</Micro>
+      <Micro className={onDark ? 'text-on-band opacity-70' : 'text-ink3'}>{label}</Micro>
       <p className={`mt-1 text-display ${tones[tone]}`}>
         {value}
-        {unit && <span className="ml-1 text-h2 font-medium">{unit}</span>}
+        {unit && <span className="ml-1 text-body font-medium">{unit}</span>}
       </p>
       {note && (
-        <p className={`mt-1 text-caption ${onDark ? 'text-on-forest opacity-70' : 'text-ink2'}`}>
+        <p className={`mt-1 text-caption ${onDark ? 'text-on-band opacity-70' : 'text-ink2'}`}>
           {note}
         </p>
       )}

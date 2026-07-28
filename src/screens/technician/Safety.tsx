@@ -161,7 +161,7 @@ export const TechnicianSafety = () => {
                     value={gas}
                     onChange={(event) => setGas(event.target.value)}
                     placeholder="0"
-                    className={`mt-1 min-h-tap w-full rounded-control border bg-surface px-3 text-h2 text-ink placeholder:text-ink3 ${
+                    className={`mt-1 min-h-tap w-full rounded-control border bg-surface px-3 text-body font-medium text-ink placeholder:text-ink3 ${
                       gasUnsafe ? 'border-alert' : 'border-line-strong'
                     }`}
                   />

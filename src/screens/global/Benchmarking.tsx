@@ -143,7 +143,7 @@ export const GlobalBenchmarking = () => {
                             {best.name}, {region?.name}
                           </p>
                         </div>
-                        <p className="shrink-0 text-h2 text-ink">
+                        <p className="shrink-0 text-body font-medium text-ink">
                           {measure.pick(best).toFixed(1)}
                           {measure.unit && (
                             <span className="text-caption text-ink2">{measure.unit}</span>
@@ -251,7 +251,7 @@ export const GlobalBenchmarking = () => {
                                 <Micro>{m.label}</Micro>
                               </div>
                               <p
-                                className={`text-h2 ${isBest ? 'text-positive' : 'text-ink'}`}
+                                className={`text-body font-medium ${isBest ? 'text-positive' : 'text-ink'}`}
                               >
                                 {m.pick(sp).toFixed(1)}
                                 {m.unit && <span className="text-caption text-ink2">{m.unit}</span>}

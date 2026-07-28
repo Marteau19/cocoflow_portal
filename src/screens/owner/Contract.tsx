@@ -165,7 +165,7 @@ export const OwnerContract = () => {
                     The same work priced individually
                   </p>
                 </div>
-                <p className="text-h2 text-ink">{money(wouldHaveCost)}</p>
+                <p className="text-body font-medium text-ink">{money(wouldHaveCost)}</p>
               </div>
             </Card>
 

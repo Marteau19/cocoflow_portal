@@ -36,7 +36,7 @@ export const BlueprintPanel = () => {
           type="button"
           aria-label="Close annotation"
           onClick={close}
-          className="fixed inset-0 z-panel bg-forest opacity-20"
+          className="fixed inset-0 z-panel bg-band-deep opacity-20"
         />
       )}
 
@@ -50,7 +50,7 @@ export const BlueprintPanel = () => {
         <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-3">
           <div>
             <Micro>{on ? 'Blueprint' : 'About this section'}</Micro>
-            <h2 className="mt-1 text-h2 text-ink">
+            <h2 className="mt-1 text-body font-medium text-ink">
               {on ? 'Callouts on this screen' : (single?.title ?? '')}
             </h2>
             {on && (

@@ -52,7 +52,7 @@ export const BottomNav = ({ role }: { role: RoleDef }) => (
             {({ isActive }) => (
               <>
                 {item.icon && (
-                  <span className="text-h2 leading-none">
+                  <span className="text-body font-medium leading-none">
                     <Icon name={item.icon} />
                   </span>
                 )}

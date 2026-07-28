@@ -49,7 +49,7 @@ const Compare = ({
   return (
     <div>
       <Micro>{label}</Micro>
-      <p className="mt-1 text-h2 text-ink">
+      <p className="mt-1 text-body font-medium text-ink">
         {value.toFixed(1)}
         {suffix}
       </p>
@@ -118,15 +118,15 @@ export const GlobalRegionDrill = () => {
                 <dl className="divide-y divide-line border-t border-line lg:border-l lg:border-t-0 lg:pl-4">
                   <div className="flex items-baseline justify-between gap-3 py-3 lg:pt-0">
                     <dt className="text-caption text-ink2">Revenue</dt>
-                    <dd className="text-h2 text-ink">{millions(revenue)}</dd>
+                    <dd className="text-body font-medium text-ink">{millions(revenue)}</dd>
                   </div>
                   <div className="flex items-baseline justify-between gap-3 py-3">
                     <dt className="text-caption text-ink2">Against target</dt>
-                    <dd className="text-h2 text-ink">{millions(revenueTarget)}</dd>
+                    <dd className="text-body font-medium text-ink">{millions(revenueTarget)}</dd>
                   </div>
                   <div className="flex items-baseline justify-between gap-3 py-3 lg:pb-0">
                     <dt className="text-caption text-ink2">Care plans</dt>
-                    <dd className="text-h2 text-ink">{contracts.toLocaleString('en-CA')}</dd>
+                    <dd className="text-body font-medium text-ink">{contracts.toLocaleString('en-CA')}</dd>
                   </div>
                 </dl>
               </div>

@@ -224,7 +224,7 @@ export const TechnicianFieldQuote = () => {
                           <span className="text-caption text-ink2">
                             {money(line.parts)} part, {money(line.labour)} labour
                           </span>
-                          <span className="text-h2 text-ink">{money(line.total)}</span>
+                          <span className="text-body font-medium text-ink">{money(line.total)}</span>
                         </div>
                       </div>
                     </Row>

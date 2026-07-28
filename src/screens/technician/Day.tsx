@@ -109,7 +109,7 @@ export const TechnicianDay = () => {
                       <div className="min-w-0 flex-1">
                         {/* Time first: it is what orders the day. */}
                         <div className="flex flex-wrap items-baseline gap-2">
-                          <p className="text-h2 text-ink">
+                          <p className="text-body font-medium text-ink">
                             {timeWindow(job.windowStart, job.windowEnd)}
                           </p>
                           <Status tone={status.tone}>{status.label}</Status>

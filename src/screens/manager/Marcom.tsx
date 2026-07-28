@@ -260,7 +260,7 @@ export const ManagerMarcom = () => {
                               <p className="text-caption text-ink3">Not live yet</p>
                             ) : (
                               <>
-                                <p className="text-h2 text-ink">{order.leadsAttributed}</p>
+                                <p className="text-body font-medium text-ink">{order.leadsAttributed}</p>
                                 <p className="text-caption text-ink2">leads</p>
                               </>
                             )}

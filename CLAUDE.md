@@ -259,7 +259,7 @@ component edits. If a brand switch breaks a component, that component has a
 hardcoded value and it is a bug.
 
 `brands/next.ts` ships with placeholder values matching legacy. It will be
-overwritten when the brand guide lands. See `REFERENCES.md`.
+overwritten when the brand guide lands. See `ASSETS.md`.
 
 ---
 

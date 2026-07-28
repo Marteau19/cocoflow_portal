@@ -29,50 +29,57 @@ export const next: Brand = {
   label: 'Ecoflo, new',
 
   color: {
-    canvas: '#F0F2EC',
-    canvasBlueprint: '#ECEFEC',
+    // Canvas is sage taken almost to white, ink is teal taken almost to black.
     surface: '#FFFFFF',
-    surfaceSunk: '#F2F4EE',
+    canvas: '#E9EDE5',
+    surfaceSunk: '#D7DFD1',
     surfaceRaised: '#FFFFFF',
+    canvasBlueprint: '#C7D2D9',
 
-    // Teal. The dark frame around the light workspace.
+    // Teal is the Masthead. Plum is the second dark field, which is why it is
+    // not also the body ink: one hue cannot be both a large ground and the text
+    // on it without the page collapsing to a single colour. See ASSETS.md 8.2,
+    // where this is recorded as an open call.
+    bandDeep: '#294D4A',
+    bandDeepAlt: '#472836',
+    onBand: '#EFF4F1',
+    onBandMuted: '#A6BAB6',
+
     sidebar: '#294D4A',
-    onSidebar: '#F1F5F2',
-    sidebarMuted: '#93AAA6',
+    onSidebar: '#EFF4F1',
+    sidebarMuted: '#A6BAB6',
 
-    ink: '#1B2A27',
-    ink2: '#4E605C',
-    ink3: '#7C8C88',
-    line: '#DFE4DA',
-    // Sage, used at full strength. It is a structural colour in this identity,
-    // not a decorative one.
+    ink: '#17231F',
+    ink2: '#4B5A54',
+    ink3: '#6C7A74',
+    line: '#CFD8C8',
+    // Sage at full strength. It is a structural colour in this identity.
     lineStrong: '#A3B19B',
-
-    // Plum, not teal. The feature panel has to separate from the sidebar, and
-    // giving it the fourth brand colour is what stops the two dark grounds
-    // reading as the same surface interrupted by content.
-    forest: '#472836',
-    onForest: '#F7EFF1',
+    fieldLine: '#73817C',
 
     accent: '#F85E00',
-    // Lightens on hover, for the reason given in legacy.ts: the fill carries
-    // dark text, so the hover state has to move away from it.
     accentHover: '#FF7A28',
     onAccent: '#1B2A27',
     accentInk: '#AC4100',
-    accentSoft: '#FFEBDD',
+    accentSoft: '#FCE6D8',
+    // 3.97:1 on teal. Graphics only, never a label. DESIGN.md section 4 rule 3.
+    accentOnBand: '#FF8A3D',
+
+    data1: '#AC4100',
+    data2: '#294D4A',
+    data3: '#472836',
 
     positive: '#1B6E45',
     onPositive: '#FFFFFF',
-    positiveSoft: '#E2F0E9',
+    positiveSoft: '#DCEDE3',
     negative: '#B3261E',
     onNegative: '#FFFFFF',
-    negativeSoft: '#FBE7E5',
+    negativeSoft: '#F8E4E2',
 
-    warn: '#8A6210',
-    warnSoft: '#F9EFD9',
-    alert: '#A33122',
-    alertSoft: '#FAE6E3',
+    warn: '#7A5610',
+    warnSoft: '#F4EAD2',
+    alert: '#96301D',
+    alertSoft: '#F6E3DE',
   },
 
   font: {
@@ -85,14 +92,15 @@ export const next: Brand = {
   },
 
   type: {
-    display: { size: '30px', line: '32px', tracking: '-0.02em', weight: 700 },
-    h1: { size: '22px', line: '28px', tracking: '-0.01em', weight: 700 },
-    h2: { size: '17px', line: '24px', tracking: '0', weight: 500 },
-    body: { size: '15px', line: '22px', tracking: '0', weight: 400 },
-    caption: { size: '13px', line: '18px', tracking: '0', weight: 400 },
+    hero: { size: '48px', line: '46px', tracking: '-0.035em', weight: 700 },
+    display: { size: '32px', line: '34px', tracking: '-0.02em', weight: 700 },
+    h1: { size: '24px', line: '30px', tracking: '-0.015em', weight: 700 },
+    body: { size: '16px', line: '25px', tracking: '0', weight: 400 },
+    caption: { size: '13px', line: '19px', tracking: '0', weight: 400 },
     micro: { size: '11px', line: '14px', tracking: '0.08em', weight: 500, transform: 'uppercase' },
-    displayLg: { size: '38px', line: '40px', tracking: '-0.02em', weight: 700 },
-    h1Lg: { size: '26px', line: '32px', tracking: '-0.01em', weight: 700 },
+    heroLg: { size: '72px', line: '68px', tracking: '-0.035em', weight: 700 },
+    displayLg: { size: '42px', line: '44px', tracking: '-0.02em', weight: 700 },
+    h1Lg: { size: '28px', line: '34px', tracking: '-0.015em', weight: 700 },
   },
 
   // The new mark is built on a squared, softly rounded counter, so this brand
@@ -104,7 +112,7 @@ export const next: Brand = {
     shell: '22px',
   },
 
-  space: [8, 12, 16, 24, 32, 48],
+  space: [8, 12, 16, 24, 32, 48, 64, 96],
 
   shadow: {
     card: '0 1px 2px rgba(27, 42, 39, 0.04), 0 10px 24px -8px rgba(27, 42, 39, 0.10)',
@@ -115,7 +123,18 @@ export const next: Brand = {
   motion: {
     state: '150ms',
     sheet: '220ms',
+    /** Route change. Content fades and rises 12px. */
+    route: '180ms',
+    /**
+     * The role switch, deliberately the longest transition in the app. It is the
+     * one that carries an argument: the Masthead ground changing under an
+     * unchanged customer name is "same record, new register" made visible.
+     */
+    role: '320ms',
+    /** Hero count-up, first mount only. */
+    count: '700ms',
     ease: 'cubic-bezier(0.2, 0, 0, 1)',
+    easeOut: 'cubic-bezier(0.16, 1, 0.3, 1)',
   },
 
   logo: {

@@ -102,7 +102,7 @@ const StockTable = ({ rows, caption }: { rows: InventoryItem[]; caption: string 
                       <Micro>{cell.label}</Micro>
                     </div>
                     <p
-                      className={`text-h2 ${
+                      className={`text-body font-medium ${
                         index === 3 && row.forecastConsumption28d > available(row)
                           ? 'text-alert'
                           : 'text-ink'

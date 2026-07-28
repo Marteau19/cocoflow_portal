@@ -17,17 +17,15 @@ import { network, regions, servicePoints } from '../../data/seedData';
 import { millions, percent } from '../../lib/format';
 import { RankedRows, TrendAgainstTarget } from '../../ui/charts';
 import {
-  Card,
-  CardHeader,
+  Band,
+  BandHead,
+  Hero,
   Identifier,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 export const GlobalMix = () => {
   const target = network.serviceTargetPct;
@@ -47,83 +45,87 @@ export const GlobalMix = () => {
   const lagging = ranked.filter((sp) => sp.servicePct < target);
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
-          eyebrow="Strategy"
-          title="Service revenue mix"
-          lead={`Where the network sits against the ${target} percent service revenue target.`}
+    <>
+      {/* ------------------------------------------------------------------ */}
+      {/* Masthead. The hero: one figure, and the distance still to travel.  */}
+      {/* ------------------------------------------------------------------ */}
+      <Section id="mix-tracker" onDark>
+        <Band kind="masthead">
+          <Micro className="text-on-band-muted">Strategy</Micro>
+          <p className="mt-1 text-h1 text-on-band">Service revenue mix</p>
+
+          {/*
+            The hero is the figure, not the page title. At the full-bleed register
+            this is 72px, and it is the only thing on the screen at that step.
+            The distance from target sits directly beneath it, signed, because
+            "33.1%" alone does not answer the question anyone opened this to ask.
+          */}
+          <div className="mt-5">
+            <Hero
+              onBand
+              label={`Network share against the ${target} percent target`}
+              value={percent(current)}
+              delta={{
+                text: `${percent(gap)} short of target`,
+                tone: current >= target ? 'positive' : 'warn',
+              }}
+              note="Service revenue as a proportion of everything the network earns."
+            />
+          </div>
+
+        </Band>
+      </Section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Lead. The chart, full bleed on canvas, no container.               */}
+      {/* ------------------------------------------------------------------ */}
+      <Band kind="lead">
+        <BandHead eyebrow="Four periods" title="Distance from target" />
+        {/*
+          The target is drawn solid and the wedge between the series and the
+          target is filled, so the gap is legible as a quantity with the numbers
+          covered. That is the reframe in DESIGN.md section 12: the target is the
+          chart, and the series is the distance from it.
+        */}
+        <TrendAgainstTarget
+          data={network.history.map((row) => ({ ...row }))}
+          xKey="period"
+          yKey="servicePct"
+          target={target}
+          targetLabel={`Target ${target}%`}
+          suffix="%"
+          goodSide="above"
         />
-
-        <Section id="mix-tracker">
-          <Stack gap="4">
-            {/* ---------------------------------------------------------- */}
-            {/* The headline. One figure, and the distance still to travel. */}
-            {/* ---------------------------------------------------------- */}
-            <Card>
-              {/*
-                One dominant figure, two supporting ones. The hierarchy comes
-                from the existing type scale, display against h2, rather than
-                from inventing a larger step: three figures at display size in a
-                row is the tile wall DESIGN.md section 9 rules out.
-              */}
-              <div className="grid gap-5 border-b border-line px-4 py-5 lg:grid-cols-[1.8fr_1fr] lg:gap-6">
-                <div>
-                  <Micro>Network service revenue share</Micro>
-                  <p className="mt-2 text-display text-ink">{percent(current)}</p>
-                  <p className="mt-2 max-w-reading text-body text-ink2">
-                    {percent(gap)} short of the {target} percent target. Service revenue as a
-                    proportion of everything the network earns.
-                  </p>
-                </div>
-
-                <dl className="divide-y divide-line border-t border-line lg:border-l lg:border-t-0 lg:pl-4">
-                  <div className="flex items-baseline justify-between gap-3 py-3 lg:pt-0">
-                    <dt className="text-caption text-ink2">Target</dt>
-                    <dd className="text-h2 text-ink">{percent(target)}</dd>
-                  </div>
-                  <div className="flex items-baseline justify-between gap-3 py-3">
-                    <dt className="text-caption text-ink2">Above the line</dt>
-                    <dd className="text-h2 text-ink">
-                      {leading.length} of {servicePoints.length}
-                    </dd>
-                  </div>
-                  <div className="flex items-baseline justify-between gap-3 py-3 lg:pb-0">
-                    <dt className="text-caption text-ink2">Gained since {network.history[0].period}</dt>
-                    <dd className="text-h2 text-positive">
-                      {percent(current - network.history[0].servicePct)}
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-
-              {/* Trend, with the target as a reference line rather than a series. */}
-              <div className="px-4 py-4">
-                <Micro>Four periods, against target</Micro>
-                <div className="mt-3">
-                  <TrendAgainstTarget
-                    data={network.history.map((row) => ({ ...row }))}
-                    xKey="period"
-                    yKey="servicePct"
-                    target={target}
-                    targetLabel={`${target}%`}
-                    suffix="%"
-                    height={200}
-                  />
-                </div>
-                <p className="mt-2 text-caption text-ink2">
-                  Up {percent(current - network.history[0].servicePct)} since{' '}
-                  {network.history[0].period}. On this trajectory the target lands within two further
-                  periods.
-                </p>
-              </div>
-            </Card>
+        <p className="mt-3 max-w-reading text-body text-ink2">
+          Up {percent(current - network.history[0].servicePct)} since{' '}
+          {network.history[0].period}. On this trajectory the target lands within two further
+          periods.
+        </p>
+        <dl className="mt-4 grid gap-x-6 gap-y-3 border-t border-line pt-4 sm:grid-cols-3">
+          <div>
+            <Micro>Target</Micro>
+            <dd className="mt-1 text-body font-medium text-ink">{percent(target)}</dd>
+          </div>
+          <div>
+            <Micro>Above the line</Micro>
+            <dd className="mt-1 text-body font-medium text-ink">
+              {leading.length} of {servicePoints.length}
+            </dd>
+          </div>
+          <div>
+            <Micro>{`Gained since ${network.history[0].period}`}</Micro>
+            <dd className="mt-1 text-body font-medium text-positive">
+              {percent(current - network.history[0].servicePct)}
+            </dd>
+          </div>
+        </dl>
+      </Band>
 
             {/* ---------------------------------------------------------- */}
             {/* Around the target line, not a league table.                */}
             {/* ---------------------------------------------------------- */}
-            <Card>
-              <CardHeader
+            <Band kind="data" flush>
+              <BandHead
                 title="Service Points, around the target"
                 eyebrow="Lead and lag"
                 action={<Identifier className="text-ink3">{`target ${target}%`}</Identifier>}
@@ -176,13 +178,13 @@ export const GlobalMix = () => {
                   />
                 </>
               )}
-            </Card>
+            </Band>
 
             {/* ---------------------------------------------------------- */}
             {/* Region roll up.                                            */}
             {/* ---------------------------------------------------------- */}
-            <Card>
-              <CardHeader title="By region" eyebrow="Weighted by revenue" />
+            <Band kind="rail" flush>
+              <BandHead title="By region" eyebrow="Weighted by revenue" />
               <RowList>
                 {regions.map((region) => {
                   const share = regionShare(region.id);
@@ -213,15 +215,19 @@ export const GlobalMix = () => {
                   );
                 })}
               </RowList>
-            </Card>
+            </Band>
 
-            <p className="text-caption text-ink3">
-              Service revenue share is service revenue as a proportion of total revenue. All figures
-              are mock.
-            </p>
-          </Stack>
-        </Section>
-      </Stack>
-    </ScreenBody>
+      {/*
+        Closing, dark. It follows a Rail band, and two consecutive bands may not
+        share a ground, so this takes the second dark that section 8 allows.
+      */}
+      <Band kind="closing" alt>
+        <Micro className="text-on-band-muted">How this is measured</Micro>
+        <p className="mt-1 max-w-reading text-caption text-on-band opacity-80">
+          Service revenue share is service revenue as a proportion of total revenue. All figures are
+          mock.
+        </p>
+      </Band>
+    </>
   );
 };

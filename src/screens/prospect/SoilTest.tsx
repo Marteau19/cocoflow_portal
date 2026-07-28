@@ -112,7 +112,7 @@ export const ProspectSoilTest = () => {
                   <Row key={finding.label}>
                     <div className="flex items-baseline justify-between gap-3">
                       <p className="text-body text-ink">{finding.label}</p>
-                      <p className="shrink-0 text-h2 text-ink">{finding.value}</p>
+                      <p className="shrink-0 text-body font-medium text-ink">{finding.value}</p>
                     </div>
                     <p className="mt-1 max-w-reading text-caption text-ink2">{finding.meaning}</p>
                   </Row>

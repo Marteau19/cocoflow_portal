@@ -43,10 +43,24 @@ export interface Brand {
     ink3: string;
     line: string;
     lineStrong: string;
+    /**
+     * Input and control outlines, held to 3:1 as a meaningful non-text control.
+     * Separate from `line`, which is structural and only has to be perceptible.
+     * Conflating them is why inputs read as unbordered.
+     */
+    fieldLine: string;
 
-    /** The one inverted feature panel. Two places in V1. See DESIGN.md 2.3. */
-    forest: string;
-    onForest: string;
+    /**
+     * The dark grounds. Masthead, chrome, hero fields.
+     *
+     * Renamed from `forest`. The forest block was always the Masthead, it just
+     * had no name for what it was, which is part of why it stayed rationed to
+     * two screens instead of becoming the structure.
+     */
+    bandDeep: string;
+    bandDeepAlt: string;
+    onBand: string;
+    onBandMuted: string;
 
     accent: string;
     accentHover: string;
@@ -55,6 +69,20 @@ export interface Brand {
     accentInk: string;
     /** Tinted ground for icon chips and highlighted rows. */
     accentSoft: string;
+    /**
+     * The accent on a dark band. Non-text only: in the new brand it reaches
+     * 3.97:1 on teal, which clears the 3:1 graphic floor and not the 4.5:1 a
+     * label needs. See DESIGN.md section 4.
+     */
+    accentOnBand: string;
+
+    /**
+     * Chart series, map marks, sparklines. Deliberately not the accent: the
+     * accent is an invitation to click and a chart line is not clickable.
+     */
+    data1: string;
+    data2: string;
+    data3: string;
 
     /**
      * Paired opposite outcomes: approve against decline, gained against lost.
@@ -82,13 +110,19 @@ export interface Brand {
   };
 
   type: {
+    /** One per screen. See DESIGN.md section 7. */
+    hero: TypeStep;
     display: TypeStep;
     h1: TypeStep;
-    h2: TypeStep;
     body: TypeStep;
     caption: TypeStep;
     micro: TypeStep;
-    /** Desktop overrides. Only these two steps change. */
+    /**
+     * The full-bleed register. Applied by `[data-register='full']`, never by a
+     * viewport media query: a framed role must keep the framed column at every
+     * width or a 72px hero lands inside a 420px handset.
+     */
+    heroLg: TypeStep;
     displayLg: TypeStep;
     h1Lg: TypeStep;
   };
@@ -115,7 +149,11 @@ export interface Brand {
   motion: {
     state: string;
     sheet: string;
+    route: string;
+    role: string;
+    count: string;
     ease: string;
+    easeOut: string;
   };
 
   logo: {
@@ -139,50 +177,70 @@ export const legacy: Brand = {
   label: 'Ecoflo, current',
 
   color: {
-    // Deeper than the previous warm paper. The canvas is now a ground that
-    // cards sit above rather than a page they are drawn on.
-    canvas: '#F1EEE5',
-    canvasBlueprint: '#EDEDE8',
+    // Surfaces are separated by CIE L* rather than by contrast ratio, because
+    // ratio is dominated by the darker colour and cannot tell invisible from
+    // fine between two paper whites. Floors: dL* 4 between adjacent levels,
+    // dL* 6 for a hairline against its ground. Measured values in DESIGN.md 3.
+    //
+    // Note the order: surface is lightest, canvas sits below it, sunk below
+    // that. The shipped build had sunk lighter than canvas, so the token named
+    // sunk floated.
     surface: '#FFFFFF',
-    surfaceSunk: '#F4F1E9',
+    canvas: '#EFE9DB',
+    surfaceSunk: '#DFD8C6',
     surfaceRaised: '#FFFFFF',
+    canvasBlueprint: '#C9D3D9',
 
+    // The dark grounds. Legacy has one dark hue, so alt is a deeper green
+    // rather than a second colour, and every composition has to work with that.
+    bandDeep: '#16281C',
+    bandDeepAlt: '#0B1710',
+    onBand: '#F2F5F0',
+    onBandMuted: '#A9BBAE',
+
+    // Sidebar is chrome and shares the Masthead ground.
     sidebar: '#16281C',
     onSidebar: '#F2F5F0',
-    sidebarMuted: '#8FA396',
+    sidebarMuted: '#A9BBAE',
 
-    ink: '#111A13',
-    ink2: '#556057',
-    ink3: '#828C84',
-    line: '#E4E0D6',
-    lineStrong: '#CFC9BC',
-
-    forest: '#16281C',
-    onForest: '#F2F5F0',
+    ink: '#141D16',
+    ink2: '#4E5A50',
+    // Metadata only, held to 3:1. Was #828C84, which measured 2.71:1 on the
+    // corrected sunk level.
+    ink3: '#6E7970',
+    line: '#D8D0BD',
+    lineStrong: '#BCB39C',
+    fieldLine: '#847C68',
 
     accent: '#64A70B',
     // Hover lightens rather than darkens. The accent fill carries dark text,
     // because white on a saturated mid-tone brand colour cannot clear 4.5:1
-    // without dulling the colour itself, so darkening on hover would walk the
-    // label towards the ground instead of away from it.
+    // without dulling the colour, so darkening would walk the label toward its
+    // own ground.
     accentHover: '#74BD0D',
     onAccent: '#111A13',
     accentInk: '#3F6B07',
-    accentSoft: '#EBF4DC',
+    accentSoft: '#E6F0D2',
+    accentOnBand: '#8FCF23',
 
-    // A deeper, bluer green than the lime accent, on purpose: a positive
-    // outcome must not be mistaken for the primary action.
+    data1: '#3F6B07',
+    data2: '#16281C',
+    data3: '#7A5610',
+
+    // Function rather than identity, so both brands share these: an approval
+    // has to read as an approval in either skin.
     positive: '#1B6E45',
     onPositive: '#FFFFFF',
-    positiveSoft: '#E1F0E8',
+    positiveSoft: '#DCEDE3',
     negative: '#B3261E',
     onNegative: '#FFFFFF',
-    negativeSoft: '#FBE7E5',
+    negativeSoft: '#F8E4E2',
 
-    warn: '#8A6210',
-    warnSoft: '#FAF0DB',
+    // Was #8A6210, which measured 4.36:1 on the new darker canvas.
+    warn: '#7A5610',
+    warnSoft: '#F4EAD2',
     alert: '#96301D',
-    alertSoft: '#FAE6E2',
+    alertSoft: '#F6E3DE',
   },
 
   font: {
@@ -192,14 +250,19 @@ export const legacy: Brand = {
   },
 
   type: {
-    display: { size: '30px', line: '32px', tracking: '-0.02em', weight: 700 },
-    h1: { size: '22px', line: '28px', tracking: '-0.01em', weight: 700 },
-    h2: { size: '17px', line: '24px', tracking: '0', weight: 500 },
-    body: { size: '15px', line: '22px', tracking: '0', weight: 400 },
-    caption: { size: '13px', line: '18px', tracking: '0', weight: 400 },
+    // The framed register: client and technician, inside the handset. These are
+    // the base values, and they apply at every viewport width.
+    hero: { size: '48px', line: '46px', tracking: '-0.035em', weight: 700 },
+    display: { size: '32px', line: '34px', tracking: '-0.02em', weight: 700 },
+    h1: { size: '24px', line: '30px', tracking: '-0.015em', weight: 700 },
+    body: { size: '16px', line: '25px', tracking: '0', weight: 400 },
+    caption: { size: '13px', line: '19px', tracking: '0', weight: 400 },
     micro: { size: '11px', line: '14px', tracking: '0.08em', weight: 500, transform: 'uppercase' },
-    displayLg: { size: '38px', line: '40px', tracking: '-0.02em', weight: 700 },
-    h1Lg: { size: '26px', line: '32px', tracking: '-0.01em', weight: 700 },
+    // The full-bleed register: manager and global. Applied by attribute, not by
+    // media query. See the interface comment.
+    heroLg: { size: '72px', line: '68px', tracking: '-0.035em', weight: 700 },
+    displayLg: { size: '42px', line: '44px', tracking: '-0.02em', weight: 700 },
+    h1Lg: { size: '28px', line: '34px', tracking: '-0.015em', weight: 700 },
   },
 
   radius: {
@@ -209,7 +272,8 @@ export const legacy: Brand = {
     shell: '24px',
   },
 
-  space: [8, 12, 16, 24, 32, 48],
+  // Gains 64 and 96: the old scale topped out too low to express band padding.
+  space: [8, 12, 16, 24, 32, 48, 64, 96],
 
   // Two layers each: a tight contact shadow that keeps the edge honest, and a
   // wide soft one that does the lifting. Tinted with the ink hue rather than
@@ -223,7 +287,18 @@ export const legacy: Brand = {
   motion: {
     state: '150ms',
     sheet: '220ms',
+    /** Route change. Content fades and rises 12px. */
+    route: '180ms',
+    /**
+     * The role switch, deliberately the longest transition in the app. It is the
+     * one that carries an argument: the Masthead ground changing under an
+     * unchanged customer name is "same record, new register" made visible.
+     */
+    role: '320ms',
+    /** Hero count-up, first mount only. */
+    count: '700ms',
     ease: 'cubic-bezier(0.2, 0, 0, 1)',
+    easeOut: 'cubic-bezier(0.16, 1, 0.3, 1)',
   },
 
   logo: {
@@ -262,9 +337,7 @@ export const applyBrand = (brand: Brand): void => {
   brand.space.forEach((v, i) => r.setProperty(`--space-${i + 1}`, `${v}px`));
   Object.entries(brand.shadow).forEach(([k, v]) => r.setProperty(`--shadow-${kebab(k)}`, v));
 
-  r.setProperty('--motion-state', brand.motion.state);
-  r.setProperty('--motion-sheet', brand.motion.sheet);
-  r.setProperty('--motion-ease', brand.motion.ease);
+  Object.entries(brand.motion).forEach(([k, v]) => r.setProperty(`--motion-${kebab(k)}`, v));
 };
 
 const kebab = (s: string): string => s.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);

@@ -32,9 +32,9 @@ import {
 } from '../../data/seedData';
 import { duration, humanise, window as timeWindow } from '../../lib/format';
 import {
+  Band,
+  BandHead,
   Button,
-  Card,
-  CardHeader,
   Flag,
   Icon,
   Identifier,
@@ -43,7 +43,6 @@ import {
   RowList,
   Stack,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /**
  * The translation layer, stated as code so reviewers can see it is mechanical
@@ -234,37 +233,44 @@ export const TechnicianWorkOrder = () => {
     <>
       {/* Padding at the base clears the sticky action bar. */}
       <div className="pb-6">
-        <ScreenBody flush>
-          <Stack gap="3">
-            {/* -------------------------------------------------------------- */}
-            {/* Active job header. Forest, for the second and last time in V1.  */}
-            {/* -------------------------------------------------------------- */}
-            <div className="bg-forest px-gutter pb-4 pt-[calc(var(--safe-top)+var(--space-3))] text-on-forest">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <Micro className="text-on-forest opacity-70">
-                    {humanise(order.status)}
-                  </Micro>
-                  <h1 className="mt-1 text-h1">{account.name}</h1>
-                  <p className="mt-1 text-caption opacity-90">
-                    {account.address}, {account.city}
-                  </p>
-                </div>
-                <div className="shrink-0 text-right">
-                  <p className="text-h2">{timeWindow(order.windowStart, order.windowEnd)}</p>
-                  <p className="text-caption opacity-70">{duration(order.durationMin)}</p>
-                </div>
-              </div>
+        {/* ---------------------------------------------------------------- */}
+        {/* Masthead. The hero is a dark field: who, where, and when.         */}
+        {/* ---------------------------------------------------------------- */}
+        <Band kind="masthead">
+          <Micro className="text-on-band-muted">{humanise(order.status)}</Micro>
 
-              <div className="border-on-forest-soft mt-3 flex flex-wrap items-center gap-3 border-t pt-3">
-                <span className="font-mono text-caption uppercase opacity-90">{order.id}</span>
-                <span className="text-caption opacity-70">
-                  {asset.model}, serial {asset.serial}
-                </span>
-                {contract && <span className="text-caption opacity-70">{contract.name}</span>}
-              </div>
+          {/*
+            The customer name is the hero. It is how a technician identifies the
+            job on arrival, and it is the same name the homeowner, the manager and
+            the network see, at four different weights. That is the golden thread
+            doing its work rather than being asserted in a document.
+          */}
+          <h1 className="mt-2 text-hero">{account.name}</h1>
+          <p className="mt-2 text-body text-on-band opacity-90">
+            {account.address}, {account.city}
+          </p>
+
+          <div className="border-on-band-soft mt-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-t pt-4">
+            <div>
+              <Micro className="text-on-band-muted">Arrival window</Micro>
+              <p className="mt-1 text-display">{timeWindow(order.windowStart, order.windowEnd)}</p>
+              <p className="text-caption text-on-band opacity-80">{duration(order.durationMin)}</p>
             </div>
+            <div className="text-right">
+              <span className="block font-mono text-caption uppercase text-on-band opacity-90">
+                {order.id}
+              </span>
+              <span className="block text-caption text-on-band opacity-80">
+                {asset.model}, serial {asset.serial}
+              </span>
+              {contract && (
+                <span className="block text-caption text-on-band opacity-80">{contract.name}</span>
+              )}
+            </div>
+          </div>
+        </Band>
 
+        <Band kind="data" flush>
             <div className="px-gutter">
               <Stack gap="3">
                 {/* ---------------------------------------------------------- */}
@@ -311,8 +317,8 @@ export const TechnicianWorkOrder = () => {
                 {/* ---------------------------------------------------------- */}
                 <Section id="wo-checklist">
                   <Stack gap="3">
-                    <Card>
-                      <CardHeader
+                    <div className="border-t border-line">
+                      <BandHead
                         icon="check"
                         title="Checklist"
                         eyebrow={
@@ -351,12 +357,12 @@ export const TechnicianWorkOrder = () => {
                           </div>
                         );
                       })}
-                    </Card>
+                    </div>
 
 
                     {/* Parts consumed, against what is on the truck. */}
-                    <Card>
-                      <CardHeader icon="package" title="Parts used" eyebrow="Comes off truck stock" />
+                    <div className="border-t border-line">
+                      <BandHead icon="package" title="Parts used" eyebrow="Comes off truck stock" />
                       <RowList>
                         {order.lineItems.map((line) => {
                           const stock = truckStock.find((row) => row.sku === line.sku);
@@ -374,7 +380,7 @@ export const TechnicianWorkOrder = () => {
                                     )}
                                   </div>
                                 </div>
-                                <p className="shrink-0 text-h2 text-ink">{line.quantity}</p>
+                                <p className="shrink-0 text-body font-medium text-ink">{line.quantity}</p>
                               </div>
                             </Row>
                           );
@@ -385,11 +391,11 @@ export const TechnicianWorkOrder = () => {
                           Add a part
                         </Button>
                       </div>
-                    </Card>
+                    </div>
 
                     {/* Time and signature. */}
-                    <Card>
-                      <CardHeader icon="user" title="Time and signature" />
+                    <div className="border-t border-line">
+                      <BandHead icon="user" title="Time and signature" />
                       <RowList>
                         <Row>
                           <div className="flex items-baseline justify-between gap-3">
@@ -430,16 +436,26 @@ export const TechnicianWorkOrder = () => {
                           </div>
                         </Row>
                       </RowList>
-                    </Card>
+                    </div>
                   </Stack>
                 </Section>
 
                 {/* ---------------------------------------------------------- */}
                 {/* The translation layer. Annotated because it is a decision. */}
                 {/* ---------------------------------------------------------- */}
+              </Stack>
+            </div>
+        </Band>
+
+        {/* ------------------------------------------------------------------ */}
+        {/* Rail. The translation layer: not what the technician typed.        */}
+        {/* ------------------------------------------------------------------ */}
+        <Band kind="rail" flush>
+            <div className="px-gutter">
+              <Stack gap="3">
                 <Section id="wo-summary-translation">
-                  <Card>
-                    <CardHeader
+                  <div className="border-t border-line">
+                    <BandHead
                       icon="message-square"
                       iconTone="neutral"
                       title="What the customer will read"
@@ -495,11 +511,11 @@ export const TechnicianWorkOrder = () => {
                         How this is generated is undecided
                       </Flag>
                     </div>
-                  </Card>
+                  </div>
                 </Section>
 
                 {/* Field quote and safety, reachable from the job. */}
-                <Card>
+                <div className="border-t border-line">
                   <RowList>
                     <Row to={`/wo/${order.id}/safety`}>
                       <div className="flex items-center justify-between gap-3">
@@ -526,15 +542,14 @@ export const TechnicianWorkOrder = () => {
                       </div>
                     </Row>
                   </RowList>
-                </Card>
+                </div>
 
                 <p className="text-caption text-ink3">
                   {technician.name}, {order.id}. Records stay on the device until they sync.
                 </p>
               </Stack>
             </div>
-          </Stack>
-        </ScreenBody>
+        </Band>
       </div>
 
       {/* ---------------------------------------------------------------- */}

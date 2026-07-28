@@ -16,21 +16,19 @@ import { GOLDEN, byId, leads, quotes, resources, territories } from '../../data/
 import { longDate, money, shortDate } from '../../lib/format';
 import {
   Avatar,
-  Card,
-  CardHeader,
+  Band,
+  BandHead,
   Flag,
   Icon,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
   type RowTone,
   type StatusTone,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 type StageState = 'done' | 'active' | 'waiting' | 'later';
 
@@ -92,20 +90,20 @@ export const ProspectInstall = () => {
   const done = STAGES.filter((s) => s.state === 'done').length;
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Your installation"
-          title="Where your project is"
+          subject="Where your project is"
           lead={`${done} of ${STAGES.length} stages done. We update this as each one finishes.`}
         />
 
         <Section id="install-tracking">
-          <Stack gap="4">
+          <div className="contents">
             {/* The honest headline: what is actually holding things up. */}
             {waiting && (
-              <Card>
-                <div className="px-4 py-3">
+              <Band kind="data" flush>
+                <div className="px-gutter py-3">
                   <Flag tone="warn" icon="alert-triangle">
                     Waiting on the municipality
                   </Flag>
@@ -118,17 +116,17 @@ export const ProspectInstall = () => {
                     Nothing is needed from you, and this does not change what you were quoted.
                   </p>
                 </div>
-              </Card>
+              </Band>
             )}
 
             {/* Stages as a sequence. Never a bar. */}
-            <Card>
-              <CardHeader eyebrow="Six stages" title="What happens, and when" />
+            <Band kind="rail" flush>
+              <BandHead eyebrow="Six stages" title="What happens, and when" />
               <RowList>
                 {STAGES.map((stage, index) => {
                   const state = STATE[stage.state];
                   return (
-                    <Row key={stage.label} tone={state.rule}>
+                    <Row gutter key={stage.label} tone={state.rule}>
                       <div className="flex items-start gap-3">
                         <span className="mt-1 shrink-0 font-mono text-caption text-ink3">
                           {String(index + 1).padStart(2, '0')}
@@ -158,14 +156,14 @@ export const ProspectInstall = () => {
                   );
                 })}
               </RowList>
-            </Card>
+            </Band>
 
             {/* Who will be on the property. */}
-            <Card>
-              <CardHeader eyebrow="Who is coming" title="Your crew" />
+            <Band kind="data" flush>
+              <BandHead eyebrow="Who is coming" title="Your crew" />
               <RowList>
                 {crew.map((person) => (
-                  <Row key={person.id}>
+                  <Row gutter key={person.id}>
                     <div className="flex items-center gap-3">
                       <Avatar
                         name={person.name}
@@ -184,29 +182,29 @@ export const ProspectInstall = () => {
                   </Row>
                 ))}
               </RowList>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <p className="text-caption text-ink2">
                   You do not need to be home for the installation, but someone should be reachable by
                   phone.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             {/* Photos from site, when there are any. Real content only. */}
-            <Card>
-              <CardHeader eyebrow="From site" title="Photos" />
-              <div className="px-4 py-6">
+            <Band kind="rail" flush>
+              <BandHead eyebrow="From site" title="Photos" />
+              <div className="px-gutter py-6">
                 <p className="text-body text-ink2">
                   Photos will appear here once work starts on the property.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             {/* What was agreed, so it stays visible through the project. */}
-            <Card>
-              <CardHeader eyebrow="What you approved" title="Your quote" />
+            <Band kind="data" flush>
+              <BandHead eyebrow="What you approved" title="Your quote" />
               <RowList>
-                <Row>
+                <Row gutter>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Agreed price</p>
                     <p className="text-caption text-ink">
@@ -214,14 +212,14 @@ export const ProspectInstall = () => {
                     </p>
                   </div>
                 </Row>
-                <Row>
+                <Row gutter>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Reference</p>
                     <Identifier>{quote.id}</Identifier>
                   </div>
                 </Row>
               </RowList>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <Micro>Nothing charged yet</Micro>
                 <p className="mt-1 flex items-start gap-2 text-caption text-ink2">
                   <span className="mt-1 shrink-0">
@@ -233,10 +231,10 @@ export const ProspectInstall = () => {
                   </span>
                 </p>
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

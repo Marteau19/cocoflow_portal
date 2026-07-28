@@ -20,19 +20,17 @@ import { Section } from '../../blueprint/Section';
 import { network, regions, servicePoints, territories } from '../../data/seedData';
 import { millions, percent } from '../../lib/format';
 import {
-  Card,
-  CardHeader,
+  Band,
+  BandHead,
   Flag,
   Identifier,
   Kpi,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /* ------------------------------------------------------------------ */
 /* The schematic                                                       */
@@ -178,18 +176,18 @@ export const GlobalNetwork = () => {
   const ranked = [...servicePoints].sort((a, b) => b.revenue - a.revenue);
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Network"
-          title="Network overview"
+          subject="Network overview"
           lead={`${servicePoints.length} Service Points across ${regions.length} regions.`}
         />
 
         <Section id="network-map">
-          <Stack gap="4">
-            <Card>
-              <div className="grid gap-4 border-b border-line px-4 py-4 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
+          <div className="contents">
+            <Band kind="data" flush>
+              <div className="grid gap-4 border-b border-line px-gutter py-4 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
                 <Kpi
                   label="Network revenue"
                   value={millions(totalRevenue)}
@@ -201,7 +199,7 @@ export const GlobalNetwork = () => {
               </div>
 
               {/* Hero at desktop, hidden below 1024px. */}
-              <div className="hidden px-4 py-4 lg:block">
+              <div className="hidden px-gutter py-4 lg:block">
                 <div className="flex items-baseline justify-between gap-3">
                   <Micro>Where the network is</Micro>
                   <Identifier className="text-ink3">schematic</Identifier>
@@ -221,11 +219,11 @@ export const GlobalNetwork = () => {
                   </p>
                 </div>
               </div>
-            </Card>
+            </Band>
 
             {/* The list is the map's replacement below 1024px, and useful above it. */}
-            <Card>
-              <CardHeader
+            <Band kind="rail" flush>
+              <BandHead
                 title="Service Points"
                 eyebrow="By revenue"
                 action={<Identifier className="text-ink3">{`${ranked.length} points`}</Identifier>}
@@ -236,7 +234,7 @@ export const GlobalNetwork = () => {
                   const above = sp.servicePct >= target;
                   const onTarget = sp.revenue >= sp.target;
                   return (
-                    <Row key={sp.id} tone={above ? 'strong' : 'warn'} to={`/network/${sp.regionId}`}>
+                    <Row gutter key={sp.id} tone={above ? 'strong' : 'warn'} to={`/network/${sp.regionId}`}>
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-baseline gap-2">
@@ -270,13 +268,13 @@ export const GlobalNetwork = () => {
                   );
                 })}
               </RowList>
-            </Card>
+            </Band>
 
-            <Card>
-              <CardHeader title="Regions" eyebrow="Drill in" />
+            <Band kind="data" flush>
+              <BandHead title="Regions" eyebrow="Drill in" />
               <RowList>
                 {regions.map((region) => (
-                  <Row key={region.id} to={`/network/${region.id}`}>
+                  <Row gutter key={region.id} to={`/network/${region.id}`}>
                     <div className="flex items-baseline justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-body text-ink">{region.name}</p>
@@ -291,10 +289,10 @@ export const GlobalNetwork = () => {
                   </Row>
                 ))}
               </RowList>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

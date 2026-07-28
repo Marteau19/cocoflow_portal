@@ -32,11 +32,17 @@ const PAIRS = [
   ['ink2', 'surfaceSunk'],
   ['onSidebar', 'sidebar'],
   ['sidebarMuted', 'sidebar'],
-  ['onForest', 'forest'],
+  ['onBand', 'bandDeep'],
+  ['onBand', 'bandDeepAlt'],
+  ['onBandMuted', 'bandDeep'],
+  ['onBandMuted', 'bandDeepAlt'],
+  ['accentOnBand', 'bandDeep'],
   ['onAccent', 'accent'],
   ['onAccent', 'accentHover'],
   ['accentInk', 'surface'],
   ['accentInk', 'canvas'],
+  // Rail bands put accent text on the sunk level, which the first pass missed.
+  ['accentInk', 'surfaceSunk'],
   ['accentInk', 'accentSoft'],
   ['onPositive', 'positive'],
   ['positive', 'surface'],
@@ -55,7 +61,14 @@ const PAIRS = [
 ];
 
 /** Metadata only, never load bearing, so held to the non-text floor. */
-const METADATA = new Set(['ink3', 'sidebarMuted']);
+/**
+ * Metadata only, never load bearing, so held to the non-text floor.
+ *
+ * `accentOnBand` is here because DESIGN.md section 4 rule 3 sanctions it as a
+ * graphic and never as a label: in the new brand the orange reaches 3.97:1 on
+ * teal, which clears 3:1 and not 4.5:1.
+ */
+const METADATA = new Set(['ink3', 'sidebarMuted', 'onBandMuted', 'accentOnBand']);
 
 const colorsFrom = async (path) => {
   const source = await readFile(path, 'utf8');

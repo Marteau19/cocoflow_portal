@@ -31,20 +31,18 @@ import {
 } from '../../data/seedData';
 import { longDate, money, shortDate } from '../../lib/format';
 import {
+  Band,
+  BandHead,
   Button,
-  Card,
-  CardHeader,
   Empty,
   Icon,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 export const ManagerCustomers = () => {
   const territory = byId(territories, GOLDEN.territoryId)!;
@@ -78,25 +76,25 @@ export const ManagerCustomers = () => {
     const openCases = cases.filter((c) => c.accountId === open.id && c.status !== 'resolved');
 
     return (
-      <ScreenBody>
-        <Stack gap="4">
+      <>
+        <div className="contents">
           <div>
             <Button variant="plain" icon="chevron-right" onClick={() => setOpenId(null)}>
               Back to customers
             </Button>
             <div className="mt-2">
-              <PageHead
+              <Masthead
                 eyebrow={`${open.city}, ${open.province}`}
-                title={open.name}
+                subject={open.name}
                 lead={`${open.address}. Customer since ${longDate(open.since ?? '')}.`}
               />
             </div>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
-            <Stack gap="4">
-              <Card>
-                <CardHeader eyebrow="Read only, from the master system" title="Account" />
+            <div className="contents">
+              <Band kind="data" flush>
+                <BandHead eyebrow="Read only, from the master system" title="Account" />
                 <dl className="[&>*+*]:border-t [&>*+*]:border-t-line">
                   {[
                     ['Account', open.id, true],
@@ -107,7 +105,7 @@ export const ManagerCustomers = () => {
                   ].map(([label, value, mono]) => (
                     <div
                       key={String(label)}
-                      className="flex items-baseline justify-between gap-3 px-4 py-3"
+                      className="flex items-baseline justify-between gap-3 px-gutter py-3"
                     >
                       <dt className="text-caption text-ink2">{label}</dt>
                       <dd
@@ -118,7 +116,7 @@ export const ManagerCustomers = () => {
                     </div>
                   ))}
                 </dl>
-                <div className="border-t border-line px-4 py-3">
+                <div className="border-t border-line px-gutter py-3">
                   <p className="flex items-start gap-2 text-caption text-ink2">
                     <span className="mt-1 shrink-0">
                       <Icon name="info" />
@@ -129,54 +127,54 @@ export const ManagerCustomers = () => {
                     </span>
                   </p>
                 </div>
-              </Card>
+              </Band>
 
               {asset && (
-                <Card>
-                  <CardHeader eyebrow="Installed" title={asset.model} />
+                <Band kind="rail" flush>
+                  <BandHead eyebrow="Installed" title={asset.model} />
                   <dl className="[&>*+*]:border-t [&>*+*]:border-t-line">
-                    <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                    <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
                       <dt className="text-caption text-ink2">Serial</dt>
                       <dd className="font-mono text-caption uppercase text-ink">{asset.serial}</dd>
                     </div>
-                    <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                    <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
                       <dt className="text-caption text-ink2">Installed</dt>
                       <dd className="text-caption text-ink">{longDate(asset.installedOn)}</dd>
                     </div>
-                    <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                    <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
                       <dt className="text-caption text-ink2">Next due</dt>
                       <dd className="text-caption text-ink">{longDate(asset.nextServiceDue)}</dd>
                     </div>
                   </dl>
-                </Card>
+                </Band>
               )}
 
               {contract && (
-                <Card>
-                  <CardHeader eyebrow="Care plan" title={contract.name} />
+                <Band kind="data" flush>
+                  <BandHead eyebrow="Care plan" title={contract.name} />
                   <dl className="[&>*+*]:border-t [&>*+*]:border-t-line">
-                    <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                    <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
                       <dt className="text-caption text-ink2">Renews</dt>
                       <dd className="text-caption text-ink">{longDate(contract.renewsOn)}</dd>
                     </div>
-                    <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                    <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
                       <dt className="text-caption text-ink2">Annual</dt>
                       <dd className="text-caption text-ink">
                         {money(contract.annualPrice_jde, contract.currency)}
                       </dd>
                     </div>
                   </dl>
-                </Card>
+                </Band>
               )}
-            </Stack>
+            </div>
 
-            <Stack gap="4">
+            <div className="contents">
               {openCases.length > 0 && (
-                <Card>
-                  <CardHeader eyebrow="Open" title="Needs a reply" />
+                <Band kind="rail" flush>
+                  <BandHead eyebrow="Open" title="Needs a reply" />
                   <RowList>
                     {openCases.map((item) => (
-                      <Row key={item.id} tone="warn">
+                      <Row gutter key={item.id} tone="warn">
                         <div className="flex items-baseline justify-between gap-3">
                           <div className="min-w-0">
                             <p className="text-body text-ink">{item.subject}</p>
@@ -189,12 +187,12 @@ export const ManagerCustomers = () => {
                       </Row>
                     ))}
                   </RowList>
-                </Card>
+                </Band>
               )}
 
               {/* The same merge the customer sees. Not a different rendering. */}
-              <Card>
-                <CardHeader
+              <Band kind="data" flush>
+                <BandHead
                   eyebrow="Exactly what the customer sees"
                   title="Their history"
                   action={<Identifier className="text-ink3">{`${timeline.length} entries`}</Identifier>}
@@ -206,7 +204,7 @@ export const ManagerCustomers = () => {
                     {timeline.map((entry) => {
                       const visit = entry.kind === 'visit' ? byId(workOrders, entry.id) : undefined;
                       return (
-                        <Row key={entry.id} tone={entry.kind === 'visit' ? 'neutral' : 'none'}>
+                        <Row gutter key={entry.id} tone={entry.kind === 'visit' ? 'neutral' : 'none'}>
                           <div className="flex items-start gap-3">
                             <span className="mt-1 shrink-0 text-ink3">
                               <Icon name={entry.kind === 'visit' ? 'calendar' : 'package'} />
@@ -235,11 +233,11 @@ export const ManagerCustomers = () => {
                     })}
                   </RowList>
                 )}
-              </Card>
-            </Stack>
+              </Band>
+            </div>
           </div>
-        </Stack>
-      </ScreenBody>
+        </div>
+      </>
     );
   }
 
@@ -247,16 +245,16 @@ export const ManagerCustomers = () => {
   /* The list.                                                          */
   /* ------------------------------------------------------------------ */
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow={territory.name}
-          title="Customers"
+          subject="Customers"
           lead={`${mine.length} accounts. Search by name, town, account or serial number.`}
         />
 
         <Section id="customers">
-          <Stack gap="4">
+          <div className="contents">
             <label className="flex min-h-tap items-center gap-2 rounded-control border border-line-strong bg-surface px-3">
               <span className="shrink-0 text-ink3">
                 <Icon name="search" />
@@ -270,14 +268,14 @@ export const ManagerCustomers = () => {
               />
             </label>
 
-            <Card>
-              <CardHeader
+            <Band kind="rail" flush>
+              <BandHead
                 title={`${shown.length} ${shown.length === 1 ? 'account' : 'accounts'}`}
                 eyebrow={query ? 'Matching your search' : 'All'}
               />
 
               {/* Column heads at desktop. Table forward. */}
-              <div className="hidden border-b border-line bg-surface-sunk px-4 py-2 md:grid md:grid-cols-[1.6fr_1fr_1fr_auto] md:gap-3">
+              <div className="hidden border-b border-line bg-surface-sunk px-gutter py-2 md:grid md:grid-cols-[1.6fr_1fr_1fr_auto] md:gap-3">
                 {['Customer', 'System', 'Care plan', 'Open'].map((head) => (
                   <Micro key={head}>{head}</Micro>
                 ))}
@@ -302,7 +300,7 @@ export const ManagerCustomers = () => {
                         key={account.id}
                         type="button"
                         onClick={() => setOpenId(account.id)}
-                        className={`block w-full border-l-rule px-4 py-3 text-left transition-colors duration-state ease-ease hover:bg-surface-sunk ${
+                        className={`block w-full border-l-rule px-gutter py-3 text-left transition-colors duration-state ease-ease hover:bg-surface-sunk ${
                           open > 0 ? 'border-l-warn' : 'border-l-transparent'
                         }`}
                       >
@@ -354,10 +352,18 @@ export const ManagerCustomers = () => {
                   })}
                 </RowList>
               )}
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+
+        {/* Closing. Where these records actually live. */}
+        <Band kind="closing" alt>
+          <Micro className="text-on-band-muted">Where this comes from</Micro>
+          <p className="mt-1 max-w-reading text-caption text-on-band opacity-80">
+            Accounts, systems and history are mastered in the CRM. This view is read only in V1.
+          </p>
+        </Band>
+      </div>
+    </>
   );
 };

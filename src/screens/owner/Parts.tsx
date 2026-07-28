@@ -19,21 +19,19 @@ import { commerce, productName, type CartLine, type CatalogueItem, type CartTota
 import { GOLDEN, assets, byId, contracts } from '../../data/seedData';
 import { money } from '../../lib/format';
 import {
+  Band,
+  BandHead,
   Button,
-  Card,
-  CardHeader,
   Empty,
   Flag,
   Icon,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Tabs,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 export const OwnerParts = () => {
   const asset = byId(assets, GOLDEN.assetId)!;
@@ -75,16 +73,16 @@ export const OwnerParts = () => {
   const inCart = (sku: string) => cart.find((line) => line.sku === sku)?.quantity ?? 0;
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Parts"
-          title="Parts for your system"
+          subject="Parts for your system"
           lead={`Filtered to the ${asset.model}, so nothing here will arrive and not fit.`}
         />
 
         <Section id="parts-store">
-          <Stack gap="4">
+          <div className="contents">
             {/* The filter is on by default. Fit is the whole value here. */}
             <Tabs
               label="Filter the catalogue"
@@ -97,20 +95,20 @@ export const OwnerParts = () => {
             />
 
             {catalogue === null ? (
-              <Card>
-                <div className="px-4 py-6" />
-              </Card>
+              <Band kind="data" flush>
+                <div className="px-gutter py-6" />
+              </Band>
             ) : shown.length === 0 ? (
-              <Card>
+              <Band kind="data" flush>
                 <Empty line="No parts match this filter." />
-              </Card>
+              </Band>
             ) : (
-              <Card>
+              <Band kind="data" flush>
                 <RowList>
                   {shown.map((item) => {
                     const quantity = inCart(item.sku);
                     return (
-                      <Row key={item.sku}>
+                      <Row gutter key={item.sku}>
                         <div className="flex items-start gap-3">
                           {/* Real part imagery, at text-adjacent size. */}
                           <img
@@ -166,19 +164,19 @@ export const OwnerParts = () => {
                     );
                   })}
                 </RowList>
-              </Card>
+              </Band>
             )}
 
             {/* Basket. Named "Your order" because customers do not have baskets. */}
             {cart.length > 0 && totals && (
-              <Card>
-                <CardHeader
+              <Band kind="rail" flush>
+                <BandHead
                   eyebrow="Your order"
                   title={`${cart.reduce((n, l) => n + l.quantity, 0)} items`}
                 />
                 <RowList>
                   {cart.map((line) => (
-                    <Row key={line.sku}>
+                    <Row gutter key={line.sku}>
                       <div className="flex items-baseline justify-between gap-3">
                         <p className="min-w-0 text-caption text-ink">
                           {line.quantity} x {productName(line.sku)}
@@ -196,29 +194,29 @@ export const OwnerParts = () => {
                 </RowList>
 
                 <dl className="[&>*+*]:border-t [&>*+*]:border-t-line border-t border-line">
-                  <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                  <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
                     <dt className="text-caption text-ink2">Parts</dt>
                     <dd className="text-caption text-ink">{money(totals.subtotal)}</dd>
                   </div>
                   {totals.contractDiscount > 0 && (
-                    <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                    <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
                       <dt className="text-caption text-ink2">{contract.name} discount</dt>
                       <dd className="text-caption text-positive">
                         &minus;{money(totals.contractDiscount)}
                       </dd>
                     </div>
                   )}
-                  <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                  <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
                     <dt className="text-caption text-ink2">Tax</dt>
                     <dd className="text-caption text-ink2">Calculated at checkout</dd>
                   </div>
-                  <div className="flex items-baseline justify-between gap-3 bg-surface-sunk px-4 py-3">
+                  <div className="flex items-baseline justify-between gap-3 bg-surface-sunk px-gutter py-3">
                     <dt className="text-body font-medium text-ink">Total</dt>
                     <dd className="text-body font-medium text-ink">{money(totals.total)}</dd>
                   </div>
                 </dl>
 
-                <div className="border-t border-line px-4 py-3">
+                <div className="border-t border-line px-gutter py-3">
                   <Button variant="primary" icon="package" block>
                     Go to checkout
                   </Button>
@@ -226,14 +224,14 @@ export const OwnerParts = () => {
                     Delivered to {`${asset.model}`} owners in the Eastern Townships within a week.
                   </p>
                 </div>
-              </Card>
+              </Band>
             )}
 
             {/* The seam, stated on screen rather than only in the annotation. */}
-            <Card>
-              <div className="px-4 py-3">
-                <Micro>Behind this screen</Micro>
-                <p className="mt-1 flex items-start gap-2 text-caption text-ink2">
+            <Band kind="closing" alt>
+              <div className="px-gutter py-3">
+                <Micro className="text-on-band-muted">Behind this screen</Micro>
+                <p className="mt-1 flex items-start gap-2 text-caption text-on-band opacity-80">
                   <span className="mt-1 shrink-0">
                     <Icon name="info" />
                   </span>
@@ -248,10 +246,10 @@ export const OwnerParts = () => {
                   </Flag>
                 </div>
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

@@ -26,21 +26,19 @@ import {
 } from '../../data/seedData';
 import { money } from '../../lib/format';
 import {
-  Card,
-  CardHeader,
+  Band,
+  BandHead,
   Flag,
   Icon,
   Identifier,
   Kpi,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
   type RowTone,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** Available is what is on hand less what a booked job has already claimed. */
 const available = (row: InventoryItem): number => row.onHand - row.reserved;
@@ -61,12 +59,22 @@ const standing = (
   return { label: 'OK', rule: 'none', tone: 'neutral' };
 };
 
-const StockTable = ({ rows, caption }: { rows: InventoryItem[]; caption: string }) => (
-  <Card>
-    <CardHeader title={caption} eyebrow={`${rows.length} lines`} />
+const StockTable = ({
+  rows,
+  caption,
+  kind = 'data',
+}: {
+  rows: InventoryItem[];
+  caption: string;
+  /* Rendered twice, for Service Point stock and truck stock, so the ground comes
+     from the caller: two adjacent bands may not share one. */
+  kind?: 'data' | 'rail';
+}) => (
+  <Band kind={kind} flush>
+    <BandHead title={caption} eyebrow={`${rows.length} lines`} />
 
     {/* Column heads sit on the sunk surface, so the table reads as a table. */}
-    <div className="hidden border-b border-line bg-surface-sunk px-4 py-2 md:grid md:grid-cols-[2fr_repeat(4,minmax(0,1fr))] md:gap-3">
+    <div className="hidden border-b border-line bg-surface-sunk px-gutter py-2 md:grid md:grid-cols-[2fr_repeat(4,minmax(0,1fr))] md:gap-3">
       {['Part', 'On hand', 'Reserved', 'Available', 'Forecast 28d'].map((head) => (
         <div key={head} className={head === 'Part' ? '' : 'text-right'}>
           <Micro>{head}</Micro>
@@ -79,7 +87,7 @@ const StockTable = ({ rows, caption }: { rows: InventoryItem[]; caption: string 
         const product = products.find((p) => p.sku === row.sku);
         const state = standing(row);
         return (
-          <Row key={`${row.sku}-${row.location}`} tone={state.rule}>
+          <Row gutter key={`${row.sku}-${row.location}`} tone={state.rule}>
             <div className="md:grid md:grid-cols-[2fr_repeat(4,minmax(0,1fr))] md:items-baseline md:gap-3">
               <div className="min-w-0">
                 <p className="text-body text-ink">{product?.name ?? row.sku}</p>
@@ -118,7 +126,7 @@ const StockTable = ({ rows, caption }: { rows: InventoryItem[]; caption: string 
         );
       })}
     </RowList>
-  </Card>
+  </Band>
 );
 
 export const ManagerInventory = () => {
@@ -137,18 +145,18 @@ export const ManagerInventory = () => {
   const drivingJobs = workOrders.filter((w) => w.type === 'FMR' && w.status !== 'complete');
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow={territory.name}
-          title="Inventory"
+          subject="Inventory"
           lead="What is on the shelf, what is on the truck, and what the schedule is about to consume."
         />
 
         <Section id="inventory">
-          <Stack gap="4">
-            <Card>
-              <div className="grid gap-4 border-b border-line px-4 py-4 md:grid-cols-[1.4fr_1fr_1fr]">
+          <div className="contents">
+            <Band kind="data" flush>
+              <div className="grid gap-4 border-b border-line px-gutter py-4 md:grid-cols-[1.4fr_1fr_1fr]">
                 <Kpi
                   label="Lines short against forecast"
                   value={String(short.length)}
@@ -160,25 +168,25 @@ export const ManagerInventory = () => {
               </div>
 
               {short.length > 0 && (
-                <div className="px-4 py-3">
+                <div className="px-gutter py-3">
                   <Flag tone="alert" icon="alert-triangle">
                     {`${short.map((row) => row.sku).join(', ')} will not cover the next four weeks`}
                   </Flag>
                 </div>
               )}
-            </Card>
+            </Band>
 
             {/* Separate on purpose. */}
-            <StockTable rows={depot} caption="Service Point stock" />
+            <StockTable rows={depot} caption="Service Point stock" kind="rail" />
             <StockTable rows={truck} caption="Truck stock" />
 
             {/* Where the forecast comes from. */}
-            <Card>
-              <CardHeader
+            <Band kind="rail" flush>
+              <BandHead
                 title="How the forecast is built"
                 eyebrow="Derived, not averaged"
               />
-              <div className="px-4 py-3">
+              <div className="px-gutter py-3">
                 <p className="text-caption text-ink2">
                   Consumption over the next four weeks is read from scheduled filter media
                   replacement work, so it moves when the schedule moves. A quarterly average would
@@ -187,7 +195,7 @@ export const ManagerInventory = () => {
               </div>
               <RowList className="border-t border-line">
                 {drivingJobs.map((job) => (
-                  <Row key={job.id}>
+                  <Row gutter key={job.id}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-body text-ink">Filter media replacement</p>
@@ -200,7 +208,7 @@ export const ManagerInventory = () => {
                   </Row>
                 ))}
               </RowList>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <p className="flex items-start gap-2 text-caption text-ink2">
                   <span className="mt-1 shrink-0">
                     <Icon name="info" />
@@ -211,10 +219,10 @@ export const ManagerInventory = () => {
                   </span>
                 </p>
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

@@ -60,7 +60,7 @@ export const next: Brand = {
     accent: '#F85E00',
     accentHover: '#FF7A28',
     onAccent: '#1B2A27',
-    accentInk: '#AC4100',
+    accentInk: '#9A3A00',
     accentSoft: '#FCE6D8',
     // 3.97:1 on teal. Graphics only, never a label. DESIGN.md section 4 rule 3.
     accentOnBand: '#FF8A3D',

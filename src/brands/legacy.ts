@@ -219,7 +219,7 @@ export const legacy: Brand = {
     // own ground.
     accentHover: '#74BD0D',
     onAccent: '#111A13',
-    accentInk: '#3F6B07',
+    accentInk: '#375D06',
     accentSoft: '#E6F0D2',
     accentOnBand: '#8FCF23',
 

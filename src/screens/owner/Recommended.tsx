@@ -26,20 +26,18 @@ import {
 } from '../../data/seedData';
 import { daysFromToday, longDate, money } from '../../lib/format';
 import {
+  Band,
+  BandHead,
   Button,
   ButtonLink,
-  Card,
-  CardHeader,
   Icon,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 type Urgency = 'due' | 'worth-knowing';
 
@@ -110,7 +108,7 @@ export const OwnerRecommended = () => {
   const decline = (id: string) => setDeclined((current) => [...current, id]);
 
   const Item = ({ item }: { item: Recommendation }) => (
-    <Row tone={item.urgency === 'due' ? 'strong' : 'neutral'}>
+    <Row gutter tone={item.urgency === 'due' ? 'strong' : 'neutral'}>
       <div className="min-w-0">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <p className="text-body text-ink">{item.label}</p>
@@ -151,30 +149,30 @@ export const OwnerRecommended = () => {
   );
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="For your property"
-          title="Worth knowing about"
+          subject="Worth knowing about"
           lead={`Based on your ${asset.model} at ${account.city}, its age, and what we have seen on site.`}
         />
 
         <Section id="recommended">
-          <Stack gap="4">
+          <div className="contents">
             {shown.length === 0 ? (
-              <Card>
-                <div className="px-4 py-6">
+              <Band kind="data" flush>
+                <div className="px-gutter py-6">
                   <p className="text-body text-ink2">
                     Nothing to suggest right now. We will only put something here when your own
                     records give us a reason to.
                   </p>
                 </div>
-              </Card>
+              </Band>
             ) : (
               <>
                 {due.length > 0 && (
-                  <Card>
-                    <CardHeader
+                  <Band kind="rail" flush>
+                    <BandHead
                       eyebrow="Due now"
                       title={`${due.length} ${due.length === 1 ? 'thing' : 'things'} we would do next`}
                       action={<Status tone="good">NO CHARGE</Status>}
@@ -184,12 +182,12 @@ export const OwnerRecommended = () => {
                         <Item key={item.id} item={item} />
                       ))}
                     </RowList>
-                  </Card>
+                  </Band>
                 )}
 
                 {later.length > 0 && (
-                  <Card>
-                    <CardHeader
+                  <Band kind="data" flush>
+                    <BandHead
                       eyebrow="No rush"
                       title="Worth knowing about"
                     />
@@ -198,14 +196,14 @@ export const OwnerRecommended = () => {
                         <Item key={item.id} item={item} />
                       ))}
                     </RowList>
-                  </Card>
+                  </Band>
                 )}
               </>
             )}
 
             {/* How this list is built. Said out loud rather than implied. */}
-            <Card>
-              <div className="px-4 py-3">
+            <Band kind="rail" flush>
+              <div className="px-gutter py-3">
                 <Micro>How we decide what to put here</Micro>
                 <p className="mt-1 max-w-reading text-caption text-ink2">
                   Only your own records: the age of your system, what technicians recorded on site,
@@ -219,10 +217,10 @@ export const OwnerRecommended = () => {
                   </p>
                 )}
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

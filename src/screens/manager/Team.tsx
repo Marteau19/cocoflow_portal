@@ -26,18 +26,16 @@ import {
 import { TODAY, duration, shortDate } from '../../lib/format';
 import {
   Avatar,
-  Card,
-  CardHeader,
+  Band,
+  BandHead,
   Flag,
   Icon,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** A nominal working day, in minutes. Travel is excluded, as on dispatch. */
 const DAY_MINUTES = 8 * 60;
@@ -72,20 +70,20 @@ export const ManagerTeam = () => {
   const constrained = confinedSpace.length - awayNext.length <= 1;
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow={territory.name}
-          title="Team and capacity"
+          subject="Team and capacity"
           lead={`${team.length} in the field. ${upcoming.length} jobs still to run.`}
         />
 
         <Section id="team">
-          <Stack gap="4">
+          <div className="contents">
             {/* The constraint, named. Not an average. */}
             {constrained && (
-              <Card>
-                <div className="px-4 py-3">
+              <Band kind="data" flush>
+                <div className="px-gutter py-3">
                   <Flag tone="warn" icon="alert-triangle">
                     One qualification is a single point of failure
                   </Flag>
@@ -105,12 +103,12 @@ export const ManagerTeam = () => {
                     hours.
                   </p>
                 </div>
-              </Card>
+              </Band>
             )}
 
             {/* Each person, with load and what they can do. */}
-            <Card>
-              <CardHeader title="The team" eyebrow="Load today, and qualifications" />
+            <Band kind="rail" flush>
+              <BandHead title="The team" eyebrow="Load today, and qualifications" />
               <RowList>
                 {team.map((person) => {
                   const jobs = workOrdersForResource(person.id, TODAY);
@@ -120,7 +118,7 @@ export const ManagerTeam = () => {
                   const quals = QUALIFIED[person.id] ?? [];
 
                   return (
-                    <Row key={person.id} tone={away ? 'warn' : 'neutral'}>
+                    <Row gutter key={person.id} tone={away ? 'warn' : 'neutral'}>
                       <div className="flex items-start gap-3">
                         <Avatar
                           name={person.name}
@@ -186,14 +184,14 @@ export const ManagerTeam = () => {
                   );
                 })}
               </RowList>
-            </Card>
+            </Band>
 
             {/* What the absence actually costs, in committed work. */}
-            <Card>
-              <CardHeader title="Committed work at risk" eyebrow="During the absence" />
+            <Band kind="data" flush>
+              <BandHead title="Committed work at risk" eyebrow="During the absence" />
               <RowList>
                 {upcoming.length === 0 ? (
-                  <Row>
+                  <Row gutter>
                     <p className="text-body text-ink2">Nothing committed in that window.</p>
                   </Row>
                 ) : (
@@ -204,7 +202,7 @@ export const ManagerTeam = () => {
                       away && job.scheduledFor >= away.from && job.scheduledFor <= away.to;
 
                     return (
-                      <Row key={job.id} tone={atRisk ? 'warn' : 'none'}>
+                      <Row gutter key={job.id} tone={atRisk ? 'warn' : 'none'}>
                         <div className="flex items-baseline justify-between gap-3">
                           <div className="min-w-0">
                             <p className="text-body text-ink">
@@ -225,15 +223,15 @@ export const ManagerTeam = () => {
                   })
                 )}
               </RowList>
-            </Card>
+            </Band>
 
             <p className="text-caption text-ink3">
               Qualifications and absence are held here for the prototype. Neither has a home in the
               data model yet, which is a gap worth closing before this ships.
             </p>
-          </Stack>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

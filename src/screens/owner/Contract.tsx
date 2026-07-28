@@ -23,20 +23,18 @@ import {
 } from '../../data/seedData';
 import { daysFromToday, longDate, money } from '../../lib/format';
 import {
+  Band,
+  BandHead,
   Button,
   ButtonLink,
-  Card,
-  CardHeader,
   Icon,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** What a visit would have cost without the plan. Makes the value legible. */
 const LIST_PRICE = { inspection: 145, fmr: 420 };
@@ -54,18 +52,18 @@ export const OwnerContract = () => {
   const wouldHaveCost = used * LIST_PRICE.inspection + upcoming.length * LIST_PRICE.fmr;
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Your care plan"
-          title={contract.name}
+          subject={contract.name}
           lead={`For your ${asset.product}, ${asset.model}.`}
         />
 
         <Section id="contract">
-          <Stack gap="4">
-            <Card>
-              <div className="flex items-baseline justify-between gap-3 px-4 py-4">
+          <div className="contents">
+            <Band kind="data" flush>
+              <div className="flex items-baseline justify-between gap-3 px-gutter py-4">
                 <div className="min-w-0">
                   <Micro>Per year</Micro>
                   <p className="mt-1 text-display text-ink">
@@ -82,25 +80,25 @@ export const OwnerContract = () => {
               </div>
 
               <dl className="[&>*+*]:border-t [&>*+*]:border-t-line border-t border-line">
-                <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
                   <dt className="text-caption text-ink2">Covering since</dt>
                   <dd className="text-caption text-ink">{longDate(contract.startsOn)}</dd>
                 </div>
-                <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
                   <dt className="text-caption text-ink2">Plan reference</dt>
                   <dd>
                     <Identifier>{contract.id}</Identifier>
                   </dd>
                 </div>
               </dl>
-            </Card>
+            </Band>
 
             {/* What is covered, in plain words. */}
-            <Card>
-              <CardHeader icon="check" eyebrow="What you get" title="Cover" />
+            <Band kind="rail" flush>
+              <BandHead icon="check" eyebrow="What you get" title="Cover" />
               <RowList>
                 {contract.entitlements.map((item) => (
-                  <Row key={item}>
+                  <Row gutter key={item}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-positive">
                         <Icon name="check" />
@@ -110,21 +108,21 @@ export const OwnerContract = () => {
                   </Row>
                 ))}
               </RowList>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <Micro>Not covered</Micro>
                 <p className="mt-1 text-caption text-ink2">
                   Damage from something outside the system, and parts you order for yourself. We tell
                   you before any work that falls outside the plan, never after.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             {/* Used against included. The value made visible, not asserted. */}
-            <Card>
-              <CardHeader eyebrow="This term" title="What the plan has done" />
+            <Band kind="data" flush>
+              <BandHead eyebrow="This term" title="What the plan has done" />
               <RowList>
                 {visits.length === 0 ? (
-                  <Row>
+                  <Row gutter>
                     <p className="text-body text-ink2">
                       No visits yet this term. Your first is scheduled automatically when it is due.
                     </p>
@@ -133,7 +131,7 @@ export const OwnerContract = () => {
                   visits.map((visit) => {
                     const done = visit.status === 'complete';
                     return (
-                      <Row key={visit.id} tone={done ? 'neutral' : 'strong'}>
+                      <Row gutter key={visit.id} tone={done ? 'neutral' : 'strong'}>
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <p className="text-body text-ink">
@@ -158,7 +156,7 @@ export const OwnerContract = () => {
                 )}
               </RowList>
 
-              <div className="flex items-baseline justify-between gap-3 border-t border-line bg-surface-sunk px-4 py-3">
+              <div className="flex items-baseline justify-between gap-3 border-t border-line bg-surface-sunk px-gutter py-3">
                 <div className="min-w-0">
                   <Micro>Without the plan</Micro>
                   <p className="mt-1 text-caption text-ink2">
@@ -167,12 +165,12 @@ export const OwnerContract = () => {
                 </div>
                 <p className="text-body font-medium text-ink">{money(wouldHaveCost)}</p>
               </div>
-            </Card>
+            </Band>
 
             {/* Changing or ending it, offered plainly rather than buried. */}
-            <Card>
-              <CardHeader icon="info" iconTone="neutral" eyebrow="If you want to change it" title="Your options" />
-              <div className="space-y-3 px-4 py-3">
+            <Band kind="rail" flush>
+              <BandHead icon="info" iconTone="neutral" eyebrow="If you want to change it" title="Your options" />
+              <div className="space-y-3 px-gutter py-3">
                 <div>
                   <p className="text-body text-ink">Move the renewal date</p>
                   <p className="mt-1 text-caption text-ink2">
@@ -187,16 +185,16 @@ export const OwnerContract = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2 border-t border-line px-4 py-3">
+              <div className="flex flex-wrap gap-2 border-t border-line px-gutter py-3">
                 <ButtonLink to="/messages" variant="quiet" icon="message-square">
                   Ask about my plan
                 </ButtonLink>
                 <Button variant="quiet">End the plan</Button>
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

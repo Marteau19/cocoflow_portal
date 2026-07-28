@@ -16,22 +16,20 @@ import { Section } from '../../blueprint/Section';
 import { GOLDEN, byId, leads, quotes, territories, type Lead } from '../../data/seedData';
 import { money, shortDate } from '../../lib/format';
 import {
-  Card,
-  CardHeader,
+  Band,
+  BandHead,
   Empty,
   Icon,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
   Tabs,
   type RowTone,
   type StatusTone,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 const STAGE: Record<Lead['status'], { label: string; rule: RowTone; tone: StatusTone }> = {
   new: { label: 'NEW', rule: 'warn', tone: 'warn' },
@@ -88,16 +86,16 @@ export const ManagerLeads = () => {
   ];
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow={territory.name}
-          title="Leads"
+          subject="Leads"
           lead="Who has asked for help, where they came from, and what stage they are at."
         />
 
         <Section id="leads">
-          <Stack gap="4">
+          <div className="contents">
             <Tabs
               label="Filter leads"
               value={filter}
@@ -108,8 +106,8 @@ export const ManagerLeads = () => {
               }))}
             />
 
-            <Card>
-              <CardHeader
+            <Band kind="data" flush>
+              <BandHead
                 title={`${shown.length} ${shown.length === 1 ? 'lead' : 'leads'}`}
                 eyebrow="Newest first"
               />
@@ -126,7 +124,7 @@ export const ManagerLeads = () => {
                       const isGolden = lead.id === GOLDEN.leadId;
 
                       return (
-                        <Row key={lead.id} tone={stage.rule}>
+                        <Row gutter key={lead.id} tone={stage.rule}>
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-baseline gap-2">
@@ -171,20 +169,20 @@ export const ManagerLeads = () => {
                     })}
                 </RowList>
               )}
-            </Card>
+            </Band>
 
-            <Card>
-              <div className="px-4 py-3">
+            <Band kind="rail" flush>
+              <div className="px-gutter py-3">
                 <Micro>Why source matters</Micro>
                 <p className="mt-1 text-caption text-ink2">
                   Every lead carries where it came from. That is what lets the MARCOM screen show
                   leads generated per campaign rather than just what was ordered.
                 </p>
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

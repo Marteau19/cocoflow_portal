@@ -24,17 +24,16 @@ import {
 } from '../../data/seedData';
 import { TODAY, dayAndDate, duration, window as timeWindow } from '../../lib/format';
 import {
-  Card,
-  CardHeader,
+  Band,
+  BandHead,
+  Hero,
   Icon,
   Identifier,
-  Micro,
+  Masthead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 const ME = 'RES-001';
 
@@ -71,15 +70,22 @@ export const TechnicianRoute = () => {
   );
 
   return (
-    <ScreenBody>
-      <Stack gap="3">
-        <header>
-          <Micro>{dayAndDate(TODAY)}</Micro>
-          <h1 className="mt-1 text-h1 text-ink">Route</h1>
-          <p className="mt-1 text-caption text-ink2">
-            {jobs.length} stops, {duration(totalWork)} of work, {duration(totalTravel)} between
-          </p>
-        </header>
+    <>
+      <div className="contents">
+        {/* Masthead. The hero is the day, in the terms a technician plans it in. */}
+        <Masthead
+          eyebrow={dayAndDate(TODAY)}
+          subject="Route"
+          hero={
+            <Hero
+              onBand
+              label="Stops today"
+              value={String(jobs.length)}
+              delta={{ text: `${duration(totalTravel)} of driving between them`, tone: 'neutral' }}
+              note={`${duration(totalWork)} of work. The order is fixed by the windows, not by distance.`}
+            />
+          }
+        />
 
         {/* Offline first, as on every technician screen. */}
         <div className="flex items-center gap-2 rounded-control border border-line bg-surface px-3 py-2">
@@ -92,10 +98,10 @@ export const TechnicianRoute = () => {
         </div>
 
         <Section id="route">
-          <Stack gap="3">
+          <div className="contents">
             {/* The list is the primary register here, not a fallback. */}
-            <Card>
-              <CardHeader title="Stops in order" eyebrow="Earliest first" />
+            <Band kind="data" flush>
+              <BandHead title="Stops in order" eyebrow="Earliest first" />
               <div>
                 {jobs.map((job, index) => {
                   const account = byId(accounts, job.accountId)!;
@@ -106,7 +112,7 @@ export const TechnicianRoute = () => {
                     <div key={job.id}>
                       {/* Travel sits between stops, where it happens. */}
                       {travel !== null && (
-                        <div className="flex items-center gap-2 border-y border-line bg-surface-sunk px-4 py-2">
+                        <div className="flex items-center gap-2 border-y border-line bg-surface-sunk px-gutter py-2">
                           <span className="text-ink3">
                             <Icon name="map-pin" />
                           </span>
@@ -116,7 +122,7 @@ export const TechnicianRoute = () => {
                         </div>
                       )}
 
-                      <Row
+                      <Row gutter
                         tone={active ? 'strong' : job.status === 'complete' ? 'none' : 'neutral'}
                         to={`/wo/${job.id}`}
                       >
@@ -159,18 +165,18 @@ export const TechnicianRoute = () => {
                   );
                 })}
               </div>
-            </Card>
+            </Band>
 
             {/* What can move, and what cannot. */}
-            <Card>
-              <CardHeader title="What is fixed" eyebrow="If the day slips" />
+            <Band kind="rail" flush>
+              <BandHead title="What is fixed" eyebrow="If the day slips" />
               <RowList>
                 {jobs.map((job) => {
                   const account = byId(accounts, job.accountId)!;
                   // A confirmed customer window is a promise; a booked one is not.
                   const fixed = job.status !== 'booked';
                   return (
-                    <Row key={job.id}>
+                    <Row gutter key={job.id}>
                       <div className="flex items-baseline justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-body text-ink">{account.name}</p>
@@ -188,12 +194,12 @@ export const TechnicianRoute = () => {
                   );
                 })}
               </RowList>
-            </Card>
+            </Band>
 
             {/* The map, at desktop width only, and honest about itself. */}
-            <Card className="hidden lg:block">
-              <CardHeader title="The run" eyebrow="Desktop only" />
-              <div className="px-4 py-3">
+            <Band kind="data" flush className="hidden lg:block">
+              <BandHead title="The run" eyebrow="Desktop only" />
+              <div className="px-gutter py-3">
                 <p className="text-caption text-ink2">
                   All {jobs.length} stops today are inside{' '}
                   {byId(territories, jobs[0]?.territoryId ?? '')?.name}. A drawn route needs base
@@ -201,10 +207,10 @@ export const TechnicianRoute = () => {
                   route until it is.
                 </p>
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

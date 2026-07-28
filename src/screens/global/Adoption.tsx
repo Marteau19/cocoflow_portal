@@ -17,19 +17,17 @@ import { Section } from '../../blueprint/Section';
 import { knowledgeBase, network, servicePoints } from '../../data/seedData';
 import { percent } from '../../lib/format';
 import {
-  Card,
-  CardHeader,
+  Band,
+  BandHead,
   Icon,
   Identifier,
   Kpi,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** A funnel read as steps, not a progress bar. Bars are banned. */
 const FUNNEL = [
@@ -79,19 +77,19 @@ export const GlobalAdoption = () => {
   );
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Digital strategy"
-          title="Adoption and Flo"
+          subject="Adoption and Flo"
           lead="What the portal is actually being used for, and where it is falling short."
         />
 
         {/* ---------------------------------------------------------------- */}
         <Section id="adoption">
-          <Stack gap="4">
-            <Card>
-              <div className="grid gap-4 border-b border-line px-4 py-4 lg:grid-cols-[1.6fr_1fr_1fr]">
+          <div className="contents">
+            <Band kind="data" flush>
+              <div className="grid gap-4 border-b border-line px-gutter py-4 lg:grid-cols-[1.6fr_1fr_1fr]">
                 <Kpi
                   label="Portal activation"
                   value={percent(adoption.portalActivationPct, 0)}
@@ -112,7 +110,7 @@ export const GlobalAdoption = () => {
               {/* Steps down the funnel, as rows with a numeric value. */}
               <RowList>
                 {FUNNEL.map((step, index) => (
-                  <Row key={step.key} tone={index === 0 ? 'strong' : 'neutral'}>
+                  <Row gutter key={step.key} tone={index === 0 ? 'strong' : 'neutral'}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-body text-ink">{step.label}</p>
@@ -124,24 +122,24 @@ export const GlobalAdoption = () => {
                 ))}
               </RowList>
 
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <p className="text-caption text-ink2">
                   The drop from activation to booking is the number to move. A customer who activates
                   and then still phones has not been given a reason to return.
                 </p>
               </div>
-            </Card>
+            </Band>
 
             {/* Readiness, because it gates everything above. */}
-            <Card>
-              <CardHeader
+            <Band kind="rail" flush>
+              <BandHead
                 title="Readiness by Service Point"
                 eyebrow="Leading indicator"
                 action={<Identifier className="text-ink3">{`${readiness.length} points`}</Identifier>}
               />
               <RowList>
                 {readiness.map((sp) => (
-                  <Row key={sp.id} tone={sp.readiness >= 80 ? 'strong' : 'warn'}>
+                  <Row gutter key={sp.id} tone={sp.readiness >= 80 ? 'strong' : 'warn'}>
                     <div className="flex items-baseline justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-body text-ink">{sp.name}</p>
@@ -156,15 +154,15 @@ export const GlobalAdoption = () => {
                   </Row>
                 ))}
               </RowList>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
         <Section id="flo-analytics">
-          <Stack gap="4">
-            <Card>
-              <div className="grid gap-4 border-b border-line px-4 py-4 lg:grid-cols-[1.6fr_1fr_1fr]">
+          <div className="contents">
+            <Band kind="data" flush>
+              <div className="grid gap-4 border-b border-line px-gutter py-4 lg:grid-cols-[1.6fr_1fr_1fr]">
                 <Kpi
                   label="Questions asked, 30 days"
                   value={adoption.floQueries30d.toLocaleString('en-CA')}
@@ -178,7 +176,7 @@ export const GlobalAdoption = () => {
                 <Kpi label="Documents indexed" value={String(knowledgeBase.length)} />
               </div>
 
-              <div className="px-4 py-3">
+              <div className="px-gutter py-3">
                 <p className="flex items-start gap-2 text-caption text-ink2">
                   <span className="mt-1 shrink-0">
                     <Icon name="info" />
@@ -190,16 +188,16 @@ export const GlobalAdoption = () => {
                   </span>
                 </p>
               </div>
-            </Card>
+            </Band>
 
-            <Card>
-              <CardHeader
+            <Band kind="rail" flush>
+              <BandHead
                 title="What Flo could not answer"
                 eyebrow={`${unansweredCount} questions, grouped`}
               />
               <RowList>
                 {GAPS.map((gap) => (
-                  <Row key={gap.theme} tone="warn">
+                  <Row gutter key={gap.theme} tone="warn">
                     <div className="flex items-baseline justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-body text-ink">{gap.theme}</p>
@@ -212,17 +210,17 @@ export const GlobalAdoption = () => {
                   </Row>
                 ))}
               </RowList>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-3">
                 <Micro>What this implies</Micro>
                 <p className="mt-1 text-caption text-ink2">
                   Each theme is a document that does not exist yet. Writing the top two would close
                   three fifths of the gap without touching the model.
                 </p>
               </div>
-            </Card>
-          </Stack>
+            </Band>
+          </div>
         </Section>
-      </Stack>
-    </ScreenBody>
+      </div>
+    </>
   );
 };

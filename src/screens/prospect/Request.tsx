@@ -17,19 +17,17 @@ import { GOLDEN, byId, leads, resources, territories } from '../../data/seedData
 import { longDate } from '../../lib/format';
 import {
   Avatar,
+  Band,
+  BandHead,
   ButtonLink,
-  Card,
-  CardHeader,
   Icon,
   Identifier,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /** What happens next, as a sequence. Not a progress bar. */
 const STEPS = [
@@ -61,11 +59,11 @@ export const ProspectRequest = () => {
   const team = resources.filter((r) => r.territoryId === servicePoint.id);
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow="Request received"
-          title={`Thanks, ${lead.name.split(' ')[0]}`}
+          subject={`Thanks, ${lead.name.split(' ')[0]}`}
           lead="We have your request and a team is assigned. Here is what happens next."
         />
 
@@ -73,8 +71,8 @@ export const ProspectRequest = () => {
         {/* The account, created at the moment they asked for help.          */}
         {/* ---------------------------------------------------------------- */}
         <Section id="intake-identity">
-          <Card>
-            <div className="px-4 py-3">
+          <Band kind="data" flush>
+            <div className="px-gutter py-3">
               <div className="flex items-start gap-3">
                 <span className="mt-1 shrink-0 text-positive">
                   <Icon name="check" />
@@ -89,39 +87,39 @@ export const ProspectRequest = () => {
               </div>
             </div>
             <RowList className="border-t border-line">
-              <Row>
+              <Row gutter>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Property</p>
                   <p className="text-right text-caption text-ink">{lead.city}, Québec</p>
                 </div>
               </Row>
-              <Row>
+              <Row gutter>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Requested</p>
                   <p className="text-caption text-ink">{longDate(lead.createdOn)}</p>
                 </div>
               </Row>
-              <Row>
+              <Row gutter>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Your reference</p>
                   <Identifier>{lead.id}</Identifier>
                 </div>
               </Row>
             </RowList>
-          </Card>
+          </Band>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
         {/* The team. Named, with faces, before anyone has spoken to them.    */}
         {/* ---------------------------------------------------------------- */}
         <Section id="team-assigned">
-          <Card>
-            <CardHeader
+          <Band kind="rail" flush>
+            <BandHead
               eyebrow="Looking after you"
               title={servicePoint.name}
               action={<Status tone="good">ASSIGNED</Status>}
             />
-            <div className="px-4 py-3">
+            <div className="px-gutter py-3">
               <p className="text-caption text-ink2">
                 One team owns your whole job, from the first visit to the last. They cover a{' '}
                 {servicePoint.radiusKm} km area around {lead.city}.
@@ -129,7 +127,7 @@ export const ProspectRequest = () => {
             </div>
             <RowList className="border-t border-line">
               {team.map((person) => (
-                <Row key={person.id}>
+                <Row gutter key={person.id}>
                   <div className="flex items-center gap-3">
                     <Avatar
                       name={person.name}
@@ -151,15 +149,15 @@ export const ProspectRequest = () => {
                 </Row>
               ))}
             </RowList>
-          </Card>
+          </Band>
         </Section>
 
         {/* ---------------------------------------------------------------- */}
-        <Card>
-          <CardHeader eyebrow="What happens next" title="Four steps" />
+        <Band kind="data" flush>
+          <BandHead eyebrow="What happens next" title="Four steps" />
           <RowList>
             {STEPS.map((step, index) => (
-              <Row key={step.label} tone={step.state === 'next' ? 'strong' : 'neutral'}>
+              <Row gutter key={step.label} tone={step.state === 'next' ? 'strong' : 'neutral'}>
                 <div className="flex items-start gap-3">
                   <span className="mt-1 shrink-0 font-mono text-caption text-ink3">
                     {String(index + 1).padStart(2, '0')}
@@ -179,10 +177,10 @@ export const ProspectRequest = () => {
               </Row>
             ))}
           </RowList>
-        </Card>
+        </Band>
 
-        <Card>
-          <div className="px-4 py-3">
+        <Band kind="rail" flush>
+          <div className="px-gutter py-3">
             <Micro>Already had your soil test?</Micro>
             <p className="mt-1 text-caption text-ink2">
               If we have been out to the property, your findings and your quote are waiting.
@@ -196,8 +194,8 @@ export const ProspectRequest = () => {
               </ButtonLink>
             </div>
           </div>
-        </Card>
-      </Stack>
-    </ScreenBody>
+        </Band>
+      </div>
+    </>
   );
 };

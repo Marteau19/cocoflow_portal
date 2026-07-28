@@ -24,20 +24,18 @@ import {
 } from '../../data/seedData';
 import { money, shortDate } from '../../lib/format';
 import {
+  Band,
+  BandHead,
   Button,
-  Card,
-  CardHeader,
   Icon,
   Identifier,
   Kpi,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 const CATEGORY: Record<MarcomItem['category'], string> = {
   print: 'Print',
@@ -72,11 +70,11 @@ export const ManagerMarcom = () => {
   );
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      <div className="contents">
+        <Masthead
           eyebrow={territory.name}
-          title="MARCOM catalogue"
+          subject="MARCOM catalogue"
           lead="Order local marketing, then see what it generated."
         />
 
@@ -104,15 +102,15 @@ export const ManagerMarcom = () => {
 
         {tab === 'catalogue' ? (
           <Section id="marcom-catalogue">
-            <Stack gap="4">
-              <Card>
-                <CardHeader title="Available to order" eyebrow={`${marcomCatalogue.length} items`} />
+            <div className="contents">
+              <Band kind="data" flush>
+                <BandHead title="Available to order" eyebrow={`${marcomCatalogue.length} items`} />
                 <RowList>
                   {marcomCatalogue.map((item) => {
                     const open = selected === item.id;
                     return (
                       <div key={item.id}>
-                        <Row>
+                        <Row gutter>
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-baseline gap-2">
@@ -142,7 +140,7 @@ export const ManagerMarcom = () => {
 
                         {/* Custom fields. What makes a generic asset local. */}
                         {open && (
-                          <div className="border-t border-line bg-surface-sunk px-4 py-3">
+                          <div className="border-t border-line bg-surface-sunk px-gutter py-3">
                             <Micro>Personalise this order</Micro>
                             {item.customFields.length === 0 ? (
                               <p className="mt-2 text-caption text-ink2">
@@ -196,15 +194,15 @@ export const ManagerMarcom = () => {
                     );
                   })}
                 </RowList>
-              </Card>
-            </Stack>
+              </Band>
+            </div>
           </Section>
         ) : (
           <Section id="marcom-results">
-            <Stack gap="4">
+            <div className="contents">
               {/* The closed loop, stated as numbers first. */}
-              <Card>
-                <div className="grid gap-4 border-b border-line px-4 py-4 md:grid-cols-[1.4fr_1fr_1fr]">
+              <Band kind="rail" flush>
+                <div className="grid gap-4 border-b border-line px-gutter py-4 md:grid-cols-[1.4fr_1fr_1fr]">
                   <Kpi
                     label="Leads attributed"
                     value={String(attributed)}
@@ -217,23 +215,23 @@ export const ManagerMarcom = () => {
                     value={attributed > 0 ? money(spend / attributed) : 'n/a'}
                   />
                 </div>
-                <div className="px-4 py-3">
+                <div className="px-gutter py-3">
                   <p className="text-caption text-ink2">
                     Attribution comes from the source recorded on each lead. Without that link this
                     screen would only show what was ordered, which is shopping rather than marketing.
                   </p>
                 </div>
-              </Card>
+              </Band>
 
-              <Card>
-                <CardHeader title="Campaigns" eyebrow="Ordered by this Service Point" />
+              <Band kind="data" flush>
+                <BandHead title="Campaigns" eyebrow="Ordered by this Service Point" />
                 <RowList>
                   {orders.map((order) => {
                     const item = byId(marcomCatalogue, order.itemId)!;
                     const status = ORDER_STATUS[order.status];
                     const cost = item.unitPrice * order.quantity;
                     return (
-                      <Row
+                      <Row gutter
                         key={order.id}
                         tone={order.leadsAttributed ? 'strong' : 'neutral'}
                       >
@@ -270,13 +268,13 @@ export const ManagerMarcom = () => {
                     );
                   })}
                 </RowList>
-              </Card>
+              </Band>
 
-              <Card>
-                <CardHeader title="Leads from these channels" eyebrow="Traced back" />
+              <Band kind="rail" flush>
+                <BandHead title="Leads from these channels" eyebrow="Traced back" />
                 <RowList>
                   {attributableLeads.map((lead) => (
-                    <Row key={lead.id}>
+                    <Row gutter key={lead.id}>
                       <div className="flex items-baseline justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-body text-ink">{lead.name}</p>
@@ -289,7 +287,7 @@ export const ManagerMarcom = () => {
                     </Row>
                   ))}
                 </RowList>
-                <div className="border-t border-line px-4 py-3">
+                <div className="border-t border-line px-gutter py-3">
                   <p className="flex items-start gap-2 text-caption text-ink2">
                     <span className="mt-1 shrink-0">
                       <Icon name="info" />
@@ -300,11 +298,20 @@ export const ManagerMarcom = () => {
                     </span>
                   </p>
                 </div>
-              </Card>
-            </Stack>
+              </Band>
+            </div>
           </Section>
         )}
-      </Stack>
-    </ScreenBody>
+
+        {/* Closing. The closed loop is the whole argument of this screen. */}
+        <Band kind="closing" alt>
+          <Micro className="text-on-band-muted">Why the campaign tab exists</Micro>
+          <p className="mt-1 max-w-reading text-caption text-on-band opacity-80">
+            Every order here is attributed back to the CRM, which is what makes the leads figure a
+            closed loop rather than a claim. Without it this screen is shopping.
+          </p>
+        </Band>
+      </div>
+    </>
   );
 };

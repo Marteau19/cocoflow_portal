@@ -187,6 +187,31 @@ tinted canvas". That sentence is the bug.
 Cards keep their shadow and their `--line` border. What changes is how seldom one
 appears.
 
+### Grouping inside a band
+
+Removing cards removes the grouping they were doing, and on the manager and Global
+screens that grouping was load bearing. It has to come back somewhere. It comes
+back as **ground variation inside a single band**, which is the one place a band
+may hold more than one surface level:
+
+1. **A header strip on `--surface-sunk`.** Column heads for a table, or a
+   `BandHead` over a long list. It reads as a table head rather than as a second
+   band because it is one row tall and carries only `micro` labels.
+2. **A tone on an individual row.** `--positive-soft`, `--warn-soft`,
+   `--alert-soft`, applied by `Row tone`, always alongside a text label. This is
+   what makes an exception findable in a 20 row list without a coloured dot.
+3. **A `--line` rule plus a `micro` label**, per rule 5 above, for a sub group
+   inside otherwise uniform rows.
+
+Nothing else. A band may not carry a second full-height ground, because that is a
+band nested inside a band under another name.
+
+This was tested at step 6 across `/sp`, `/sp/dispatch`, `/sp/inventory`,
+`/network` and `/mix`, the screens where a wall of rules was the risk. The two card
+ceiling held on all of them, but only because these three devices were available.
+Without them the ceiling would not be survivable on a dense screen, so treat this
+subsection as part of the ceiling rather than as an allowance beside it.
+
 ---
 
 ## 3. Surface hierarchy
@@ -379,9 +404,10 @@ Computed, not estimated. Two AA failures shipped last time by assuming.
 | `on-band` on `band-deep-alt` | 16.69 | 11.62 | 4.5 |
 | `on-band-muted` on `band-deep` | 7.68 | 4.58 | 3.0 |
 | `on-band-muted` on `band-deep-alt` | 9.09 | 6.35 | 3.0 |
-| `accent-ink` on `surface` | 6.33 | 5.98 | 4.5 |
-| `accent-ink` on `canvas` | 5.23 | 5.05 | 4.5 |
-| `accent-ink` on `accent-soft` | 5.35 | 4.97 | 4.5 |
+| `accent-ink` on `surface` | 7.69 | 7.05 | 4.5 |
+| `accent-ink` on `canvas` | 6.35 | 5.94 | 4.5 |
+| `accent-ink` on `surface-sunk` | **5.41** | **5.16** | 4.5 |
+| `accent-ink` on `accent-soft` | 6.50 | 5.86 | 4.5 |
 | `on-accent` on `accent` | 5.99 | 4.69 | 4.5 |
 | `on-accent` on `accent-hover` | 7.64 | 5.73 | 4.5 |
 | `accent-on-band` on `band-deep` | 8.21 | **3.97** | 3.0, non-text only |
@@ -395,9 +421,14 @@ Computed, not estimated. Two AA failures shipped last time by assuming.
 | `alert` on `surface` / `canvas` / `-soft` | 7.67 / 6.34 / 6.20 | 7.67 / 6.47 / 6.20 | 4.5 |
 | `field-line` on `surface` / `canvas` | 4.15 / 3.43 | 4.07 / 3.43 | 3.0 |
 
-Two fixes carried in these numbers: `warn` moved from `#8A6210` to `#7A5610`
-because it measured 4.36:1 on the new darker canvas, and `ink-3` moved from
-`#828C84` to `#6E7970` because it measured 2.71:1 on the corrected sunk level.
+Three fixes carried in these numbers. `warn` moved from `#8A6210` to `#7A5610`
+because it measured 4.36:1 on the new darker canvas. `ink-3` moved from `#828C84`
+to `#6E7970` because it measured 2.71:1 on the corrected sunk level. And
+`accent-ink` darkened from `#3F6B07` to `#375D06` in legacy and `#AC4100` to
+`#9A3A00` in next, because it measured **4.45:1 and 4.38:1 on `--surface-sunk`**, a
+pair the first table never checked. It was missed because Rail bands did not exist
+when that table was written, so accent text had never sat on the sunk level before.
+`scripts/audit-contrast.mjs` now covers the pair.
 
 ---
 

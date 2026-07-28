@@ -294,7 +294,7 @@ export const CardHeader = ({
  *
  * This used to be a 3px left rule. Two things were wrong with it.
  *
- * First, it was broken: `RowList` used `[&>*+*]:border-t [&>*+*]:border-t-line`, and Tailwind's
+ * First, it was broken: `RowList` used `divide-y divide-line`, and Tailwind's
  * `divide-{color}` sets `border-color` on all four sides of every child after the
  * first, through a selector that outranks a plain `border-l-transparent` utility.
  * So every row except the first grew a 3px vertical stub in the hairline colour
@@ -376,7 +376,7 @@ export const RowList = ({
   className?: string;
 }) => (
   /*
-    Not `[&>*+*]:border-t [&>*+*]:border-t-line`. That utility pair sets `border-color` on all four
+    Not `divide-y divide-line`. That utility pair sets `border-color` on all four
     sides of every child after the first, through a selector specific enough to
     beat a plain per-side colour utility on the child itself. Setting only
     `border-top-color` keeps the divider and leaves the child's own borders alone.

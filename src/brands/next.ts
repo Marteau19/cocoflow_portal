@@ -3,11 +3,21 @@
  *
  * The new Ecoflo identity. Reachable with Alt+Shift+N or ?brand=next.
  *
- * PLACEHOLDER. Every value below currently mirrors the legacy brand, with the
- * exceptions marked TODO. When the brand guide lands in the reference folder,
- * overwrite the values in this file and nothing else. If overwriting this file
- * requires touching a component, that component has a hardcoded value and it is
- * a bug. See REFERENCES.md.
+ * The palette is read off the artboards in `references/brandings/New`:
+ *
+ *   orange  #F85E00   the accent
+ *   teal    #294D4A   the navigation ground
+ *   plum    #472836   the inverted feature panel
+ *   sage    #A3B19B   structural lines and muted grounds
+ *
+ * Those four are the whole identity. Everything else in this file is derived
+ * from them: the canvas is sage taken almost to white, the ink is teal taken
+ * almost to black, `accentInk` is the orange pushed dark enough to clear 4.5:1
+ * as text, and each `-soft` value is its parent lifted to a tint.
+ *
+ * Positive, negative, warn and alert are not in the brand palette. They are
+ * function rather than identity, so both brands share them: an approval must
+ * read as an approval in either skin.
  *
  * Keep every key. A missing key breaks the switch at runtime by design.
  */
@@ -19,28 +29,56 @@ export const next: Brand = {
   label: 'Ecoflo, new',
 
   color: {
-    // TODO overwrite from brand guide
-    canvas: '#FAF8F3',
-    canvasBlueprint: '#F7F7F4',
+    canvas: '#F0F2EC',
+    canvasBlueprint: '#ECEFEC',
     surface: '#FFFFFF',
-    surfaceSunk: '#F2EFE7',
-    ink: '#111A13',
-    ink2: '#5B655D',
-    ink3: '#8A928B',
-    line: '#E4E0D6',
-    lineStrong: '#CFC9BC',
-    forest: '#16281C',
-    onForest: '#F2F5F0',
-    accent: '#64A70B',
-    accentHover: '#588F0A',
-    onAccent: '#FFFFFF',
-    accentInk: '#3F6B07',
-    warn: '#9A6B12',
-    alert: '#96301D',
+    surfaceSunk: '#F2F4EE',
+    surfaceRaised: '#FFFFFF',
+
+    // Teal. The dark frame around the light workspace.
+    sidebar: '#294D4A',
+    onSidebar: '#F1F5F2',
+    sidebarMuted: '#93AAA6',
+
+    ink: '#1B2A27',
+    ink2: '#4E605C',
+    ink3: '#7C8C88',
+    line: '#DFE4DA',
+    // Sage, used at full strength. It is a structural colour in this identity,
+    // not a decorative one.
+    lineStrong: '#A3B19B',
+
+    // Plum, not teal. The feature panel has to separate from the sidebar, and
+    // giving it the fourth brand colour is what stops the two dark grounds
+    // reading as the same surface interrupted by content.
+    forest: '#472836',
+    onForest: '#F7EFF1',
+
+    accent: '#F85E00',
+    // Lightens on hover, for the reason given in legacy.ts: the fill carries
+    // dark text, so the hover state has to move away from it.
+    accentHover: '#FF7A28',
+    onAccent: '#1B2A27',
+    accentInk: '#AC4100',
+    accentSoft: '#FFEBDD',
+
+    positive: '#1B6E45',
+    onPositive: '#FFFFFF',
+    positiveSoft: '#E2F0E9',
+    negative: '#B3261E',
+    onNegative: '#FFFFFF',
+    negativeSoft: '#FBE7E5',
+
+    warn: '#8A6210',
+    warnSoft: '#F9EFD9',
+    alert: '#A33122',
+    alertSoft: '#FAE6E3',
   },
 
   font: {
-    // TODO overwrite if the new brand changes the typeface
+    // The artboards are set in a grotesque close enough to Plus Jakarta Sans
+    // that changing typeface would be a guess rather than a reading. The
+    // typeface stays until the brand guide names one.
     sans: "'Plus Jakarta Sans', system-ui, sans-serif",
     mono: "'IBM Plex Mono', ui-monospace, monospace",
     webfonts: ['Plus+Jakarta+Sans:wght@400;500;700', 'IBM+Plex+Mono:wght@400;500'],
@@ -57,17 +95,21 @@ export const next: Brand = {
     h1Lg: { size: '26px', line: '32px', tracking: '-0.01em', weight: 700 },
   },
 
+  // The new mark is built on a squared, softly rounded counter, so this brand
+  // runs slightly tighter corners than legacy.
   radius: {
-    // TODO the new brand may run tighter or softer corners
-    card: '10px',
-    control: '8px',
+    card: '16px',
+    control: '10px',
     pill: '999px',
+    shell: '22px',
   },
 
   space: [8, 12, 16, 24, 32, 48],
 
   shadow: {
-    sheet: '0 8px 32px rgba(17, 26, 19, 0.10)',
+    card: '0 1px 2px rgba(27, 42, 39, 0.04), 0 10px 24px -8px rgba(27, 42, 39, 0.10)',
+    raised: '0 2px 4px rgba(27, 42, 39, 0.05), 0 18px 36px -10px rgba(27, 42, 39, 0.16)',
+    sheet: '0 4px 8px rgba(27, 42, 39, 0.06), 0 28px 72px -16px rgba(27, 42, 39, 0.28)',
   },
 
   motion: {
@@ -77,15 +119,12 @@ export const next: Brand = {
   },
 
   logo: {
-    // TODO point at the new brand assets once they land.
-    //
-    // Deliberately borrowing the legacy files until then. The new identity in
-    // the reference folder is a set of artboards, not an extracted wordmark, so
-    // choosing one would be a guess. Pointing at assets that do not exist would
-    // break the logo on brand switch and read as a component bug, which is the
-    // one signal this contract exists to give us honestly.
-    wordmark: '/brand/legacy/ecoflo-wordmark.png',
-    wordmarkOnDark: '/brand/legacy/ecoflo-wordmark-light.png',
-    mark: '/brand/legacy/ecoflo-mark.png',
+    // Extracted from the artboards: the gradient wordmark for light grounds,
+    // the reversed white wordmark for dark ones, and the leading letter as a
+    // standalone mark. The gradient lives inside the asset, which is why
+    // DESIGN.md bans gradients in chrome but not here.
+    wordmark: '/brand/next/ecoflo-wordmark.png',
+    wordmarkOnDark: '/brand/next/ecoflo-wordmark-light.png',
+    mark: '/brand/next/ecoflo-mark.png',
   },
 };

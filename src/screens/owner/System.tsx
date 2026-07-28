@@ -155,7 +155,7 @@ export const OwnerSystem = () => {
         {/* ---------------------------------------------------------------- */}
         <Section id="system-documents">
           <Card>
-            <CardHeader eyebrow="Yours to keep" title="Documents" />
+            <CardHeader icon="file-text" eyebrow="Yours to keep" title="Documents" />
             <RowList>
               {[
                 { label: 'Installation certificate', detail: longDate(asset.installedOn) },

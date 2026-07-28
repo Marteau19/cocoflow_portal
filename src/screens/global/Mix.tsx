@@ -90,7 +90,7 @@ export const GlobalMix = () => {
                   </div>
                   <div className="flex items-baseline justify-between gap-3 py-3 lg:pb-0">
                     <dt className="text-caption text-ink2">Gained since {network.history[0].period}</dt>
-                    <dd className="text-h2 text-accent-ink">
+                    <dd className="text-h2 text-positive">
                       {percent(current - network.history[0].servicePct)}
                     </dd>
                   </div>

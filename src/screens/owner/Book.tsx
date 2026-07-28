@@ -139,7 +139,7 @@ export const OwnerBook = () => {
           <Stack gap="4">
             {/* What the visit is for. */}
             <Card>
-              <CardHeader eyebrow="Step one" title="What is it about?" />
+              <CardHeader icon="message-square" eyebrow="Step one" title="What is it about?" />
               <RowList>
                 {REASONS.map((item) => {
                   const selected = reason === item.code;
@@ -174,6 +174,7 @@ export const OwnerBook = () => {
             {/* Real availability, and an arrival window rather than a time. */}
             <Card>
               <CardHeader
+                icon="calendar"
                 eyebrow="Step two"
                 title="Choose an arrival window"
                 action={<Status tone="neutral">{`${SLOTS.length} days open`}</Status>}

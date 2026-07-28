@@ -173,7 +173,7 @@ export const ProspectQuote = () => {
                   <Row key={line.label}>
                     <div className="flex items-baseline justify-between gap-3">
                       <p className="min-w-0 text-caption text-ink">{line.label}</p>
-                      <span className="shrink-0 text-caption text-accent-ink">Included</span>
+                      <span className="shrink-0 text-caption text-positive">Included</span>
                     </div>
                   </Row>
                 ))}

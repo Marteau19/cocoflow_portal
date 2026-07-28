@@ -97,12 +97,12 @@ export const OwnerContract = () => {
 
             {/* What is covered, in plain words. */}
             <Card>
-              <CardHeader eyebrow="What you get" title="Cover" />
+              <CardHeader icon="check" eyebrow="What you get" title="Cover" />
               <RowList>
                 {contract.entitlements.map((item) => (
                   <Row key={item}>
                     <div className="flex items-start gap-3">
-                      <span className="mt-1 shrink-0 text-accent-ink">
+                      <span className="mt-1 shrink-0 text-positive">
                         <Icon name="check" />
                       </span>
                       <p className="text-body text-ink">{item}</p>
@@ -150,7 +150,7 @@ export const OwnerContract = () => {
                               </Status>
                             </div>
                           </div>
-                          <p className="shrink-0 text-caption text-accent-ink">Included</p>
+                          <p className="shrink-0 text-caption text-positive">Included</p>
                         </div>
                       </Row>
                     );
@@ -171,7 +171,7 @@ export const OwnerContract = () => {
 
             {/* Changing or ending it, offered plainly rather than buried. */}
             <Card>
-              <CardHeader eyebrow="If you want to change it" title="Your options" />
+              <CardHeader icon="info" iconTone="neutral" eyebrow="If you want to change it" title="Your options" />
               <div className="space-y-3 px-4 py-3">
                 <div>
                   <p className="text-body text-ink">Move the renewal date</p>

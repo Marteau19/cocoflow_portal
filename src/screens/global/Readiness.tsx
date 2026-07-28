@@ -151,7 +151,7 @@ export const GlobalReadiness = () => {
                             <Row key={gate.key} rule={pass ? 'none' : 'warn'}>
                               <div className="flex items-start gap-3">
                                 <span
-                                  className={`mt-1 shrink-0 ${pass ? 'text-accent-ink' : 'text-warn'}`}
+                                  className={`mt-1 shrink-0 ${pass ? 'text-positive' : 'text-warn'}`}
                                 >
                                   <Icon name={pass ? 'check' : 'alert-triangle'} />
                                 </span>

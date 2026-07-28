@@ -109,7 +109,12 @@ export const ManagerDashboard = () => {
             {/* What needs a decision. Rows, with a left rule for urgency. */}
             {/* ---------------------------------------------------------- */}
             <Card>
-              <CardHeader title="Needs you today" eyebrow="Decisions, not notifications" />
+              <CardHeader
+                icon="alert-triangle"
+                iconTone="warn"
+                title="Needs you today"
+                eyebrow="Decisions, not notifications"
+              />
               <RowList>
                 {unstarted.length > 0 && (
                   <Row rule="warn" to="/sp/dispatch">

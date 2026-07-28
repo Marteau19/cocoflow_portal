@@ -133,7 +133,7 @@ export const OwnerMessages = () => {
                 }
               />
 
-              <div className="divide-y divide-line">
+              <div className="[&>*+*]:border-t [&>*+*]:border-t-line">
                 {messages.map((message, index) => {
                   const author =
                     message.from === 'team' && message.authorId

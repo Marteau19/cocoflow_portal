@@ -368,23 +368,27 @@ export const RankedRows = ({
     detail?: ReactNode;
   }>;
 }) => (
-  <div className="divide-y divide-line">
+  <div className="[&>*+*]:border-t [&>*+*]:border-t-line">
     {rows.map((row) => {
-      const tone =
-        row.standing === 'lead'
-          ? 'border-l-ink'
-          : row.standing === 'lag'
-            ? 'border-l-warn'
-            : 'border-l-line-strong';
+      // Standing is carried by the row's ground, not by a left rule. Same change
+      // as `Row`: a 3px edge is the weakest of the status treatments, and mixed in
+      // with the accidental ones it read as noise.
+      const ground = row.standing === 'lag' ? 'bg-warn-soft' : '';
       return (
-        <div key={row.key} className={`flex items-baseline justify-between gap-3 border-l-rule ${tone} px-4 py-3`}>
+        <div
+          key={row.key}
+          className={`flex items-baseline justify-between gap-3 ${ground} px-4 py-3`}
+        >
           <div className="min-w-0">
-            <p className="text-body text-ink">{row.label}</p>
+            <p className={`text-body text-ink ${row.standing === 'lead' ? 'font-medium' : ''}`}>
+              {row.label}
+            </p>
             {row.detail && <div className="mt-1 text-caption text-ink2">{row.detail}</div>}
           </div>
-          <p className="shrink-0 text-body font-medium text-ink">
+          {/* Global is comparative: the figure sits at `display`, not at body. */}
+          <p className="shrink-0 text-display text-ink">
             {row.value.toFixed(1)}
-            {row.suffix && <span className="text-caption text-ink2">{row.suffix}</span>}
+            {row.suffix && <span className="ml-1 text-body font-medium text-ink2">{row.suffix}</span>}
           </p>
         </div>
       );

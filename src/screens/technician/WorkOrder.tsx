@@ -147,7 +147,7 @@ export const TechnicianWorkOrder = () => {
 
     if (item.type === 'photo') {
       return (
-        <Row key={item.id} rule={complete ? 'strong' : 'neutral'}>
+        <Row key={item.id} tone={complete ? 'strong' : 'neutral'}>
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="text-body text-ink">{item.label}</p>
@@ -170,7 +170,7 @@ export const TechnicianWorkOrder = () => {
 
     if (item.type === 'measure') {
       return (
-        <Row key={item.id} rule={complete ? 'strong' : 'neutral'}>
+        <Row key={item.id} tone={complete ? 'strong' : 'neutral'}>
           <label className="block">
             <p className="text-body text-ink">{item.label}</p>
             <input
@@ -411,7 +411,7 @@ export const TechnicianWorkOrder = () => {
                             <p className="text-caption text-ink">{duration(order.durationMin)}</p>
                           </div>
                         </Row>
-                        <Row rule={signed ? 'strong' : 'neutral'}>
+                        <Row tone={signed ? 'strong' : 'neutral'}>
                           <div className="flex items-center justify-between gap-3">
                             <div className="min-w-0">
                               <p className="text-body text-ink">Customer signature</p>

@@ -192,7 +192,7 @@ export const GlobalMix = () => {
                   return (
                     <Row
                       key={region.id}
-                      rule={above ? 'strong' : 'warn'}
+                      tone={above ? 'strong' : 'warn'}
                       to={`/network/${region.id}`}
                     >
                       <div className="flex items-start justify-between gap-3">

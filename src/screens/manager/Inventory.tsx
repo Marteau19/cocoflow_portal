@@ -38,7 +38,7 @@ import {
   RowList,
   Stack,
   Status,
-  type RuleTone,
+  type RowTone,
 } from '../../ui/primitives';
 import { ScreenBody } from '../ScreenBody';
 
@@ -51,7 +51,7 @@ const available = (row: InventoryItem): number => row.onHand - row.reserved;
  */
 const standing = (
   row: InventoryItem,
-): { label: string; rule: RuleTone; tone: 'neutral' | 'warn' | 'alert' } => {
+): { label: string; rule: RowTone; tone: 'neutral' | 'warn' | 'alert' } => {
   if (row.forecastConsumption28d > available(row)) {
     return { label: 'SHORT', rule: 'alert', tone: 'alert' };
   }
@@ -79,7 +79,7 @@ const StockTable = ({ rows, caption }: { rows: InventoryItem[]; caption: string 
         const product = products.find((p) => p.sku === row.sku);
         const state = standing(row);
         return (
-          <Row key={`${row.sku}-${row.location}`} rule={state.rule}>
+          <Row key={`${row.sku}-${row.location}`} tone={state.rule}>
             <div className="md:grid md:grid-cols-[2fr_repeat(4,minmax(0,1fr))] md:items-baseline md:gap-3">
               <div className="min-w-0">
                 <p className="text-body text-ink">{product?.name ?? row.sku}</p>

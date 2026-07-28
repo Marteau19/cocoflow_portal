@@ -119,7 +119,7 @@ export const ProspectHandover = () => {
             <Card>
               <CardHeader icon="calendar" eyebrow="Already booked" title="Your first check up" />
               <RowList>
-                <Row rule="strong">
+                <Row tone="strong">
                   <div className="flex items-baseline justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-body text-ink">Annual inspection</p>

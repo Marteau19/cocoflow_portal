@@ -189,7 +189,7 @@ export const GlobalReadiness = () => {
                         key={gate.key}
                         gutter
                         density="global"
-                        rule={pass ? 'none' : 'warn'}
+                        tone={pass ? 'none' : 'warn'}
                         // Ground carries state. A failing gate and a passing gate
                         // differing only by a 13px icon colour is what made the one
                         // thing this screen exists to say read weakest.

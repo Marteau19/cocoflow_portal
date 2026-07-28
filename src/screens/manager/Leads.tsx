@@ -3,7 +3,7 @@
  *
  * Screen 24. Leads.
  *
- * Bordered rows, stage as a text label and a left rule. Source matters as much
+ * Bordered rows, stage as a text label and a tinted ground. Source matters as much
  * as stage here: attribution is what makes the MARCOM screen's closed loop
  * possible, so it is a column rather than a detail.
  *
@@ -28,12 +28,12 @@ import {
   Stack,
   Status,
   Tabs,
-  type RuleTone,
+  type RowTone,
   type StatusTone,
 } from '../../ui/primitives';
 import { ScreenBody } from '../ScreenBody';
 
-const STAGE: Record<Lead['status'], { label: string; rule: RuleTone; tone: StatusTone }> = {
+const STAGE: Record<Lead['status'], { label: string; rule: RowTone; tone: StatusTone }> = {
   new: { label: 'NEW', rule: 'warn', tone: 'warn' },
   contacted: { label: 'CONTACTED', rule: 'neutral', tone: 'neutral' },
   'soil-test-booked': { label: 'SOIL TEST BOOKED', rule: 'neutral', tone: 'neutral' },
@@ -126,7 +126,7 @@ export const ManagerLeads = () => {
                       const isGolden = lead.id === GOLDEN.leadId;
 
                       return (
-                        <Row key={lead.id} rule={stage.rule}>
+                        <Row key={lead.id} tone={stage.rule}>
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-baseline gap-2">

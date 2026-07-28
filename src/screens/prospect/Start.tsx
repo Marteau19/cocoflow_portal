@@ -64,7 +64,7 @@ export const ProspectStart = () => {
           <Stack gap="4">
             <Card>
               <CardHeader eyebrow="Step one" title="What brings you here?" />
-              <div className="divide-y divide-line">
+              <div className="[&>*+*]:border-t [&>*+*]:border-t-line">
                 {REASONS.map((item) => {
                   const selected = reason === item.code;
                   return (

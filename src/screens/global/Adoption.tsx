@@ -112,7 +112,7 @@ export const GlobalAdoption = () => {
               {/* Steps down the funnel, as rows with a numeric value. */}
               <RowList>
                 {FUNNEL.map((step, index) => (
-                  <Row key={step.key} rule={index === 0 ? 'strong' : 'neutral'}>
+                  <Row key={step.key} tone={index === 0 ? 'strong' : 'neutral'}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-body text-ink">{step.label}</p>
@@ -141,7 +141,7 @@ export const GlobalAdoption = () => {
               />
               <RowList>
                 {readiness.map((sp) => (
-                  <Row key={sp.id} rule={sp.readiness >= 80 ? 'strong' : 'warn'}>
+                  <Row key={sp.id} tone={sp.readiness >= 80 ? 'strong' : 'warn'}>
                     <div className="flex items-baseline justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-body text-ink">{sp.name}</p>
@@ -199,7 +199,7 @@ export const GlobalAdoption = () => {
               />
               <RowList>
                 {GAPS.map((gap) => (
-                  <Row key={gap.theme} rule="warn">
+                  <Row key={gap.theme} tone="warn">
                     <div className="flex items-baseline justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-body text-ink">{gap.theme}</p>

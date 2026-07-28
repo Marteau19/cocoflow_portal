@@ -179,7 +179,7 @@ export const OwnerBook = () => {
                 title="Choose an arrival window"
                 action={<Status tone="neutral">{`${SLOTS.length} days open`}</Status>}
               />
-              <div className="divide-y divide-line">
+              <div className="[&>*+*]:border-t [&>*+*]:border-t-line">
                 {SLOTS.map((day) => (
                   <div key={day.date} className="px-4 py-3">
                     <div className="flex items-baseline justify-between gap-3">

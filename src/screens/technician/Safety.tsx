@@ -182,7 +182,7 @@ export const TechnicianSafety = () => {
                     : `${blockingOutstanding.length} required outstanding`
                 }
               />
-              <div className="divide-y divide-line">
+              <div className="[&>*+*]:border-t [&>*+*]:border-t-line">
                 {CHECKS.map((check) => {
                   const complete = done.includes(check.id);
                   return (

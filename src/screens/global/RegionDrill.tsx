@@ -115,7 +115,7 @@ export const GlobalRegionDrill = () => {
                     Weighted by revenue, so the larger Service Points count for more.
                   </p>
                 </div>
-                <dl className="divide-y divide-line border-t border-line lg:border-l lg:border-t-0 lg:pl-4">
+                <dl className="[&>*+*]:border-t [&>*+*]:border-t-line border-t border-line lg:border-l lg:border-t-0 lg:pl-4">
                   <div className="flex items-baseline justify-between gap-3 py-3 lg:pt-0">
                     <dt className="text-caption text-ink2">Revenue</dt>
                     <dd className="text-body font-medium text-ink">{millions(revenue)}</dd>
@@ -152,7 +152,7 @@ export const GlobalRegionDrill = () => {
                   const above = sp.servicePct >= target;
 
                   return (
-                    <Row key={sp.id} rule={above ? 'strong' : 'warn'}>
+                    <Row key={sp.id} tone={above ? 'strong' : 'warn'}>
                       <div className="flex flex-wrap items-baseline justify-between gap-2">
                         <div className="min-w-0">
                           <p className="text-body text-ink">{sp.name}</p>
@@ -204,7 +204,7 @@ export const GlobalRegionDrill = () => {
                 {ranked
                   .filter((sp) => sp.servicePct < target)
                   .map((sp) => (
-                    <Row key={sp.id} rule="warn">
+                    <Row key={sp.id} tone="warn">
                       <p className="text-body text-ink">{sp.name}</p>
                       <p className="mt-1 max-w-reading text-caption text-ink2">
                         {percent(target - sp.servicePct)} of service share to find.{' '}

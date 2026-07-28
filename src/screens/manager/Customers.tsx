@@ -97,7 +97,7 @@ export const ManagerCustomers = () => {
             <Stack gap="4">
               <Card>
                 <CardHeader eyebrow="Read only, from the master system" title="Account" />
-                <dl className="divide-y divide-line">
+                <dl className="[&>*+*]:border-t [&>*+*]:border-t-line">
                   {[
                     ['Account', open.id, true],
                     ['Property type', open.propertyType, false],
@@ -134,7 +134,7 @@ export const ManagerCustomers = () => {
               {asset && (
                 <Card>
                   <CardHeader eyebrow="Installed" title={asset.model} />
-                  <dl className="divide-y divide-line">
+                  <dl className="[&>*+*]:border-t [&>*+*]:border-t-line">
                     <div className="flex items-baseline justify-between gap-3 px-4 py-3">
                       <dt className="text-caption text-ink2">Serial</dt>
                       <dd className="font-mono text-caption uppercase text-ink">{asset.serial}</dd>
@@ -154,7 +154,7 @@ export const ManagerCustomers = () => {
               {contract && (
                 <Card>
                   <CardHeader eyebrow="Care plan" title={contract.name} />
-                  <dl className="divide-y divide-line">
+                  <dl className="[&>*+*]:border-t [&>*+*]:border-t-line">
                     <div className="flex items-baseline justify-between gap-3 px-4 py-3">
                       <dt className="text-caption text-ink2">Renews</dt>
                       <dd className="text-caption text-ink">{longDate(contract.renewsOn)}</dd>
@@ -176,7 +176,7 @@ export const ManagerCustomers = () => {
                   <CardHeader eyebrow="Open" title="Needs a reply" />
                   <RowList>
                     {openCases.map((item) => (
-                      <Row key={item.id} rule="warn">
+                      <Row key={item.id} tone="warn">
                         <div className="flex items-baseline justify-between gap-3">
                           <div className="min-w-0">
                             <p className="text-body text-ink">{item.subject}</p>
@@ -206,7 +206,7 @@ export const ManagerCustomers = () => {
                     {timeline.map((entry) => {
                       const visit = entry.kind === 'visit' ? byId(workOrders, entry.id) : undefined;
                       return (
-                        <Row key={entry.id} rule={entry.kind === 'visit' ? 'neutral' : 'none'}>
+                        <Row key={entry.id} tone={entry.kind === 'visit' ? 'neutral' : 'none'}>
                           <div className="flex items-start gap-3">
                             <span className="mt-1 shrink-0 text-ink3">
                               <Icon name={entry.kind === 'visit' ? 'calendar' : 'package'} />

@@ -195,7 +195,7 @@ export const OwnerParts = () => {
                   ))}
                 </RowList>
 
-                <dl className="divide-y divide-line border-t border-line">
+                <dl className="[&>*+*]:border-t [&>*+*]:border-t-line border-t border-line">
                   <div className="flex items-baseline justify-between gap-3 px-4 py-3">
                     <dt className="text-caption text-ink2">Parts</dt>
                     <dd className="text-caption text-ink">{money(totals.subtotal)}</dd>

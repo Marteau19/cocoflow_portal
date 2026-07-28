@@ -135,7 +135,7 @@ export const OwnerInvoices = () => {
                 )}
               </div>
 
-              <dl className="divide-y divide-line border-t border-line">
+              <dl className="[&>*+*]:border-t [&>*+*]:border-t-line border-t border-line">
                 <div className="flex items-baseline justify-between gap-3 px-4 py-3">
                   <dt className="text-caption text-ink2">Paid this year</dt>
                   <dd className="text-body font-medium text-ink">{money(paidThisYear)}</dd>
@@ -169,7 +169,7 @@ export const OwnerInvoices = () => {
                   state they are currently in. The switch shows the state and the
                   action at once.
                 */}
-                <Row rule={autopay ? 'positive' : 'warn'}>
+                <Row tone={autopay ? 'positive' : 'warn'}>
                   <Toggle
                     label={autopay ? 'Autopay is on' : 'Autopay is off'}
                     checked={autopay}

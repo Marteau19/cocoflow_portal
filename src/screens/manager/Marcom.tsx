@@ -235,7 +235,7 @@ export const ManagerMarcom = () => {
                     return (
                       <Row
                         key={order.id}
-                        rule={order.leadsAttributed ? 'strong' : 'neutral'}
+                        tone={order.leadsAttributed ? 'strong' : 'neutral'}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0 flex-1">

@@ -92,12 +92,16 @@ export const Section = ({
           onClick={() => open(id)}
           aria-label={`About this section: ${annotation.title}`}
           aria-expanded={isOpen}
-          className={`absolute right-2 top-2 z-frame grid h-3 w-3 place-items-center rounded-control border text-micro transition-colors duration-state ease-ease ${
+          // The marker clears the camera on the two sections that run to the top
+          // of the display. Those are exactly the `onDark` ones: a section is
+          // inverted here because it is the full-bleed panel a screen opens with,
+          // and a full-bleed panel is the only thing that passes under the island.
+          className={`absolute right-2 z-frame grid h-3 w-3 place-items-center rounded-control border text-micro transition-colors duration-state ease-ease ${
             onDark
-              ? 'border-on-forest text-on-forest opacity-50 hover:opacity-100'
+              ? 'top-[calc(var(--safe-top)+var(--space-1))] border-on-forest text-on-forest opacity-50 hover:opacity-100'
               : isOpen
-                ? 'border-ink2 text-ink'
-                : 'border-line text-ink3 hover:border-ink3 hover:text-ink2'
+                ? 'top-2 border-ink2 text-ink'
+                : 'top-2 border-line text-ink3 hover:border-ink3 hover:text-ink2'
           }`}
         >
           <span className="font-mono leading-none">{number}</span>

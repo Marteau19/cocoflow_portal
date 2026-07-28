@@ -239,7 +239,7 @@ export const TechnicianWorkOrder = () => {
             {/* -------------------------------------------------------------- */}
             {/* Active job header. Forest, for the second and last time in V1.  */}
             {/* -------------------------------------------------------------- */}
-            <div className="bg-forest px-gutter py-4 text-on-forest">
+            <div className="bg-forest px-gutter pb-4 pt-[calc(var(--safe-top)+var(--space-3))] text-on-forest">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <Micro className="text-on-forest opacity-70">

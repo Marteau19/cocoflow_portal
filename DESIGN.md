@@ -219,6 +219,31 @@ Below 768px the sidebar collapses to a dark bar that opens a sheet. The
 mobile-first roles use a bottom bar at every width, inside the device frame above
 900px.
 
+### The device frame
+Above 900px the three mobile-first roles render inside a handset. Below 900px
+there is no frame and the app is the whole viewport.
+
+The handset is **drawn, not photographed**: resolution independent, no asset
+weight, and the screen corner is a real clipping boundary rather than a rectangle
+positioned over a picture. It lives entirely in the `.device-*` block in
+`index.css`.
+
+Two rules follow from it:
+
+- **The camera sits over the app**, as hardware does. It is a sibling of the
+  screen, so the screen keeps its overflow clip, and it takes no pointer events.
+- **Content is inset from the top of the display by `--safe-top`**, because the
+  camera is in the way. A full-bleed panel still runs to the very top of the
+  screen, which is what a real app does; it is the panel's own top padding that
+  clears the island. `--safe-top` is `0` below 900px, where there is no camera.
+
+**The one exception to the no-hex rule.** The rail, the bezel and the lens are
+literal colours. They are photographic properties of a physical object, not brand
+values: a titanium rail is the same grey in both brands, and a brand switch that
+tinted the phone would be a bug. They sit in `index.css` beside the device
+dimensions, which are literals for the same reason. Nothing else in the codebase
+gets this exemption.
+
 ### Client (mobile first)
 Single column, 20px gutters. One dominant block at the top that answers "what
 happens next", then a quiet list beneath. Bottom nav, **four items maximum,

@@ -144,8 +144,16 @@ const inspect = () => {
    *
    * A dot is a small, empty, fully rounded element with a signal background.
    * "No label" means no text in its parent, which is the shape the ban is about.
+   *
+   * The device frame is excluded. The camera lens is a small round coloured
+   * element with no label and always will be, because it is hardware rather than
+   * a status signal, and the ban is about colour being the only signal in the
+   * interface. The frame is not the interface.
    */
+  const inDeviceChrome = (el) => el.closest('.device-shell') && !el.closest('.device-screen');
+
   for (const el of all) {
+    if (inDeviceChrome(el)) continue;
     const s = styles.get(el);
     const r = el.getBoundingClientRect();
     const round = parseFloat(s.borderRadius) >= r.width / 2 && r.width <= 12 && r.width > 2;

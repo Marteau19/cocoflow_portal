@@ -16,18 +16,17 @@ import { GOLDEN, byId, leads, resources, territories } from '../../data/seedData
 import { longDate } from '../../lib/format';
 import {
   Avatar,
+  Band,
+  BandHead,
   ButtonLink,
-  Card,
-  CardHeader,
+  Hero,
   Icon,
+  Masthead,
   Micro,
-  PageHead,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 /**
  * What was measured, and what each measurement means for this property. The
@@ -69,19 +68,31 @@ export const ProspectSoilTest = () => {
   )!;
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
+    <>
+      {/*
+        Masthead. The hero is the finding the whole design follows from: how fast
+        the ground drains. A number on its own would be a measurement, so it
+        carries what it means directly beneath.
+      */}
+      <Section id="soil-test" onDark>
+        <Masthead
           eyebrow="Your soil test"
-          title="What we found on your land"
-          lead="We spent an hour on the property. Here is what the ground told us, in plain language."
+          subject="What we found on your land"
+          hero={
+            <Hero
+              onBand
+              label="How fast the ground drains"
+              value={FINDINGS[0].value}
+              delta={{ text: 'Rules out a conventional leaching bed', tone: 'warn' }}
+              note="We spent an hour on the property. Here is what the ground told us, in plain language."
+            />
+          }
         />
+      </Section>
 
-        <Section id="soil-test">
-          <Stack gap="4">
-            {/* Who came, and when. A test is a visit, not a document. */}
-            <Card>
-              <div className="flex items-center gap-3 px-4 py-3">
+      {/* Data. Who came, and when. A test is a visit, not a document. */}
+      <Band kind="data" flush>
+              <div className="flex items-center gap-3 px-gutter py-4">
                 <Avatar
                   name={technician.name}
                   initials={technician.initials}
@@ -95,21 +106,25 @@ export const ProspectSoilTest = () => {
                   </p>
                 </div>
               </div>
-              <div className="border-t border-line px-4 py-3">
-                <Status tone="good">REPORT READY</Status>
-                <p className="mt-2 text-caption text-ink2">
+              <div className="border-t border-line px-gutter py-4">
+                <Status tone="good" dot>
+                  REPORT READY
+                </Status>
+                <p className="mt-2 max-w-reading text-caption text-ink2">
                   There is nothing to pay for the test. It is part of how we work out what your
                   property needs.
                 </p>
               </div>
-            </Card>
+      </Band>
 
-            {/* Each finding with what it means. Never a number on its own. */}
-            <Card>
-              <CardHeader eyebrow="Four things we measured" title="What the ground told us" />
-              <RowList>
+      {/* Rail. Each finding with what it means. Never a number on its own. */}
+      <Band kind="rail" flush>
+              <div className="px-gutter">
+                <BandHead eyebrow="Four things we measured" title="What the ground told us" />
+              </div>
+              <RowList className="border-t border-line">
                 {FINDINGS.map((finding) => (
-                  <Row key={finding.label}>
+                  <Row key={finding.label} gutter>
                     <div className="flex items-baseline justify-between gap-3">
                       <p className="text-body text-ink">{finding.label}</p>
                       <p className="shrink-0 text-body font-medium text-ink">{finding.value}</p>
@@ -118,12 +133,14 @@ export const ProspectSoilTest = () => {
                   </Row>
                 ))}
               </RowList>
-            </Card>
+      </Band>
 
-            {/* The conclusion, stated before the quote asks for a decision. */}
-            <Card>
-              <CardHeader eyebrow="What this means" title="What we can install" />
-              <div className="px-4 py-3">
+      {/* Data. The conclusion, stated before the quote asks for a decision. */}
+      <Band kind="data" flush>
+              <div className="px-gutter">
+                <BandHead eyebrow="What this means" title="What we can install" />
+              </div>
+              <div className="px-gutter pb-4">
                 <p className="max-w-reading text-body text-ink">
                   Your lot rules out a conventional leaching bed. What it suits is a compact system
                   that treats the water above the problem layer rather than relying on the ground to
@@ -134,18 +151,20 @@ export const ProspectSoilTest = () => {
                   simpler and cheaper system would be the right call, and we would have said so.
                 </p>
               </div>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-4">
                 <ButtonLink to="/quote" variant="primary" icon="chevron-right">
                   See what we recommend
                 </ButtonLink>
               </div>
-            </Card>
+      </Band>
 
-            {/* The report itself, for whoever wants the underlying numbers. */}
-            <Card>
-              <CardHeader eyebrow="For your records" title="The full report" />
-              <RowList>
-                <Row>
+      {/* Closing. The report itself, for whoever wants the underlying numbers. */}
+      <Band kind="closing" flush>
+              <div className="px-gutter">
+                <BandHead eyebrow="For your records" title="The full report" />
+              </div>
+              <RowList className="border-t border-line">
+                <Row gutter>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <span className="shrink-0 text-ink3">
@@ -164,17 +183,14 @@ export const ProspectSoilTest = () => {
                   </div>
                 </Row>
               </RowList>
-              <div className="border-t border-line px-4 py-3">
+              <div className="border-t border-line px-gutter py-4">
                 <Micro>If you are getting other quotes</Micro>
                 <p className="mt-1 text-caption text-ink2">
                   This report is yours. You are welcome to share it with anyone else you are talking
                   to, and you do not need our permission.
                 </p>
               </div>
-            </Card>
-          </Stack>
-        </Section>
-      </Stack>
-    </ScreenBody>
+      </Band>
+    </>
   );
 };

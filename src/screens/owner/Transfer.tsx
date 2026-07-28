@@ -171,7 +171,7 @@ export const OwnerTransfer = () => {
                 {STAYS.map((item) => (
                   <Row key={item.label}>
                     <div className="flex items-start gap-3">
-                      <span className="mt-1 shrink-0 text-accent-ink">
+                      <span className="mt-1 shrink-0 text-positive">
                         <Icon name="check" />
                       </span>
                       <div className="min-w-0">

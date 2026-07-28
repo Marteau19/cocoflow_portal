@@ -38,6 +38,10 @@ const TOKENS = [
   'color-surface-sunk',
   'color-accent',
   'color-accent-ink',
+  // Available to any chart where the point is which side of a line a value
+  // falls on. The series itself stays accent: it is the brand line.
+  'color-positive',
+  'color-negative',
   'color-warn',
   'font-mono',
   'font-sans',

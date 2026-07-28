@@ -54,18 +54,30 @@ export const Section = ({
 
   return (
     <section
-      className={`relative ${on ? 'border-l border-dashed border-line-strong pl-3' : ''} ${className}`}
+      // Read by scripts/audit-design.mjs to assert that every screen carries at
+      // least one annotation. A screen without one leaves a hole in the exported
+      // spec, which is the failure this layer exists to prevent.
+      data-section-id={id}
+      className={`relative ${on ? 'border-l border-dashed border-line-strong pl-5' : ''} ${className}`}
     >
       {on ? (
         <>
-          {/* Leader line, from the boundary into the content. */}
-          <span aria-hidden className="absolute left-0 top-2 h-px w-3 bg-line-strong" />
+          {/* Leader line, from the boundary to the callout. */}
+          <span aria-hidden className="absolute left-0 top-4 h-px w-1 bg-line-strong" />
+          {/*
+            Inset from both edges rather than straddling the boundary at y=0. A
+            section that runs flush to the top of the screen, which is every
+            screen opening with an inverted panel, would otherwise have its
+            callout clipped by the rounded corner of the device frame. The
+            resulting indent reads as a drawing margin, which is the register
+            Blueprint mode is in anyway.
+          */}
           <button
             type="button"
             onClick={() => open(id)}
             aria-label={`Callout ${number}, ${annotation.title}`}
             aria-expanded={isOpen}
-            className={`absolute left-0 top-0 z-frame -translate-x-1/2 rounded-control border px-1 font-mono text-micro transition-colors duration-state ease-ease ${
+            className={`absolute left-1 top-3 z-frame rounded-control border px-1 font-mono text-micro transition-colors duration-state ease-ease ${
               isOpen
                 ? 'border-accent-ink bg-accent text-on-accent'
                 : 'border-line-strong bg-surface text-ink2 hover:border-ink2 hover:text-ink'
@@ -80,12 +92,16 @@ export const Section = ({
           onClick={() => open(id)}
           aria-label={`About this section: ${annotation.title}`}
           aria-expanded={isOpen}
-          className={`absolute right-2 top-2 z-frame grid h-3 w-3 place-items-center rounded-control border text-micro transition-colors duration-state ease-ease ${
+          // The marker clears the camera on the two sections that run to the top
+          // of the display. Those are exactly the `onDark` ones: a section is
+          // inverted here because it is the full-bleed panel a screen opens with,
+          // and a full-bleed panel is the only thing that passes under the island.
+          className={`absolute right-2 z-frame grid h-3 w-3 place-items-center rounded-control border text-micro transition-colors duration-state ease-ease ${
             onDark
-              ? 'border-on-forest text-on-forest opacity-50 hover:opacity-100'
+              ? 'top-[calc(var(--safe-top)+var(--space-1))] border-on-forest text-on-forest opacity-50 hover:opacity-100'
               : isOpen
-                ? 'border-ink2 text-ink'
-                : 'border-line text-ink3 hover:border-ink3 hover:text-ink2'
+                ? 'top-2 border-ink2 text-ink'
+                : 'top-2 border-line text-ink3 hover:border-ink3 hover:text-ink2'
           }`}
         >
           <span className="font-mono leading-none">{number}</span>

@@ -32,6 +32,7 @@ import {
   ButtonLink,
   Card,
   Icon,
+  IconChip,
   Micro,
   Row,
   RowList,
@@ -76,7 +77,7 @@ export const OwnerHome = () => {
         {/* The dominant block. Nothing else on this screen competes with it. */}
         {/* ---------------------------------------------------------------- */}
         <Section id="next-visit" onDark>
-          <div className="bg-forest px-gutter py-5 text-on-forest">
+          <div className="bg-forest px-gutter pb-5 pt-[calc(var(--safe-top)+var(--space-4))] text-on-forest">
             <Micro className="text-on-forest opacity-70">Your next visit</Micro>
 
             {/*
@@ -129,11 +130,19 @@ export const OwnerHome = () => {
         {/* ---------------------------------------------------------------- */}
         <div className="px-gutter">
           <Stack gap="4">
+            {/*
+              Three rows that are structurally identical: label, value, one line
+              of detail, chevron. The icon chip is what makes them scannable
+              without reading, which is the case DESIGN.md section 7 permits it
+              for. Each one is a different icon, so the chips distinguish rather
+              than decorate.
+            */}
             <Card>
               <RowList>
                 <Row to="/system">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
+                  <div className="flex items-center gap-3">
+                    <IconChip name="file-text" />
+                    <div className="min-w-0 flex-1">
                       <Micro>Your system</Micro>
                       <p className="mt-1 text-body text-ink">{asset.product}</p>
                       <p className="text-caption text-ink2">
@@ -147,8 +156,9 @@ export const OwnerHome = () => {
                 </Row>
 
                 <Row to="/contract">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
+                  <div className="flex items-center gap-3">
+                    <IconChip name="check" />
+                    <div className="min-w-0 flex-1">
                       <Micro>Your care plan</Micro>
                       <p className="mt-1 text-body text-ink">{contract.name}</p>
                       <p className="text-caption text-ink2">
@@ -163,8 +173,9 @@ export const OwnerHome = () => {
                 </Row>
 
                 <Row to="/invoices">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
+                  <div className="flex items-center gap-3">
+                    <IconChip name="package" tone="neutral" />
+                    <div className="min-w-0 flex-1">
                       <Micro>Invoices</Micro>
                       <p className="mt-1 text-body text-ink">Nothing outstanding</p>
                       <p className="text-caption text-ink2">

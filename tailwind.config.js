@@ -24,6 +24,10 @@ export default {
       'canvas-blueprint': 'var(--color-canvas-blueprint)',
       surface: 'var(--color-surface)',
       'surface-sunk': 'var(--color-surface-sunk)',
+      'surface-raised': 'var(--color-surface-raised)',
+      sidebar: 'var(--color-sidebar)',
+      'on-sidebar': 'var(--color-on-sidebar)',
+      'sidebar-muted': 'var(--color-sidebar-muted)',
       ink: 'var(--color-ink)',
       ink2: 'var(--color-ink2)',
       ink3: 'var(--color-ink3)',
@@ -35,8 +39,17 @@ export default {
       'accent-hover': 'var(--color-accent-hover)',
       'on-accent': 'var(--color-on-accent)',
       'accent-ink': 'var(--color-accent-ink)',
+      'accent-soft': 'var(--color-accent-soft)',
+      positive: 'var(--color-positive)',
+      'on-positive': 'var(--color-on-positive)',
+      'positive-soft': 'var(--color-positive-soft)',
+      negative: 'var(--color-negative)',
+      'on-negative': 'var(--color-on-negative)',
+      'negative-soft': 'var(--color-negative-soft)',
       warn: 'var(--color-warn)',
+      'warn-soft': 'var(--color-warn-soft)',
       alert: 'var(--color-alert)',
+      'alert-soft': 'var(--color-alert-soft)',
     },
 
     // The six-step scale from DESIGN.md section 4, plus the page gutter, which
@@ -59,11 +72,15 @@ export default {
       card: 'var(--radius-card)',
       control: 'var(--radius-control)',
       pill: 'var(--radius-pill)',
+      shell: 'var(--radius-shell)',
     },
 
-    // One shadow, for sheets, modals and the device frame. Nothing else.
+    // Three steps, per DESIGN.md section 4. `card` is the resting state of every
+    // card, `raised` is hover and card-on-card, `sheet` is sheets and modals.
     boxShadow: {
       none: 'none',
+      card: 'var(--shadow-card)',
+      raised: 'var(--shadow-raised)',
       sheet: 'var(--shadow-sheet)',
     },
 
@@ -154,13 +171,11 @@ export default {
       borderWidth: {
         rule: '3px',
       },
-      width: {
-        device: '420px',
-      },
-      height: {
-        device: '860px',
-      },
       maxWidth: {
+        // The width of the device screen. Panels that mirror the phone, the role
+        // menu and the Blueprint sheet, are held to it so they line up with the
+        // frame. The frame's own dimensions live in the `.device-*` block in
+        // index.css, with the rest of its physical measurements.
         device: '420px',
         reading: '68ch',
         shell: '1440px',

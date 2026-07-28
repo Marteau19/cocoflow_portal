@@ -31,6 +31,7 @@ import {
   Row,
   RowList,
   Stack,
+  Tabs,
 } from '../../ui/primitives';
 import { ScreenBody } from '../ScreenBody';
 
@@ -85,25 +86,15 @@ export const OwnerParts = () => {
         <Section id="parts-store">
           <Stack gap="4">
             {/* The filter is on by default. Fit is the whole value here. */}
-            <div className="flex flex-wrap items-center gap-2">
-              {[
-                { label: `Fits my ${asset.model}`, value: true },
-                { label: 'Everything', value: false },
-              ].map((chip) => (
-                <button
-                  key={chip.label}
-                  type="button"
-                  onClick={() => setOnlyMine(chip.value)}
-                  className={`min-h-tap rounded-pill border px-3 text-caption transition-colors duration-state ease-ease ${
-                    onlyMine === chip.value
-                      ? 'border-ink bg-ink text-canvas'
-                      : 'border-line-strong bg-surface text-ink2 hover:text-ink'
-                  }`}
-                >
-                  {chip.label}
-                </button>
-              ))}
-            </div>
+            <Tabs
+              label="Filter the catalogue"
+              value={onlyMine ? 'mine' : 'all'}
+              onChange={(value) => setOnlyMine(value === 'mine')}
+              options={[
+                { value: 'mine', label: `Fits my ${asset.model}` },
+                { value: 'all', label: 'Everything' },
+              ]}
+            />
 
             {catalogue === null ? (
               <Card>
@@ -212,7 +203,7 @@ export const OwnerParts = () => {
                   {totals.contractDiscount > 0 && (
                     <div className="flex items-baseline justify-between gap-3 px-4 py-3">
                       <dt className="text-caption text-ink2">{contract.name} discount</dt>
-                      <dd className="text-caption text-accent-ink">
+                      <dd className="text-caption text-positive">
                         &minus;{money(totals.contractDiscount)}
                       </dd>
                     </div>

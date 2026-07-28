@@ -69,7 +69,7 @@ export const ProspectHandover = () => {
                 {WHAT_YOU_HAVE.map((item) => (
                   <Row key={item.label}>
                     <div className="flex items-start gap-3">
-                      <span className="mt-1 shrink-0 text-accent-ink">
+                      <span className="mt-1 shrink-0 text-positive">
                         <Icon name="check" />
                       </span>
                       <div className="min-w-0">
@@ -117,7 +117,7 @@ export const ProspectHandover = () => {
 
             {/* First visit already booked. The promise made concrete. */}
             <Card>
-              <CardHeader eyebrow="Already booked" title="Your first check up" />
+              <CardHeader icon="calendar" eyebrow="Already booked" title="Your first check up" />
               <RowList>
                 <Row rule="strong">
                   <div className="flex items-baseline justify-between gap-3">
@@ -135,7 +135,7 @@ export const ProspectHandover = () => {
 
             {/* The handover itself. One login, nothing re-entered. */}
             <Card>
-              <CardHeader eyebrow="What changes for you" title="Same login, new view" />
+              <CardHeader icon="user" eyebrow="What changes for you" title="Same login, new view" />
               <div className="px-4 py-3">
                 <p className="max-w-reading text-body text-ink2">
                   Nothing to sign up for and nothing to re-enter. The account you have been using to

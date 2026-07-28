@@ -4,10 +4,12 @@
  * The component vocabulary. DESIGN.md is normative; this file is where it is
  * enforced, so a screen that reaches for a primitive gets the rules for free.
  *
- * What is deliberately absent is as important as what is here: no card shadow,
- * no coloured status dot, no progress bar, no icon in a tinted square, no
- * gradient. Section 9 of DESIGN.md is the list, and it is treated as a lint
- * rule rather than a style suggestion.
+ * This file was rebuilt for the Console direction. The previous version enforced
+ * the opposite of several rules here: no card shadow, no coloured status fill, no
+ * status dot, no icon in a tinted square. Those reversals are listed in DESIGN.md
+ * section 9 under "No longer banned", and the enforcement that remains is what
+ * still holds: one accent fill per screen, no gradient, no emoji, no dot without
+ * a label, no weight 600, no hex value anywhere below this line.
  */
 
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
@@ -18,15 +20,51 @@ import { icons, type IconName } from './icons';
 /* Icon                                                                */
 /* ------------------------------------------------------------------ */
 
-/**
- * Renders inline at text size in `currentColor`, always. Never inside a tinted
- * rounded square: that badge pattern is the single most recognisable tell in
- * current dashboard output.
- */
+/** Inline, at text size, in `currentColor`. The default everywhere in prose. */
 export const Icon = ({ name, className }: { name: IconName; className?: string }) => {
   const Glyph = icons[name];
   return <Glyph size="1em" strokeWidth={1.75} aria-hidden className={className} />;
 };
+
+export type ChipTone = 'accent' | 'neutral' | 'positive' | 'warn' | 'alert' | 'on-dark';
+
+const chipTones: Record<ChipTone, string> = {
+  accent: 'bg-accent-soft text-accent-ink',
+  neutral: 'bg-surface-sunk text-ink2',
+  positive: 'bg-positive-soft text-positive',
+  warn: 'bg-warn-soft text-warn',
+  alert: 'bg-alert-soft text-alert',
+  // On the sidebar and the inverted feature panel, where no light tint reads.
+  // `.bg-on-dark-soft` is a component class in index.css: Tailwind cannot append
+  // an alpha channel to a hex-valued custom property, so the tint is mixed.
+  'on-dark': 'bg-on-dark-soft text-on-forest',
+};
+
+/**
+ * An icon in a rounded square on a tinted ground.
+ *
+ * Permitted in card headers and in nav, and nowhere else. It is a grouping
+ * device: it tells you which card you are looking at before you read the title.
+ * Inline in prose it would be decoration, which is what the old ban was about.
+ */
+export const IconChip = ({
+  name,
+  tone = 'accent',
+  size = 'md',
+}: {
+  name: IconName;
+  tone?: ChipTone;
+  size?: 'sm' | 'md';
+}) => (
+  <span
+    aria-hidden
+    className={`grid shrink-0 place-items-center rounded-control ${chipTones[tone]} ${
+      size === 'sm' ? 'h-4 w-4 text-caption' : 'h-5 w-5 text-body'
+    }`}
+  >
+    <Icon name={name} />
+  </span>
+);
 
 /* ------------------------------------------------------------------ */
 /* Typography helpers                                                  */
@@ -36,24 +74,43 @@ export const Icon = ({ name, className }: { name: IconName; className?: string }
  * Eyebrow and field labels. Never longer than four words, which is why the
  * prop is a string rather than children.
  */
-export const Micro = ({ children, className = 'text-ink3' }: { children: string; className?: string }) => (
-  <p className={`text-micro ${className}`}>{children}</p>
-);
+export const Micro = ({
+  children,
+  className = 'text-ink3',
+}: {
+  children: string;
+  className?: string;
+}) => <p className={`text-micro ${className}`}>{children}</p>;
 
 /**
  * Identifiers: work order numbers, invoice numbers, SKUs, asset ids, quote
  * references. Always mono, always uppercase, never truncated below the point of
  * uniqueness, which is why there is no ellipsis option.
  */
-export const Identifier = ({ children, className = 'text-ink2' }: { children: string; className?: string }) => (
-  <span className={`font-mono text-caption uppercase ${className}`}>{children}</span>
-);
+export const Identifier = ({
+  children,
+  className = 'text-ink2',
+}: {
+  children: string;
+  className?: string;
+}) => <span className={`font-mono text-caption uppercase ${className}`}>{children}</span>;
 
 /* ------------------------------------------------------------------ */
 /* Actions                                                             */
 /* ------------------------------------------------------------------ */
 
-type ButtonVariant = 'primary' | 'quiet' | 'plain';
+/**
+ * `primary` is the one accent fill on the screen.
+ *
+ * `positive` and `negative` are a pair, for opposite outcomes on the same
+ * decision: approve against decline, accept against reject. Using one of them
+ * alone, as a second primary, is the misuse this pair invites and DESIGN.md
+ * section 2 forbids.
+ *
+ * `dark` is the neutral-but-prominent action. It is how a third button sits
+ * beside a pair without claiming to be a fourth outcome.
+ */
+type ButtonVariant = 'primary' | 'positive' | 'negative' | 'dark' | 'quiet' | 'plain';
 
 // `whitespace-nowrap` is load bearing: an action label that wraps to two lines
 // inside a 48px control is the first thing a reviewer notices, and it happens at
@@ -62,12 +119,17 @@ const buttonBase =
   'inline-flex min-h-tap items-center justify-center gap-2 whitespace-nowrap rounded-control px-4 text-body font-medium transition-colors duration-state ease-ease disabled:opacity-40';
 
 const buttonVariants: Record<ButtonVariant, string> = {
-  // The accent fill. One per screen: a screen with two of these is a bug.
+  // The accent fill. One per screen: a screen with two of these is a bug. The
+  // label is dark, and hover lightens. See DESIGN.md section 2.
   primary: 'bg-accent text-on-accent hover:bg-accent-hover',
+  positive: 'bg-positive text-on-positive hover:opacity-90',
+  negative: 'bg-negative text-on-negative hover:opacity-90',
+  dark: 'bg-ink text-canvas hover:opacity-90',
   // Everything else that needs a boundary.
   quiet: 'border border-line-strong bg-surface text-ink hover:bg-surface-sunk',
-  // Text action, for tertiary placement inside rows.
-  plain: 'px-0 text-accent-ink hover:text-ink',
+  // Text action, for tertiary placement inside rows. No control height: it sits
+  // in a line of copy, so it must not push the line taller than its neighbours.
+  plain: 'min-h-0 px-0 text-accent-ink hover:text-ink',
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -120,38 +182,104 @@ export const ButtonLink = ({
   </Link>
 );
 
+/**
+ * The floating action button.
+ *
+ * One per screen at most, and only where the screen has a single obvious verb
+ * that should stay reachable while the user scrolls: booking a visit, starting a
+ * job. Anywhere else it is a shortcut nobody asked for that covers content.
+ */
+export const Fab = ({
+  label,
+  icon,
+  to,
+  onClick,
+}: {
+  label: string;
+  icon: IconName;
+  to?: string;
+  onClick?: () => void;
+}) => {
+  const shell =
+    'fixed bottom-6 right-gutter z-bar inline-flex min-h-tap items-center gap-2 rounded-pill bg-accent px-4 text-body font-medium text-on-accent shadow-raised transition-colors duration-state ease-ease hover:bg-accent-hover';
+  if (to) {
+    return (
+      <Link to={to} className={shell}>
+        <Icon name={icon} />
+        {label}
+      </Link>
+    );
+  }
+  return (
+    <button type="button" onClick={onClick} className={shell}>
+      <Icon name={icon} />
+      {label}
+    </button>
+  );
+};
+
 /* ------------------------------------------------------------------ */
 /* Surfaces                                                            */
 /* ------------------------------------------------------------------ */
 
 /**
- * A bounded object: 1px line on surface, 10px radius, no elevation. The only
- * shadow in the system is reserved for sheets, modals and the device frame.
+ * A bounded object: surface ground, 1px line, card radius, and a resting shadow.
+ *
+ * The border and the shadow do different jobs and both are needed. The shadow
+ * separates the card from the canvas; the border is what keeps the edge crisp
+ * where the shadow is too soft to define one.
+ *
+ * `tone="raised"` is for a card on a card, which pairs with a `surface-sunk`
+ * ground on the container. `tone="flat"` drops the elevation, for a card that is
+ * already inside another one and only needs a boundary.
  */
 export const Card = ({
   children,
+  tone = 'card',
   className = '',
 }: {
   children: ReactNode;
+  tone?: 'card' | 'raised' | 'flat';
   className?: string;
-}) => (
-  <div className={`rounded-card border border-line bg-surface ${className}`}>{children}</div>
-);
+}) => {
+  const tones = {
+    card: 'bg-surface shadow-card',
+    raised: 'bg-surface-raised shadow-raised',
+    flat: 'bg-surface shadow-none',
+  } as const;
+  return (
+    <div className={`overflow-hidden rounded-card border border-line ${tones[tone]} ${className}`}>
+      {children}
+    </div>
+  );
+};
 
-/** Section heading inside a card or a column. */
+/**
+ * Section heading inside a card or a column.
+ *
+ * The optional icon chip is the grouping device from DESIGN.md section 7: at a
+ * glance it says what kind of card this is before the title is read.
+ */
 export const CardHeader = ({
   title,
   eyebrow,
+  icon,
+  iconTone = 'accent',
   action,
 }: {
   title: string;
   eyebrow?: string;
+  icon?: IconName;
+  iconTone?: ChipTone;
   action?: ReactNode;
 }) => (
-  <div className="flex items-end justify-between gap-3 border-b border-line px-4 py-3">
-    <div>
-      {eyebrow && <Micro>{eyebrow}</Micro>}
-      <h2 className={`text-h2 text-ink ${eyebrow ? 'mt-1' : ''}`}>{title}</h2>
+  <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
+    <div className="flex min-w-0 items-center gap-3">
+      {icon && <IconChip name={icon} tone={iconTone} />}
+      <div className="min-w-0">
+        {eyebrow && <Micro>{eyebrow}</Micro>}
+        <h2 className={`text-h2 text-ink ${eyebrow ? 'mt-1' : ''}`}>{title}</h2>
+      </div>
     </div>
     {action}
   </div>
@@ -162,27 +290,28 @@ export const CardHeader = ({
 /* ------------------------------------------------------------------ */
 
 /**
- * Status is a left rule, never a coloured circle.
+ * A 3px left rule on a row. One of the four permitted status treatments.
  *
- * DESIGN.md section 7 sanctions --line-strong, --warn and --alert here, and
- * nothing else. Accent is deliberately absent: it marks the one primary action
- * on a screen, and spending it on row state is how a screen ends up with two
- * greens. Where a row needs emphasis without a signal, `strong` is an ink rule.
+ * Accent is still deliberately absent. It marks the one primary action on a
+ * screen, and spending it on row state is how a screen ends up with two accents
+ * and no primary. Where a row needs emphasis without a signal, `strong` is an
+ * ink rule.
  */
-export type RuleTone = 'none' | 'neutral' | 'strong' | 'warn' | 'alert';
+export type RuleTone = 'none' | 'neutral' | 'strong' | 'positive' | 'warn' | 'alert';
 
 const ruleTones: Record<RuleTone, string> = {
   none: 'border-l-transparent',
   neutral: 'border-l-line-strong',
   strong: 'border-l-ink',
+  positive: 'border-l-positive',
   warn: 'border-l-warn',
   alert: 'border-l-alert',
 };
 
 /**
- * Bordered rows, not rounded-rect cards. The manager and global surfaces are
- * table forward, and a list of floating cards reads as a phone app pretending
- * to be a console.
+ * Bordered rows, not floating rounded rectangles. The manager and global
+ * surfaces are table forward, and a list of individually floating cards reads as
+ * a phone app pretending to be a console.
  */
 export const Row = ({
   to,
@@ -238,26 +367,63 @@ export const Field = ({
 /* Status                                                             */
 /* ------------------------------------------------------------------ */
 
-export type StatusTone = 'neutral' | 'warn' | 'alert' | 'good';
+export type StatusTone = 'neutral' | 'warn' | 'alert' | 'good' | 'accent';
 
-const statusTones: Record<StatusTone, string> = {
-  neutral: 'text-ink2',
-  warn: 'text-warn',
-  alert: 'text-alert',
-  good: 'text-accent-ink',
+/**
+ * Solid signal colour on the matching tinted ground.
+ *
+ * `good` maps to positive rather than to accent on purpose. Accent is orange in
+ * the new brand, and an orange "paid" or "passed" reads as a warning. Function
+ * colours are shared across both brands for exactly this reason.
+ */
+const statusTones: Record<StatusTone, { pill: string; dot: string; text: string }> = {
+  neutral: { pill: 'bg-surface-sunk text-ink2', dot: 'bg-ink3', text: 'text-ink2' },
+  warn: { pill: 'bg-warn-soft text-warn', dot: 'bg-warn', text: 'text-warn' },
+  alert: { pill: 'bg-alert-soft text-alert', dot: 'bg-alert', text: 'text-alert' },
+  good: { pill: 'bg-positive-soft text-positive', dot: 'bg-positive', text: 'text-positive' },
+  accent: { pill: 'bg-accent-soft text-accent-ink', dot: 'bg-accent', text: 'text-accent-ink' },
 };
 
 /**
- * A text label in the micro step. Never a dot, never a filled pill. Signal
- * colours are text only, which is why there is no background here.
+ * A status pill: micro label on a tinted ground.
+ *
+ * `dot` adds a filled circle before the label. The label is not optional and
+ * there is no prop to remove it, because a dot on its own is colour as the only
+ * signal, which is the one thing in this area that is still banned.
  */
-export const Status = ({ children, tone = 'neutral' }: { children: string; tone?: StatusTone }) => (
-  <span className={`text-micro ${statusTones[tone]}`}>{children}</span>
+export const Status = ({
+  children,
+  tone = 'neutral',
+  dot = false,
+}: {
+  children: string;
+  tone?: StatusTone;
+  dot?: boolean;
+}) => (
+  <span
+    className={`inline-flex shrink-0 items-center gap-2 rounded-pill px-2 py-1 text-micro ${statusTones[tone].pill}`}
+  >
+    {dot && <span aria-hidden className={`h-1 w-1 rounded-pill ${statusTones[tone].dot}`} />}
+    {children}
+  </span>
 );
 
 /**
- * Signal colours may also carry a 1px border of the same hue, for the rare case
- * where a boundary is needed. Still no fill.
+ * A status dot with its label as ordinary text, for use inside a row of prose or
+ * a table cell where a filled pill would be too loud.
+ *
+ * The label is a required prop for the same reason as above.
+ */
+export const StatusDot = ({ label, tone = 'neutral' }: { label: string; tone?: StatusTone }) => (
+  <span className="inline-flex items-center gap-2">
+    <span aria-hidden className={`h-1 w-1 shrink-0 rounded-pill ${statusTones[tone].dot}`} />
+    <span className={`text-caption ${statusTones[tone].text}`}>{label}</span>
+  </span>
+);
+
+/**
+ * A louder callout than a pill: a bordered, tinted band with an optional icon.
+ * For the one thing on a screen that must be read before anything else.
  */
 export const Flag = ({
   children,
@@ -265,23 +431,108 @@ export const Flag = ({
   icon,
 }: {
   children: string;
-  tone?: 'warn' | 'alert' | 'neutral';
+  tone?: 'warn' | 'alert' | 'neutral' | 'good';
   icon?: IconName;
 }) => {
   const tones = {
-    warn: 'border-warn text-warn',
-    alert: 'border-alert text-alert',
-    neutral: 'border-line-strong text-ink2',
+    warn: 'border-warn bg-warn-soft text-warn',
+    alert: 'border-alert bg-alert-soft text-alert',
+    good: 'border-positive bg-positive-soft text-positive',
+    neutral: 'border-line-strong bg-surface-sunk text-ink2',
   } as const;
   return (
     <span
-      className={`inline-flex items-center gap-2 rounded-control border px-2 py-1 text-caption ${tones[tone]}`}
+      className={`inline-flex items-center gap-2 rounded-control border px-2 py-1 text-caption font-medium ${tones[tone]}`}
     >
       {icon && <Icon name={icon} />}
       {children}
     </span>
   );
 };
+
+/* ------------------------------------------------------------------ */
+/* Controls                                                           */
+/* ------------------------------------------------------------------ */
+
+/**
+ * A row of filter pills. The active one is filled, the rest are bordered.
+ *
+ * The fill defaults to `ink` rather than `accent`, because a tab strip is
+ * navigation and the accent belongs to the screen's primary action. Pass
+ * `fill="accent"` only on a screen that has no other accent fill.
+ */
+export const Tabs = <T extends string>({
+  options,
+  value,
+  onChange,
+  fill = 'ink',
+  label,
+}: {
+  options: readonly { value: T; label: string }[];
+  value: T;
+  onChange: (value: T) => void;
+  fill?: 'ink' | 'accent';
+  label: string;
+}) => (
+  <div role="tablist" aria-label={label} className="flex flex-wrap gap-2">
+    {options.map((option) => {
+      const active = option.value === value;
+      const activeFill =
+        fill === 'accent' ? 'bg-accent text-on-accent' : 'bg-ink text-canvas';
+      return (
+        <button
+          key={option.value}
+          type="button"
+          role="tab"
+          aria-selected={active}
+          onClick={() => onChange(option.value)}
+          className={`inline-flex min-h-tap items-center whitespace-nowrap rounded-pill px-4 text-caption font-medium transition-colors duration-state ease-ease ${
+            active ? activeFill : 'border border-line-strong bg-surface text-ink2 hover:bg-surface-sunk'
+          }`}
+        >
+          {option.label}
+        </button>
+      );
+    })}
+  </div>
+);
+
+/** A pill track that fills with accent when on, with a white knob. */
+export const Toggle = ({
+  label,
+  checked,
+  onChange,
+  hint,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  hint?: string;
+}) => (
+  <label className="flex min-h-tap items-center justify-between gap-3">
+    <span className="min-w-0">
+      <span className="block text-body text-ink">{label}</span>
+      {hint && <span className="mt-1 block text-caption text-ink2">{hint}</span>}
+    </span>
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={() => onChange(!checked)}
+      className={`relative h-[28px] w-[48px] shrink-0 rounded-pill border transition-colors duration-state ease-ease ${
+        checked ? 'border-accent bg-accent' : 'border-line-strong bg-surface-sunk'
+      }`}
+    >
+      <span
+        aria-hidden
+        className={`absolute top-[2px] block h-[22px] w-[22px] rounded-pill bg-surface shadow-card transition-transform duration-state ease-ease ${
+          checked ? 'translate-x-[22px]' : 'translate-x-[2px]'
+        }`}
+      />
+    </button>
+  </label>
+);
 
 /* ------------------------------------------------------------------ */
 /* Numbers                                                            */
@@ -302,20 +553,25 @@ export const Kpi = ({
   value: string;
   unit?: string;
   note?: string;
-  tone?: 'ink' | 'accent' | 'on-forest';
+  tone?: 'ink' | 'accent' | 'positive' | 'negative' | 'on-forest';
 }) => {
-  const tones = { ink: 'text-ink', accent: 'text-accent-ink', 'on-forest': 'text-on-forest' } as const;
+  const tones = {
+    ink: 'text-ink',
+    accent: 'text-accent-ink',
+    positive: 'text-positive',
+    negative: 'text-negative',
+    'on-forest': 'text-on-forest',
+  } as const;
+  const onDark = tone === 'on-forest';
   return (
     <div>
-      <Micro className={tone === 'on-forest' ? 'text-on-forest opacity-70' : 'text-ink3'}>
-        {label}
-      </Micro>
+      <Micro className={onDark ? 'text-on-forest opacity-70' : 'text-ink3'}>{label}</Micro>
       <p className={`mt-1 text-display ${tones[tone]}`}>
         {value}
         {unit && <span className="ml-1 text-h2 font-medium">{unit}</span>}
       </p>
       {note && (
-        <p className={`mt-1 text-caption ${tone === 'on-forest' ? 'text-on-forest opacity-70' : 'text-ink2'}`}>
+        <p className={`mt-1 text-caption ${onDark ? 'text-on-forest opacity-70' : 'text-ink2'}`}>
           {note}
         </p>
       )}
@@ -366,8 +622,7 @@ export const Avatar = ({
   /** `hero` is for the client home only, where the face is the reassurance. */
   size?: 'md' | 'lg' | 'hero';
 }) => {
-  const dimensions =
-    size === 'hero' ? 'h-[72px] w-[72px]' : size === 'lg' ? 'h-6 w-6' : 'h-5 w-5';
+  const dimensions = size === 'hero' ? 'h-[72px] w-[72px]' : size === 'lg' ? 'h-6 w-6' : 'h-5 w-5';
 
   if (photo) {
     return (
@@ -382,7 +637,7 @@ export const Avatar = ({
   return (
     <span
       aria-hidden
-      className={`${dimensions} shrink-0 grid place-items-center rounded-pill border border-line bg-surface-sunk text-caption font-medium text-ink2`}
+      className={`${dimensions} grid shrink-0 place-items-center rounded-pill border border-line bg-surface-sunk text-caption font-medium text-ink2`}
     >
       {initials}
     </span>

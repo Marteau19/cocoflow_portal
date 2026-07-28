@@ -21,13 +21,28 @@ export const ScreenBody = ({
 }) => {
   const { role } = useRole();
 
-  // The technician works one-handed in a basement; the global surface is read
-  // across a boardroom. Neither wants the client's airiness.
+  /**
+   * The technician works one-handed in a basement; the global surface is read
+   * across a boardroom. Neither wants the client's airiness.
+   *
+   * `--safe-top` is added on top of the density step. It is zero everywhere
+   * except inside the device frame, where it is the height that clears the
+   * camera. Adding it here rather than on an ancestor is what lets a full-bleed
+   * panel still run to the very top of the display.
+   */
   const density =
-    role.key === 'sp-technician' ? 'py-3' : role.viewport === 'desktop' ? 'py-4' : 'py-5';
+    role.key === 'sp-technician'
+      ? 'pt-[calc(var(--safe-top)+var(--space-2))]'
+      : role.viewport === 'desktop'
+        ? 'pt-[calc(var(--safe-top)+var(--space-3))]'
+        : 'pt-[calc(var(--safe-top)+var(--space-4))]';
 
+  // A flush screen opens with a full-bleed inverted panel, so it gets no top
+  // padding at all: the panel owns its own, including the camera inset. A strip
+  // of canvas above the panel reads as a rendering fault rather than as
+  // breathing room, and it is the first thing the eye lands on.
   return (
-    <div className={`${flush ? '' : 'px-gutter'} ${density} pb-6`}>
+    <div className={`${flush ? '' : `px-gutter ${density}`} pb-6`}>
       <div className={role.viewport === 'desktop' ? 'mx-auto max-w-shell' : ''}>{children}</div>
     </div>
   );

@@ -239,7 +239,7 @@ export const TechnicianWorkOrder = () => {
             {/* -------------------------------------------------------------- */}
             {/* Active job header. Forest, for the second and last time in V1.  */}
             {/* -------------------------------------------------------------- */}
-            <div className="bg-forest px-gutter py-4 text-on-forest">
+            <div className="bg-forest px-gutter pb-4 pt-[calc(var(--safe-top)+var(--space-3))] text-on-forest">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <Micro className="text-on-forest opacity-70">
@@ -270,16 +270,22 @@ export const TechnicianWorkOrder = () => {
                 {/* ---------------------------------------------------------- */}
                 {/* Offline. Stated plainly, because the field audience checks. */}
                 {/* ---------------------------------------------------------- */}
+                {/*
+                  The demo control sits on its own line beneath the message
+                  rather than beside it. Sharing the line costs the message about
+                  half its width, and at phone width the offline warning, which
+                  is the whole point of the block, turns into five short lines.
+                */}
                 <div
-                  className={`flex items-start gap-2 rounded-control border px-3 py-2 ${
-                    online ? 'border-line bg-surface' : 'border-warn'
+                  className={`rounded-control border px-3 py-2 ${
+                    online ? 'border-line bg-surface' : 'border-warn bg-warn-soft'
                   }`}
                 >
-                  <span className={`mt-1 shrink-0 ${online ? 'text-accent-ink' : 'text-warn'}`}>
-                    <Icon name={online ? 'check' : 'alert-triangle'} />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className={`text-caption ${online ? 'text-ink2' : 'text-warn'}`}>
+                  <div className="flex items-start gap-2">
+                    <span className={`mt-1 shrink-0 ${online ? 'text-positive' : 'text-warn'}`}>
+                      <Icon name={online ? 'check' : 'alert-triangle'} />
+                    </span>
+                    <p className={`min-w-0 flex-1 text-caption ${online ? 'text-ink2' : 'text-warn'}`}>
                       {online
                         ? 'Online. Changes are saved as you make them.'
                         : 'No signal in this basement. Everything you record is saved on the device and syncs when you are back in range.'}
@@ -290,14 +296,16 @@ export const TechnicianWorkOrder = () => {
                     nobody in the room mistakes it for something a technician
                     would tap. Real offline state comes from the device.
                   */}
-                  <button
-                    type="button"
-                    onClick={() => setOnline((v) => !v)}
-                    title="Demo control"
-                    className="shrink-0 rounded-control border border-line px-2 py-1 font-mono text-micro text-ink3 transition-colors duration-state ease-ease hover:text-ink2"
-                  >
-                    {online ? 'demo: go offline' : 'demo: go online'}
-                  </button>
+                  <div className="mt-2 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setOnline((v) => !v)}
+                      title="Demo control"
+                      className="shrink-0 rounded-control border border-line bg-surface px-2 py-1 font-mono text-micro text-ink3 transition-colors duration-state ease-ease hover:text-ink2"
+                    >
+                      {online ? 'demo: go offline' : 'demo: go online'}
+                    </button>
+                  </div>
                 </div>
 
                 {/* ---------------------------------------------------------- */}
@@ -305,6 +313,7 @@ export const TechnicianWorkOrder = () => {
                   <Stack gap="3">
                     <Card>
                       <CardHeader
+                        icon="check"
                         title="Checklist"
                         eyebrow={
                           requiredOutstanding === 0
@@ -347,7 +356,7 @@ export const TechnicianWorkOrder = () => {
 
                     {/* Parts consumed, against what is on the truck. */}
                     <Card>
-                      <CardHeader title="Parts used" eyebrow="Comes off truck stock" />
+                      <CardHeader icon="package" title="Parts used" eyebrow="Comes off truck stock" />
                       <RowList>
                         {order.lineItems.map((line) => {
                           const stock = truckStock.find((row) => row.sku === line.sku);
@@ -380,7 +389,7 @@ export const TechnicianWorkOrder = () => {
 
                     {/* Time and signature. */}
                     <Card>
-                      <CardHeader title="Time and signature" />
+                      <CardHeader icon="user" title="Time and signature" />
                       <RowList>
                         <Row>
                           <div className="flex items-baseline justify-between gap-3">
@@ -431,6 +440,8 @@ export const TechnicianWorkOrder = () => {
                 <Section id="wo-summary-translation">
                   <Card>
                     <CardHeader
+                      icon="message-square"
+                      iconTone="neutral"
                       title="What the customer will read"
                       eyebrow="Generated from the checklist"
                       action={

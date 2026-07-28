@@ -28,19 +28,17 @@ import {
 import { TODAY, dayAndDate, millions, money, percent, window as timeWindow } from '../../lib/format';
 import {
   Avatar,
+  Band,
+  BandHead,
   ButtonLink,
-  Card,
-  CardHeader,
+  Hero,
   Icon,
   Identifier,
-  Kpi,
-  PageHead,
+  Micro,
   Row,
   RowList,
-  Stack,
   Status,
 } from '../../ui/primitives';
-import { ScreenBody } from '../ScreenBody';
 
 export const ManagerDashboard = () => {
   const territory = byId(territories, GOLDEN.territoryId)!;
@@ -58,58 +56,62 @@ export const ManagerDashboard = () => {
   const aboveTarget = sp.servicePct >= network.serviceTargetPct;
 
   return (
-    <ScreenBody>
-      <Stack gap="4">
-        <PageHead
-          eyebrow={territory.name}
-          title="Service Point dashboard"
-          lead={`${dayAndDate(TODAY)}. ${today.length} jobs booked today.`}
-        />
+    <>
+      {/* ------------------------------------------------------------------ */}
+      {/* Masthead. The hero is the measure the Service Point is held to.    */}
+      {/* ------------------------------------------------------------------ */}
+      <Section id="sp-dashboard" onDark>
+        <Band kind="masthead">
+          <Micro className="text-on-band-muted">{territory.name}</Micro>
+          <p className="mt-1 text-h1 text-on-band">Service Point dashboard</p>
 
-        <Section id="sp-dashboard">
-          <Stack gap="4">
-            {/* ---------------------------------------------------------- */}
-            {/* Asymmetric by design: the strategic measure leads.         */}
-            {/* ---------------------------------------------------------- */}
-            <Card>
-              <div className="grid gap-4 border-b border-line px-4 py-4 md:grid-cols-[1.4fr_1fr_1fr]">
-                <Kpi
-                  label="Service revenue share"
-                  value={percent(sp.servicePct)}
-                  note={
-                    aboveTarget
-                      ? `Above the ${network.serviceTargetPct}% target`
-                      : `${percent(network.serviceTargetPct - sp.servicePct)} below the ${network.serviceTargetPct}% target`
-                  }
-                  tone={aboveTarget ? 'accent' : 'ink'}
-                />
-                <Kpi
-                  label="Revenue, year to date"
-                  value={millions(sp.revenue)}
-                  note={`Target ${millions(sp.target)}`}
-                />
-                <Kpi label="Active care plans" value={sp.activeContracts.toLocaleString('en-CA')} />
-              </div>
+          {/*
+            One hero, not two figures side by side. The shipped version put
+            service share and revenue at the same 38px, which meant neither was
+            the hero. Revenue drops to the supporting row below.
+          */}
+          <div className="mt-5">
+            <Hero
+              onBand
+              label="Service revenue share"
+              value={percent(sp.servicePct)}
+              delta={{
+                text: aboveTarget
+                  ? `Above the ${network.serviceTargetPct}% target`
+                  : `${percent(network.serviceTargetPct - sp.servicePct)} below the ${network.serviceTargetPct}% target`,
+                tone: aboveTarget ? 'positive' : 'warn',
+              }}
+              note={`${dayAndDate(TODAY)}. ${today.length} ${today.length === 1 ? 'job' : 'jobs'} booked today.`}
+            />
+          </div>
 
-              <dl className="divide-y divide-line md:grid md:grid-cols-3 md:divide-y-0 md:divide-x">
-                {[
-                  { label: 'Revenue per km', value: `${sp.revenuePerKm.toFixed(1)}` },
-                  { label: 'Customer rating', value: sp.rating.toFixed(1) },
-                  { label: 'Portal readiness', value: `${sp.readiness}%` },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-baseline justify-between gap-3 px-4 py-3">
-                    <dt className="text-caption text-ink2">{item.label}</dt>
-                    <dd className="text-body font-medium text-ink">{item.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </Card>
+        </Band>
+      </Section>
+
+      {/* Rail. The supporting figures, off the dark ground. */}
+      <Band kind="rail">
+        <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-3 lg:grid-cols-5">
+          {[
+            { label: 'Revenue, year to date', value: millions(sp.revenue) },
+            { label: 'Active care plans', value: sp.activeContracts.toLocaleString('en-CA') },
+            { label: 'Revenue per km', value: sp.revenuePerKm.toFixed(1) },
+            { label: 'Customer rating', value: sp.rating.toFixed(1) },
+            { label: 'Portal readiness', value: `${sp.readiness}%` },
+          ].map((item) => (
+            <div key={item.label}>
+              <Micro>{item.label}</Micro>
+              <dd className="mt-1 text-body font-medium text-ink">{item.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </Band>
 
             {/* ---------------------------------------------------------- */}
             {/* What needs a decision. Rows, with a left rule for urgency. */}
             {/* ---------------------------------------------------------- */}
-            <Card>
-              <CardHeader
+            <Band kind="data" flush>
+              <div className="px-gutter">
+              <BandHead
                 icon="alert-triangle"
                 iconTone="warn"
                 title="Needs you today"
@@ -193,13 +195,15 @@ export const ManagerDashboard = () => {
                   </div>
                 </Row>
               </RowList>
-            </Card>
+            </div>
+            </Band>
 
             {/* ---------------------------------------------------------- */}
             {/* Today, by technician.                                      */}
             {/* ---------------------------------------------------------- */}
-            <Card>
-              <CardHeader
+            <Band kind="rail" flush>
+              <div className="px-gutter">
+              <BandHead
                 title="Today"
                 eyebrow="By technician"
                 action={
@@ -255,15 +259,13 @@ export const ManagerDashboard = () => {
                   );
                 })}
               </RowList>
-            </Card>
+            </div>
+            </Band>
 
             <p className="text-caption text-ink3">
               {territory.name}, {money(sp.revenue)} of {money(sp.target)} against target. Figures are
               mock.
             </p>
-          </Stack>
-        </Section>
-      </Stack>
-    </ScreenBody>
+    </>
   );
 };

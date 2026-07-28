@@ -259,7 +259,13 @@ export const TrendAgainstTarget = ({
             the domain with it, which leaves the target rule flush to the plot
             edge where it reads as a border.
           */}
-          <YAxis hide type="number" domain={domain} allowDataOverflow={false} />
+          {/*
+            A 1px-wide axis rather than `hide` or `width={0}`. Both of those drop
+            the axis from the chart's axis map, and the explicit domain goes with
+            it, which is what left the target rule flush to the plot top reading
+            as a border. No ticks: fitted values read as debug output.
+          */}
+          <YAxis width={1} tick={false} axisLine={false} domain={domain} />
 
           {/*
             The wedge. `baseValue` is the target, so the fill measures the gap

@@ -757,8 +757,14 @@ Required:
 7. **Minimum plot height 240px.** Below that a line has no room to have a shape,
    and the gap to the target has no room to be a visible quantity.
 8. **Headroom above the target.** The domain extends past the reference line by at
-   least half the data spread. With the target at the top of the domain the rule
-   renders flush to the plot edge and reads as a border.
+   least half the data spread, so the target rule sits inside the plot rather than
+   on its top edge where it reads as a border. Verified at 34% from the top.
+
+   Implementation note, because it cost an hour: give the y axis `width={1}` with
+   `tick={false}`. Both `hide` and `width={0}` drop the axis from Recharts' axis
+   map and take the explicit domain with it, silently falling back to the auto
+   domain. The symptom is a target line flush to the plot top and a wedge that
+   fills the whole plot.
 9. **Series colours from the Data role**, never `--accent`. Inline labels at the
    line end, no legend box. The target label sits at the **left**, because the
    right end is where the endpoint value and its signed distance already are.

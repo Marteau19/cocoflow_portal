@@ -27,14 +27,14 @@ import {
   RowList,
   Stack,
   Status,
-  type RuleTone,
+  type RowTone,
   type StatusTone,
 } from '../../ui/primitives';
 import { ScreenBody } from '../ScreenBody';
 
 type StageState = 'done' | 'active' | 'waiting' | 'later';
 
-const STATE: Record<StageState, { label: string; rule: RuleTone; tone: StatusTone }> = {
+const STATE: Record<StageState, { label: string; rule: RowTone; tone: StatusTone }> = {
   done: { label: 'DONE', rule: 'neutral', tone: 'neutral' },
   active: { label: 'HAPPENING NOW', rule: 'strong', tone: 'good' },
   waiting: { label: 'WAITING ON THE TOWN', rule: 'warn', tone: 'warn' },
@@ -128,7 +128,7 @@ export const ProspectInstall = () => {
                 {STAGES.map((stage, index) => {
                   const state = STATE[stage.state];
                   return (
-                    <Row key={stage.label} rule={state.rule}>
+                    <Row key={stage.label} tone={state.rule}>
                       <div className="flex items-start gap-3">
                         <span className="mt-1 shrink-0 font-mono text-caption text-ink3">
                           {String(index + 1).padStart(2, '0')}

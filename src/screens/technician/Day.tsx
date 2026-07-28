@@ -32,7 +32,7 @@ import {
   RowList,
   Stack,
   Status,
-  type RuleTone,
+  type RowTone,
   type StatusTone,
 } from '../../ui/primitives';
 import { ScreenBody } from '../ScreenBody';
@@ -41,7 +41,7 @@ import { ScreenBody } from '../ScreenBody';
 const ME = 'RES-001';
 
 /** Status drives the rule and the label together, so they cannot disagree. */
-const STATUS: Record<WorkOrder['status'], { rule: RuleTone; tone: StatusTone; label: string }> = {
+const STATUS: Record<WorkOrder['status'], { rule: RowTone; tone: StatusTone; label: string }> = {
   booked: { rule: 'neutral', tone: 'neutral', label: 'BOOKED' },
   confirmed: { rule: 'neutral', tone: 'neutral', label: 'CONFIRMED' },
   'on-the-way': { rule: 'strong', tone: 'good', label: 'ON THE WAY' },
@@ -104,7 +104,7 @@ export const TechnicianDay = () => {
                 const isActive = active?.id === job.id;
 
                 return (
-                  <Row key={job.id} rule={status.rule} to={`/wo/${job.id}`}>
+                  <Row key={job.id} tone={status.rule} to={`/wo/${job.id}`}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         {/* Time first: it is what orders the day. */}

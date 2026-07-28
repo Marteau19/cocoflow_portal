@@ -290,22 +290,36 @@ export const CardHeader = ({
 /* ------------------------------------------------------------------ */
 
 /**
- * A 3px left rule on a row. One of the four permitted status treatments.
+ * Row state, carried by the row's ground.
  *
- * Accent is still deliberately absent. It marks the one primary action on a
- * screen, and spending it on row state is how a screen ends up with two accents
- * and no primary. Where a row needs emphasis without a signal, `strong` is an
- * ink rule.
+ * This used to be a 3px left rule. Two things were wrong with it.
+ *
+ * First, it was broken: `RowList` used `[&>*+*]:border-t [&>*+*]:border-t-line`, and Tailwind's
+ * `divide-{color}` sets `border-color` on all four sides of every child after the
+ * first, through a selector that outranks a plain `border-l-transparent` utility.
+ * So every row except the first grew a 3px vertical stub in the hairline colour
+ * whether it had a state or not. There was no logic to those marks because they
+ * were an accident.
+ *
+ * Second, even working correctly it was the weakest of the four status treatments.
+ * The audit finding on `/readiness` was that a passing gate and a failing gate
+ * read as identical because the only difference was a thin marker. Ground carries
+ * state; a 3px edge does not.
+ *
+ * So state is now a tinted ground. `none` is the common case and paints nothing.
  */
-export type RuleTone = 'none' | 'neutral' | 'strong' | 'positive' | 'warn' | 'alert';
+export type RowTone = 'none' | 'neutral' | 'strong' | 'positive' | 'warn' | 'alert';
 
-const ruleTones: Record<RuleTone, string> = {
-  none: 'border-l-transparent',
-  neutral: 'border-l-line-strong',
-  strong: 'border-l-ink',
-  positive: 'border-l-positive',
-  warn: 'border-l-warn',
-  alert: 'border-l-alert',
+const rowTones: Record<RowTone, string> = {
+  none: '',
+  // `neutral` and `strong` were emphasis rather than signal, and emphasis on a row
+  // is the job of its type weight. They paint nothing, deliberately, so the call
+  // sites that pass them keep working without adding noise back.
+  neutral: '',
+  strong: '',
+  positive: 'bg-positive-soft',
+  warn: 'bg-warn-soft',
+  alert: 'bg-alert-soft',
 };
 
 /**
@@ -315,14 +329,14 @@ const ruleTones: Record<RuleTone, string> = {
  */
 export const Row = ({
   to,
-  rule = 'none',
+  tone = 'none',
   children,
   className = '',
   gutter = false,
   density = 'client',
 }: {
   to?: string;
-  rule?: RuleTone;
+  tone?: RowTone;
   children: ReactNode;
   className?: string;
   /**
@@ -339,7 +353,7 @@ export const Row = ({
     manager: 'py-2',
     global: 'py-3',
   }[density];
-  const shell = `block w-full border-l-rule ${ruleTones[rule]} ${
+  const shell = `block w-full ${rowTones[tone]} ${
     gutter ? 'px-gutter' : 'px-4'
   } ${pad} text-left transition-colors duration-state ease-ease ${className}`;
 
@@ -360,7 +374,15 @@ export const RowList = ({
 }: {
   children: ReactNode;
   className?: string;
-}) => <div className={`divide-y divide-line ${className}`}>{children}</div>;
+}) => (
+  /*
+    Not `[&>*+*]:border-t [&>*+*]:border-t-line`. That utility pair sets `border-color` on all four
+    sides of every child after the first, through a selector specific enough to
+    beat a plain per-side colour utility on the child itself. Setting only
+    `border-top-color` keeps the divider and leaves the child's own borders alone.
+  */
+  <div className={`[&>*+*]:border-t [&>*+*]:border-t-line ${className}`}>{children}</div>
+);
 
 /** Label and value on one line. The workhorse of the quiet lower half. */
 export const Field = ({

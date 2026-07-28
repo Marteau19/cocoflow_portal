@@ -90,7 +90,7 @@ export const OwnerSystem = () => {
               <p className="mt-2 text-body text-ink">{condition.detail}</p>
             </div>
 
-            <dl className="divide-y divide-line border-t border-line">
+            <dl className="[&>*+*]:border-t [&>*+*]:border-t-line border-t border-line">
               <Field label="Model" value={asset.model} mono />
               <Field label="Serial number" value={asset.serial} mono />
               <Field label="Installed" value={longDate(asset.installedOn)} />
@@ -117,7 +117,7 @@ export const OwnerSystem = () => {
                 const visit = isVisit ? byId(workOrders, entry.id) : undefined;
 
                 return (
-                  <Row key={entry.id} rule={isVisit ? 'neutral' : 'none'}>
+                  <Row key={entry.id} tone={isVisit ? 'neutral' : 'none'}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-ink3">
                         <Icon name={isVisit ? 'calendar' : 'package'} />

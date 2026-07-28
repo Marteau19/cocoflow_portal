@@ -28,7 +28,7 @@ import {
   RowList,
   Stack,
   Status,
-  type RuleTone,
+  type RowTone,
 } from '../../ui/primitives';
 import { ScreenBody } from '../ScreenBody';
 
@@ -111,7 +111,7 @@ export const GlobalBenchmarking = () => {
       .filter((alert) => alert.gap >= alert.measure.tolerance);
   }).sort((a, b) => b.gap / b.measure.tolerance - a.gap / a.measure.tolerance);
 
-  const severity = (ratio: number): { tone: 'warn' | 'alert' | 'neutral'; rule: RuleTone; label: string } =>
+  const severity = (ratio: number): { tone: 'warn' | 'alert' | 'neutral'; rule: RowTone; label: string } =>
     ratio >= 2
       ? { tone: 'alert', rule: 'alert', label: 'WORTH A CALL' }
       : { tone: 'warn', rule: 'warn', label: 'WORTH A LOOK' };
@@ -184,7 +184,7 @@ export const GlobalBenchmarking = () => {
                     return (
                       <Row
                         key={`${alert.measure.key}-${alert.sp.id}`}
-                        rule={level.rule}
+                        tone={level.rule}
                         to={`/network/${alert.sp.regionId}`}
                       >
                         <div className="flex items-start justify-between gap-3">

@@ -117,7 +117,7 @@ export const TechnicianRoute = () => {
                       )}
 
                       <Row
-                        rule={active ? 'strong' : job.status === 'complete' ? 'none' : 'neutral'}
+                        tone={active ? 'strong' : job.status === 'complete' ? 'none' : 'neutral'}
                         to={`/wo/${job.id}`}
                       >
                         <div className="flex items-start gap-3">

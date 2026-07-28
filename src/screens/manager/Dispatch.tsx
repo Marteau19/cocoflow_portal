@@ -97,7 +97,7 @@ export const ManagerDispatch = () => {
                   {unconfirmed.map((job) => {
                     const account = byId(accounts, job.accountId)!;
                     return (
-                      <Row key={job.id} rule="warn">
+                      <Row key={job.id} tone="warn">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <Status tone="warn">NOT CONFIRMED</Status>
@@ -128,7 +128,7 @@ export const ManagerDispatch = () => {
             {/* Technicians against the day. */}
             <Card>
               <CardHeader title="Today" eyebrow="By technician" />
-              <div className="divide-y divide-line">
+              <div className="[&>*+*]:border-t [&>*+*]:border-t-line">
                 {technicians.map((person) => {
                   const jobs = workOrdersForResource(person.id, TODAY).sort((a, b) =>
                     a.windowStart.localeCompare(b.windowStart),
@@ -171,7 +171,7 @@ export const ManagerDispatch = () => {
                             return (
                               <Row
                                 key={job.id}
-                                rule={
+                                tone={
                                   job.status === 'booked'
                                     ? 'warn'
                                     : active

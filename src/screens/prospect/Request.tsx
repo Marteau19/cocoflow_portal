@@ -159,7 +159,7 @@ export const ProspectRequest = () => {
           <CardHeader eyebrow="What happens next" title="Four steps" />
           <RowList>
             {STEPS.map((step, index) => (
-              <Row key={step.label} rule={step.state === 'next' ? 'strong' : 'neutral'}>
+              <Row key={step.label} tone={step.state === 'next' ? 'strong' : 'neutral'}>
                 <div className="flex items-start gap-3">
                   <span className="mt-1 shrink-0 font-mono text-caption text-ink3">
                     {String(index + 1).padStart(2, '0')}

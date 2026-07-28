@@ -119,7 +119,7 @@ export const ManagerDashboard = () => {
               />
               <RowList>
                 {unstarted.length > 0 && (
-                  <Row rule="warn" to="/sp/dispatch">
+                  <Row tone="warn" to="/sp/dispatch">
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <Status tone="warn">UNCONFIRMED</Status>
@@ -144,7 +144,7 @@ export const ManagerDashboard = () => {
                 {openCases.map((item) => {
                   const account = byId(accounts, item.accountId);
                   return (
-                    <Row key={item.id} rule="warn" to="/sp/customers">
+                    <Row key={item.id} tone="warn" to="/sp/customers">
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <Status tone="warn">OPEN</Status>
@@ -161,7 +161,7 @@ export const ManagerDashboard = () => {
                   );
                 })}
 
-                <Row rule="neutral" to="/sp/leads">
+                <Row tone="neutral" to="/sp/leads">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <Status>TO CONTACT</Status>
@@ -178,7 +178,7 @@ export const ManagerDashboard = () => {
                   </div>
                 </Row>
 
-                <Row rule="neutral" to="/sp/inventory">
+                <Row tone="neutral" to="/sp/inventory">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <Status>REORDER</Status>
@@ -218,7 +218,7 @@ export const ManagerDashboard = () => {
                     a.windowStart.localeCompare(b.windowStart),
                   );
                   return (
-                    <Row key={person.id} rule={jobs.length === 0 ? 'none' : 'neutral'}>
+                    <Row key={person.id} tone={jobs.length === 0 ? 'none' : 'neutral'}>
                       <div className="flex items-start gap-3">
                         <Avatar
                           name={person.name}

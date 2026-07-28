@@ -236,7 +236,7 @@ export const GlobalNetwork = () => {
                   const above = sp.servicePct >= target;
                   const onTarget = sp.revenue >= sp.target;
                   return (
-                    <Row key={sp.id} rule={above ? 'strong' : 'warn'} to={`/network/${sp.regionId}`}>
+                    <Row key={sp.id} tone={above ? 'strong' : 'warn'} to={`/network/${sp.regionId}`}>
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-baseline gap-2">

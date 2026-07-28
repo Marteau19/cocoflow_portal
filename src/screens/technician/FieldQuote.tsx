@@ -161,7 +161,7 @@ export const TechnicianFieldQuote = () => {
                 title="What did you find?"
                 eyebrow={selected.length === 0 ? 'Nothing selected' : `${selected.length} selected`}
               />
-              <div className="divide-y divide-line">
+              <div className="[&>*+*]:border-t [&>*+*]:border-t-line">
                 {FINDINGS.map((finding) => {
                   const chosen = selected.includes(finding.id);
                   const product = products.find((p) => p.sku === finding.sku);

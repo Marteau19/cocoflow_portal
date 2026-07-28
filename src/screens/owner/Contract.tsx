@@ -81,7 +81,7 @@ export const OwnerContract = () => {
                 </Status>
               </div>
 
-              <dl className="divide-y divide-line border-t border-line">
+              <dl className="[&>*+*]:border-t [&>*+*]:border-t-line border-t border-line">
                 <div className="flex items-baseline justify-between gap-3 px-4 py-3">
                   <dt className="text-caption text-ink2">Covering since</dt>
                   <dd className="text-caption text-ink">{longDate(contract.startsOn)}</dd>
@@ -133,7 +133,7 @@ export const OwnerContract = () => {
                   visits.map((visit) => {
                     const done = visit.status === 'complete';
                     return (
-                      <Row key={visit.id} rule={done ? 'neutral' : 'strong'}>
+                      <Row key={visit.id} tone={done ? 'neutral' : 'strong'}>
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <p className="text-body text-ink">

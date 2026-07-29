@@ -1102,6 +1102,35 @@ The active state is solved without a fill:
 A 2px rule and a weight change is enough. It reads as "you are here" rather than
 as a button that is somehow already pressed.
 
+### Navigation is always reachable, and a new screen starts at its top
+
+Two behaviours, not styling, and both were wrong on a real phone.
+
+**Navigation never scrolls away.** The bottom bar is pinned to the bottom of the
+viewport and the content scrolls behind it. This requires the shell to have a
+`height`, not a `min-height`: with `min-height` it grew to fit its content, the
+screen element grew with it as a flex child, its `overflow: hidden` had nothing to
+clip, and the inner column never became a scroller. The page scrolled instead and
+the bar, a flex sibling below the column, went with it. It was at the bottom of the
+document rather than the bottom of the screen.
+
+The height is `dvh`, not `vh`. On mobile Safari and Chrome `100vh` is the viewport
+with the browser chrome retracted, which is taller than what you can see, so even a
+correctly sized shell put the bar below the fold. A `vh` line stays as the fallback
+for browsers without `dvh`.
+
+The manager's sheet trigger is sticky for the same reason, offset by the fixed top
+bar's height rather than to 0, so it does not come to rest underneath it.
+
+**A route change starts at the top of the new screen.** A single page app keeps
+scroll position, which is right for a back button and wrong for a nav tap: arriving
+halfway down a list, past the Masthead, reads as a screen that failed to load.
+`ScrollToTop` resets both scroll containers, because which one is live depends on
+the register: framed roles scroll the content column and the window never moves,
+full-bleed roles scroll the window. The jump is instant and never smoothed. A
+smooth scroll on a route change animates content that is already gone, and
+`prefers-reduced-motion` needs no case here because there is no motion to reduce.
+
 **The sidebar stops floating.** It runs full height, flush to the left edge of the
 shell, `--band-deep`, no radius on the outer edge. The floating rounded panel left
 1280px of dead canvas below itself on long pages. It is chrome, so it should behave

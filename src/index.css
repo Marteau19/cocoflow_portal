@@ -276,10 +276,33 @@
     justify-items: center;
   }
 
+  /**
+   * On a real phone there is no frame, and this chain is what pins the bottom
+   * navigation to the bottom of the screen.
+   *
+   * It has to be `height`, not `min-height`. With `min-height` the shell grew to
+   * fit its content, `.device-screen` grew with it as a `flex: 1` child, its
+   * `overflow: hidden` never had anything to clip, and so the inner
+   * `overflow-y-auto` column never became a scroller. The page scrolled instead,
+   * and the nav, which is a flex sibling below that column, scrolled away with it.
+   * That is the "menu is at the bottom of the page" report: it was at the bottom of
+   * the document rather than the bottom of the viewport.
+   *
+   * And it has to be `dvh`, not `vh`. On mobile Safari and Chrome `100vh` is the
+   * viewport with the browser chrome retracted, which is taller than what you can
+   * actually see, so even a correctly sized shell put the nav below the fold until
+   * you scrolled. `dvh` tracks the visible height as the chrome shows and hides.
+   * The `vh` line above it is the fallback for browsers without `dvh`, where being
+   * slightly too tall is better than having no height at all.
+   *
+   * `--space-6` is the fixed top bar, which `main` already offsets with `pt-6`.
+   */
   .device-shell {
     position: relative;
     display: flex;
-    min-height: calc(100vh - var(--space-6));
+    height: calc(100vh - var(--space-6));
+    height: calc(100dvh - var(--space-6));
+    min-height: 0;
     flex-direction: column;
   }
 
@@ -298,6 +321,13 @@
     flex-direction: column;
     overflow: hidden;
     background-color: var(--color-canvas);
+  }
+
+  /* Stops a flick at the end of the list from rubber-banding the page behind the
+     app, which on iOS reads as the whole screen coming loose. */
+  [data-content-column] {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Inert until there is a frame to sit in. */

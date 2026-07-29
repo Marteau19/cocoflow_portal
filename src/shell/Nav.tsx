@@ -209,7 +209,16 @@ export const SheetNav = ({ role }: { role: RoleDef }) => {
     role.nav.find((item) => item.to === location.pathname)?.label ?? role.nav[0].label;
 
   return (
-    <div className="md:hidden">
+    /*
+      Sticky, for the same reason the bottom nav is pinned: navigation you have to
+      scroll back up to find is navigation that is missing.
+
+      `top-6` rather than `top-0` because the top bar is fixed at that height, so a
+      sticky element at 0 would come to rest underneath it. The negative top margin
+      and matching padding let the sunk ground run edge to edge behind the trigger
+      as it sticks, so content does not appear through the gap above it.
+    */
+    <div className="sticky top-6 z-nav -mt-3 bg-canvas pb-3 pt-3 md:hidden">
       <button
         type="button"
         onClick={() => setOpen(true)}

@@ -35,7 +35,6 @@ import {
   Band,
   BandHead,
   Button,
-  Flag,
   Icon,
   Identifier,
   Micro,
@@ -506,11 +505,11 @@ export const TechnicianWorkOrder = () => {
                       </>
                     )}
 
-                    <div className="border-t border-line px-4 py-3">
-                      <Flag tone="warn" icon="alert-triangle">
-                        How this is generated is undecided
-                      </Flag>
-                    </div>
+                    {/*
+                      "How this is generated is undecided" lived here. It is in the
+                      `wo-summary-translation` annotation's openDecision, which is
+                      the surface built for it.
+                    */}
                   </div>
                 </Section>
 

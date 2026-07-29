@@ -223,11 +223,15 @@ export const TechnicianRoute = () => {
             <Band kind="data" flush>
               <BandHead title="The run" eyebrow="Not drawn yet" />
               <div className="px-gutter py-3">
+                {/*
+                  The honest missing-data statement stays. What went is the
+                  explanation of why this build lacks the data, which is Blueprint
+                  language: a technician does not need to know what was bundled.
+                */}
                 <p className="text-caption text-ink2">
-                  All {jobs.length} stops today are inside{' '}
-                  {byId(territories, jobs[0]?.territoryId ?? '')?.name}. A drawn route needs base
-                  geography, which is not bundled in this build, so the ordered list above is the
-                  route until it is.
+                  All {jobs.length} stops are inside{' '}
+                  {byId(territories, jobs[0]?.territoryId ?? '')?.name}. Base geography not yet
+                  supplied, so the list above is the route.
                 </p>
               </div>
             </Band>

@@ -891,7 +891,15 @@ export const Masthead = ({
   alt = false,
   children,
 }: {
-  eyebrow: string;
+  /**
+   * Optional, and this is a copy rule expressed as a type.
+   *
+   * A Masthead gets an eyebrow or a heading, not both, unless the eyebrow does
+   * orientation work the heading cannot: naming a step, a date or a count. It was
+   * required, so every screen supplied one, and most of them restated the heading.
+   * "Your soil test" above "What we found on your land" is one idea twice.
+   */
+  eyebrow?: string;
   subject: string;
   hero?: ReactNode;
   lead?: string;
@@ -899,15 +907,15 @@ export const Masthead = ({
   children?: ReactNode;
 }) => (
   <Band kind="masthead" alt={alt}>
-    <Micro className="text-on-band-muted">{eyebrow}</Micro>
+    {eyebrow && <Micro className="text-on-band-muted">{eyebrow}</Micro>}
     {hero ? (
       <>
-        <p className="mt-1 text-h1 text-on-band">{subject}</p>
+        <p className={`text-h1 text-on-band ${eyebrow ? 'mt-1' : ''}`}>{subject}</p>
         <div className="mt-5">{hero}</div>
       </>
     ) : (
       /* The subject is the hero. No second figure competes with it. */
-      <p className="mt-2 text-hero text-on-band">{subject}</p>
+      <p className={`text-hero text-on-band ${eyebrow ? 'mt-2' : ''}`}>{subject}</p>
     )}
     {lead && (
       <p className="mt-3 max-w-reading text-body text-on-band opacity-90">{lead}</p>

@@ -38,12 +38,18 @@ const STEPS = [
   },
   {
     label: 'We visit and test the soil',
-    detail: 'About an hour on site, no cost to you',
+    detail: 'About an hour on site, no charge',
     state: 'later' as const,
   },
   {
+    /*
+      "No pressure either way" was the third reassurance on this screen. The one
+      that survives sits on /quote, next to Approve, which is where the decision
+      actually is. Reassuring somebody about a decision they cannot make yet is
+      what makes a page feel like it is protesting.
+    */
     label: 'We design your system and quote it',
-    detail: 'You approve or you do not. No pressure either way',
+    detail: 'You approve, or you do not',
     state: 'later' as const,
   },
   {
@@ -61,10 +67,11 @@ export const ProspectRequest = () => {
   return (
     <>
       <div className="contents">
+        {/* The eyebrow earns its place: it names the state, which the greeting cannot. */}
         <Masthead
           eyebrow="Request received"
           subject={`Thanks, ${lead.name.split(' ')[0]}`}
-          lead="We have your request and a team is assigned. Here is what happens next."
+          lead="A team is assigned."
         />
 
         {/* ---------------------------------------------------------------- */}
@@ -80,8 +87,7 @@ export const ProspectRequest = () => {
                 <div className="min-w-0">
                   <p className="text-body text-ink">Your account is ready</p>
                   <p className="mt-1 text-caption text-ink2">
-                    Everything from here, the soil test, the quote, the install and the paperwork,
-                    lives in this one place. You will not have to explain yourself twice.
+                    Soil test, quote, install and paperwork, all in one place.
                   </p>
                 </div>
               </div>
@@ -121,8 +127,8 @@ export const ProspectRequest = () => {
             />
             <div className="px-gutter py-3">
               <p className="text-caption text-ink2">
-                One team owns your whole job, from the first visit to the last. They cover a{' '}
-                {servicePoint.radiusKm} km area around {lead.city}.
+                One team from first visit to last, covering {servicePoint.radiusKm} km around{' '}
+                {lead.city}.
               </p>
             </div>
             <RowList className="border-t border-line">
@@ -154,7 +160,7 @@ export const ProspectRequest = () => {
 
         {/* ---------------------------------------------------------------- */}
         <Band kind="data" flush>
-          <BandHead eyebrow="What happens next" title="Four steps" />
+          <BandHead title="What happens next" />
           <RowList>
             {STEPS.map((step, index) => (
               <Row key={step.label} tone={step.state === 'next' ? 'strong' : 'neutral'}>
@@ -182,9 +188,7 @@ export const ProspectRequest = () => {
         <Band kind="rail" flush>
           <div className="px-gutter py-3">
             <Micro>Already had your soil test?</Micro>
-            <p className="mt-1 text-caption text-ink2">
-              If we have been out to the property, your findings and your quote are waiting.
-            </p>
+            <p className="mt-1 text-caption text-ink2">Your findings and quote are waiting.</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <ButtonLink to="/soil-test" variant="quiet">
                 See the soil test

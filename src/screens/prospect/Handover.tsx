@@ -48,10 +48,18 @@ export const ProspectHandover = () => {
     <>
       {/* Masthead. The hero is a dark field: the statement itself. */}
       <Section id="handover" onDark>
+        {/*
+          "Handover" above "Your system is live" is the same idea twice, so the
+          eyebrow is gone.
+
+          The non-breaking space binds "is live", so the line breaks after "system"
+          and the hero sets as two balanced lines instead of stranding "live" on its
+          own. DESIGN.md section 5 permits an explicit break. It does not permit
+          shrinking the hero to avoid one.
+        */}
         <Masthead
-          eyebrow="Handover"
-          subject="Your system is live"
-          lead={`Commissioned and running. ${servicePoint.name} looks after it from here.`}
+          subject={'Your system is\u00A0live'}
+          lead={`${servicePoint.name} looks after it from here.`}
         >
           <div className="mt-4">
             <Status tone="good" dot>
@@ -93,10 +101,13 @@ export const ProspectHandover = () => {
               <BandHead eyebrow="Keeping it that way" title={contract.name} />
             </div>
             <div className="px-gutter pb-4">
+              {/*
+                The entitlement rows below already list what is covered, so the
+                paragraph only has to say the one thing they do not: that we come
+                before something goes wrong rather than after.
+              */}
               <p className="max-w-reading text-body text-ink2">
-                A system like yours needs the filter media replaced every few years and a check up
-                once a year. The care plan covers both, and it means we come to you before something
-                goes wrong rather than after.
+                We come to you before something goes wrong, not after.
               </p>
             </div>
               <RowList className="border-t border-line">
@@ -134,7 +145,7 @@ export const ProspectHandover = () => {
                     <div className="min-w-0">
                       <p className="text-body text-ink">Annual inspection</p>
                       <p className="mt-1 text-caption text-ink2">
-                        We will confirm a window with you nearer the time
+                        We confirm a window nearer the time
                       </p>
                     </div>
                     <p className="shrink-0 text-caption text-ink">{longDate('2027-08-10')}</p>
@@ -153,20 +164,28 @@ export const ProspectHandover = () => {
               <Micro className="text-on-band-muted">What changes for you</Micro>
               <p className="mt-1 text-h1 text-on-band">Same login, new view</p>
               <div className="mt-3">
+                {/*
+                  Three sentences became two. "Nothing to sign up for and nothing to
+                  re-enter" and "the account you have been using becomes the account
+                  you use" are the same claim, so the concrete one survives.
+                */}
                 <p className="max-w-reading text-body text-on-band opacity-90">
-                  Nothing to sign up for and nothing to re-enter. The account you have been using to
-                  follow the project becomes the account you use to run the system. Your soil test,
-                  your design and your permit stay with it.
+                  The account you used to follow the project is the one you use to run the system.
+                  Your soil test, your design and your permit stay with it.
                 </p>
               </div>
               <div className="mt-4">
-                <Button variant="primary" icon="home" onClick={() => setRole('client-owner')}>
+                <Button variant="primary" size="primary" onBand icon="home" onClick={() => setRole('client-owner')}>
                   Go to my system
                 </Button>
+                {/*
+                  "In the prototype this switches the role" was demo mechanics on a
+                  customer screen. Deleted rather than moved: it describes this
+                  build's role switcher, not a system decision, so it has no home in
+                  sections.ts either.
+                */}
                 <p className="mt-3 max-w-reading text-caption text-on-band opacity-70">
-                  In the prototype this switches the role. For a real customer it is the same screen
-                  they were already on. Installed against {quote.id}. Warranty and documents live
-                  under My system.
+                  Installed against {quote.id}. Warranty and documents live under My system.
                 </p>
               </div>
       </Band>

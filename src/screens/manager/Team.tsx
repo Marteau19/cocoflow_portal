@@ -225,10 +225,12 @@ export const ManagerTeam = () => {
               </RowList>
             </Band>
 
-            <p className="text-caption text-ink3">
-              Qualifications and absence are held here for the prototype. Neither has a home in the
-              data model yet, which is a gap worth closing before this ships.
-            </p>
+            {/*
+              The qualifications and absence gap moved to the `team` annotation's
+              openDecision, which was null. This is the one leak in the sweep that
+              was not already recorded somewhere, so it is a move rather than a
+              delete.
+            */}
           </div>
         </Section>
       </div>

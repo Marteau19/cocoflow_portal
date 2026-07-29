@@ -641,7 +641,8 @@ export const sections: Section[] = [
     dataDirection: 'read',
     integration: 'ServiceResource records with availability and utilisation.',
     bf: ['BF3'],
-    openDecision: null,
+    openDecision:
+      'Qualifications and absence have no home in the data model yet. Both are shown on this screen and neither has a system of record, which is a gap worth closing before this ships.',
     phase: 'V2',
   },
 

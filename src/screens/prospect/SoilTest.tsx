@@ -22,42 +22,24 @@ import {
   Hero,
   Icon,
   Masthead,
-  Micro,
   Row,
   RowList,
   Status,
 } from '../../ui/primitives';
 
 /**
- * What was measured, and what each measurement means for this property. The
- * second half is the whole point: a percolation rate is meaningless to a
- * homeowner until someone says what it rules out.
+ * What was measured, the verdict, and a fragment naming the cause.
+ *
+ * Each `meaning` used to be a full sentence explaining the verdict: 110 words
+ * across the four. The label says what was measured and the value says what was
+ * found, so the sentence was restating a conclusion the reader had already drawn.
+ * A fragment naming the physical cause is the only part that was load bearing.
  */
 const FINDINGS = [
-  {
-    label: 'How fast the ground drains',
-    value: 'Slowly',
-    meaning:
-      'There is a clay layer about 600mm down. Water sits on it rather than soaking away, which is why a conventional leaching bed would flood in spring.',
-  },
-  {
-    label: 'How deep we can dig',
-    value: 'Not far',
-    meaning:
-      'Bedrock sits close to the surface on the lake side of the lot. A deep system is not an option here.',
-  },
-  {
-    label: 'Distance to the lake',
-    value: 'Tight',
-    meaning:
-      'Provincial setback rules leave a narrow band we are allowed to build in, closer to the house than you might expect.',
-  },
-  {
-    label: 'The water table',
-    value: 'High in spring',
-    meaning:
-      'It rises with the thaw. Whatever we install has to keep working when the ground is saturated.',
-  },
+  { label: 'How fast the ground drains', value: 'Slowly', meaning: 'Clay layer 600mm down' },
+  { label: 'How deep we can dig', value: 'Not far', meaning: 'Bedrock close to the surface' },
+  { label: 'Distance to the lake', value: 'Tight', meaning: 'Setback rules leave a narrow band' },
+  { label: 'The water table', value: 'High in spring', meaning: 'Rises with the thaw' },
 ];
 
 export const ProspectSoilTest = () => {
@@ -75,16 +57,21 @@ export const ProspectSoilTest = () => {
         carries what it means directly beneath.
       */}
       <Section id="soil-test" onDark>
+        {/*
+          The eyebrow was "Your soil test" above a heading reading "What we found on
+          your land", which is the same thing twice. The note said the copy was in
+          plain language, which is the one thing plain language never does.
+
+          The eyebrow now does orientation the heading cannot: when it happened.
+        */}
         <Masthead
-          eyebrow="Your soil test"
+          eyebrow={`${longDate('2026-07-23')}, an hour on site`}
           subject="What we found on your land"
           hero={
             <Hero
               onBand
               label="How fast the ground drains"
               value={FINDINGS[0].value}
-              delta={{ text: 'Rules out a conventional leaching bed', tone: 'warn' }}
-              note="We spent an hour on the property. Here is what the ground told us, in plain language."
             />
           }
         />
@@ -101,26 +88,20 @@ export const ProspectSoilTest = () => {
                 />
                 <div className="min-w-0">
                   <p className="text-body text-ink">{technician.name} tested your land</p>
-                  <p className="text-caption text-ink2">
-                    {longDate('2026-07-23')}, about an hour on site
-                  </p>
+                  <p className="text-caption text-ink2">No charge for the test</p>
                 </div>
               </div>
               <div className="border-t border-line px-gutter py-4">
                 <Status tone="good" dot>
                   REPORT READY
                 </Status>
-                <p className="mt-2 max-w-reading text-caption text-ink2">
-                  There is nothing to pay for the test. It is part of how we work out what your
-                  property needs.
-                </p>
               </div>
       </Band>
 
       {/* Rail. Each finding with what it means. Never a number on its own. */}
       <Band kind="rail" flush>
               <div className="px-gutter">
-                <BandHead eyebrow="Four things we measured" title="What the ground told us" />
+                <BandHead title="What the ground told us" />
               </div>
               <RowList className="border-t border-line">
                 {FINDINGS.map((finding) => (
@@ -138,17 +119,17 @@ export const ProspectSoilTest = () => {
       {/* Data. The conclusion, stated before the quote asks for a decision. */}
       <Band kind="data" flush>
               <div className="px-gutter">
-                <BandHead eyebrow="What this means" title="What we can install" />
+                <BandHead title="What we can install" />
               </div>
               <div className="px-gutter pb-4">
+                {/*
+                  The "that is not a sales answer" paragraph is gone. Rebutting an
+                  accusation the customer has not made is what plants it, and the
+                  four measurements above already make the argument.
+                */}
                 <p className="max-w-reading text-body text-ink">
-                  Your lot rules out a conventional leaching bed. What it suits is a compact system
-                  that treats the water above the problem layer rather than relying on the ground to
-                  do the work.
-                </p>
-                <p className="mt-3 max-w-reading text-caption text-ink2">
-                  That is not a sales answer. If your soil drained well and the lot were larger, a
-                  simpler and cheaper system would be the right call, and we would have said so.
+                  Your lot needs a compact system that treats the water above the clay, rather than
+                  relying on the ground.
                 </p>
               </div>
               <div className="border-t border-line px-gutter py-4">
@@ -161,7 +142,7 @@ export const ProspectSoilTest = () => {
       {/* Closing. The report itself, for whoever wants the underlying numbers. */}
       <Band kind="closing" flush>
               <div className="px-gutter">
-                <BandHead eyebrow="For your records" title="The full report" />
+                <BandHead title="The full report" />
               </div>
               <RowList className="border-t border-line">
                 <Row>
@@ -173,7 +154,7 @@ export const ProspectSoilTest = () => {
                       <div className="min-w-0">
                         <p className="text-body text-ink">Soil assessment, {lead.city}</p>
                         <p className="text-caption text-ink2">
-                          The measurements, the method, and the standard they are read against
+                          Measurements, method and standard
                         </p>
                       </div>
                     </div>
@@ -184,11 +165,8 @@ export const ProspectSoilTest = () => {
                 </Row>
               </RowList>
               <div className="border-t border-line px-gutter py-4">
-                <Micro>If you are getting other quotes</Micro>
-                <p className="mt-1 text-caption text-ink2">
-                  This report is yours. You are welcome to share it with anyone else you are talking
-                  to, and you do not need our permission.
-                </p>
+                {/* The generosity survives in nine words instead of thirty. */}
+                <p className="text-caption text-ink2">Yours to keep, and to share with anyone.</p>
               </div>
       </Band>
     </>

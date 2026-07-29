@@ -13,6 +13,7 @@ import { useBrand } from './brands/useBrand';
 import { BlueprintProvider } from './blueprint/BlueprintProvider';
 import { AppRoutes } from './routes';
 import { AppShell } from './shell/AppShell';
+import { ScrollToTop } from './shell/ScrollToTop';
 import { RoleProvider } from './shell/useRole';
 
 export const App = () => {
@@ -22,6 +23,12 @@ export const App = () => {
   return (
     <RoleProvider>
       <BlueprintProvider>
+        {/*
+          Sits above the shell so it runs after the new route has rendered and the
+          scroll container exists, and outside AppShell so a register change cannot
+          unmount it.
+        */}
+        <ScrollToTop />
         <AppShell>
           <AppRoutes />
         </AppShell>

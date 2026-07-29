@@ -112,7 +112,7 @@ export const TechnicianDay = () => {
                 const isActive = active?.id === job.id;
 
                 return (
-                  <Row gutter key={job.id} tone={status.rule} to={`/wo/${job.id}`}>
+                  <Row key={job.id} tone={status.rule} to={`/wo/${job.id}`}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         {/* Time first: it is what orders the day. */}

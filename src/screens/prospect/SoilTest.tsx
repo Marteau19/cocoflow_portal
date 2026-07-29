@@ -124,7 +124,7 @@ export const ProspectSoilTest = () => {
               </div>
               <RowList className="border-t border-line">
                 {FINDINGS.map((finding) => (
-                  <Row key={finding.label} gutter>
+                  <Row key={finding.label}>
                     <div className="flex items-baseline justify-between gap-3">
                       <p className="text-body text-ink">{finding.label}</p>
                       <p className="shrink-0 text-body font-medium text-ink">{finding.value}</p>
@@ -164,7 +164,7 @@ export const ProspectSoilTest = () => {
                 <BandHead eyebrow="For your records" title="The full report" />
               </div>
               <RowList className="border-t border-line">
-                <Row gutter>
+                <Row>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <span className="shrink-0 text-ink3">

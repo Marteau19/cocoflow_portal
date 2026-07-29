@@ -31,7 +31,8 @@ export interface CatalogueItem {
   currency: Currency;
   /** True when the part fits the system this customer actually owns. */
   fitsMySystem: boolean;
-  image: string;
+  /** Null where no photograph of this category exists. See IMAGE_BY_CATEGORY. */
+  image: string | null;
 }
 
 export interface CartLine {
@@ -68,12 +69,30 @@ export interface CommerceAdapter {
 /* Prototype implementation                                            */
 /* ------------------------------------------------------------------ */
 
-/** Part imagery, keyed by category so new SKUs inherit a sensible image. */
+/**
+ * Part imagery, keyed by category.
+ *
+ * There are three photographs in `public/img` and five categories, and the
+ * previous map ignored what was actually in each file:
+ *
+ *   part-1.png  a green inspection lid
+ *   part-2.png  a black filter disc
+ *   part-3.png  a bolt and clamp assembly
+ *
+ * It mapped `lid` to the bolt and `filter-media` to the lid, so the inspection lid
+ * seal showed a bolt and the filter media showed a lid. Both were wrong, and
+ * because the thumbnail was 24px nobody could see which.
+ *
+ * `pump` and `control` are deliberately absent. There is no pump photograph and no
+ * control panel photograph, and reusing one of these three for them would put a
+ * confidently wrong picture next to a $615 part. A category with no image gets no
+ * image, and the row renders a labelled placeholder instead. That is the same
+ * choice this prototype makes everywhere else a value is unknown: state the gap
+ * rather than fill it with something plausible.
+ */
 const IMAGE_BY_CATEGORY: Record<string, string> = {
-  'filter-media': '/img/part-1.png',
-  pump: '/img/part-2.png',
-  control: '/img/part-2.png',
-  lid: '/img/part-3.png',
+  lid: '/img/part-1.png',
+  'filter-media': '/img/part-2.png',
   accessory: '/img/part-3.png',
 };
 
@@ -100,7 +119,7 @@ export const prototypeAdapter: CommerceAdapter = {
       price_jde: p.price_jde,
       currency: p.currency,
       fitsMySystem: p.fitsModels.some((m) => mine.includes(m)),
-      image: IMAGE_BY_CATEGORY[p.category] ?? '/img/part-3.png',
+      image: IMAGE_BY_CATEGORY[p.category] ?? null,
     }));
   },
 

@@ -124,7 +124,7 @@ export const ManagerLeads = () => {
                       const isGolden = lead.id === GOLDEN.leadId;
 
                       return (
-                        <Row gutter key={lead.id} tone={stage.rule}>
+                        <Row key={lead.id} tone={stage.rule}>
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-baseline gap-2">

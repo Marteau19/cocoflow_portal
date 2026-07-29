@@ -95,7 +95,7 @@ export const ManagerDispatch = () => {
                   {unconfirmed.map((job) => {
                     const account = byId(accounts, job.accountId)!;
                     return (
-                      <Row gutter key={job.id} tone="warn">
+                      <Row key={job.id} tone="warn">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <Status tone="warn">NOT CONFIRMED</Status>
@@ -167,7 +167,7 @@ export const ManagerDispatch = () => {
                             const isMoving = moving === job.id;
 
                             return (
-                              <Row gutter
+                              <Row
                                 key={job.id}
                                 tone={
                                   job.status === 'booked'

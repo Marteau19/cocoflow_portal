@@ -58,6 +58,17 @@ const PAIRS = [
   ['alert', 'alertSoft'],
   ['ink3', 'surface'],
   ['ink3', 'canvas'],
+  /*
+    The bottom navigation bar moved to the sunk ground so it stops reading as an
+    unattached white slab, which put the inactive nav label and the disabled button
+    label on a pair that had never been measured. Both are `ink3` on
+    `surfaceSunk`. Same lesson as the `accentInk` row above: a new ground means a
+    new pair, and the pair has to be added the moment the ground is.
+  */
+  ['ink3', 'surfaceSunk'],
+  // The active nav label, and the label on an `onBand` primary button.
+  ['ink', 'surface'],
+  ['ink2', 'surface'],
 ];
 
 /** Metadata only, never load bearing, so held to the non-text floor. */

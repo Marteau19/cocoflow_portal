@@ -118,7 +118,7 @@ export const ManagerTeam = () => {
                   const quals = QUALIFIED[person.id] ?? [];
 
                   return (
-                    <Row gutter key={person.id} tone={away ? 'warn' : 'neutral'}>
+                    <Row key={person.id} tone={away ? 'warn' : 'neutral'}>
                       <div className="flex items-start gap-3">
                         <Avatar
                           name={person.name}
@@ -191,7 +191,7 @@ export const ManagerTeam = () => {
               <BandHead title="Committed work at risk" eyebrow="During the absence" />
               <RowList>
                 {upcoming.length === 0 ? (
-                  <Row gutter>
+                  <Row>
                     <p className="text-body text-ink2">Nothing committed in that window.</p>
                   </Row>
                 ) : (
@@ -202,7 +202,7 @@ export const ManagerTeam = () => {
                       away && job.scheduledFor >= away.from && job.scheduledFor <= away.to;
 
                     return (
-                      <Row gutter key={job.id} tone={atRisk ? 'warn' : 'none'}>
+                      <Row key={job.id} tone={atRisk ? 'warn' : 'none'}>
                         <div className="flex items-baseline justify-between gap-3">
                           <div className="min-w-0">
                             <p className="text-body text-ink">

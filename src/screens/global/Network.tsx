@@ -234,7 +234,7 @@ export const GlobalNetwork = () => {
                   const above = sp.servicePct >= target;
                   const onTarget = sp.revenue >= sp.target;
                   return (
-                    <Row gutter key={sp.id} tone={above ? 'strong' : 'warn'} to={`/network/${sp.regionId}`}>
+                    <Row key={sp.id} tone={above ? 'strong' : 'warn'} to={`/network/${sp.regionId}`}>
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-baseline gap-2">
@@ -274,7 +274,7 @@ export const GlobalNetwork = () => {
               <BandHead title="Regions" eyebrow="Drill in" />
               <RowList>
                 {regions.map((region) => (
-                  <Row gutter key={region.id} to={`/network/${region.id}`}>
+                  <Row key={region.id} to={`/network/${region.id}`}>
                     <div className="flex items-baseline justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-body text-ink">{region.name}</p>

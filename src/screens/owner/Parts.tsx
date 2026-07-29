@@ -24,13 +24,14 @@ import {
   Button,
   Empty,
   Flag,
-  Icon,
   Identifier,
   Masthead,
   Micro,
+  Note,
   Row,
   RowList,
   Tabs,
+  Thumb,
 } from '../../ui/primitives';
 
 export const OwnerParts = () => {
@@ -75,24 +76,40 @@ export const OwnerParts = () => {
   return (
     <>
       <div className="contents">
+        {/*
+          "Parts for your system" set to two lines with "system" alone on the
+          second, which DESIGN.md section 5 now forbids. "Parts and filters" rags
+          clean at the framed column width and says the same thing: these are the
+          consumables for an installed system.
+        */}
         <Masthead
           eyebrow="Parts"
-          subject="Parts for your system"
+          subject="Parts and filters"
           lead={`Filtered to the ${asset.model}, so nothing here will arrive and not fit.`}
         />
 
         <Section id="parts-store">
           <div className="contents">
-            {/* The filter is on by default. Fit is the whole value here. */}
-            <Tabs
-              label="Filter the catalogue"
-              value={onlyMine ? 'mine' : 'all'}
-              onChange={(value) => setOnlyMine(value === 'mine')}
-              options={[
-                { value: 'mine', label: `Fits my ${asset.model}` },
-                { value: 'all', label: 'Everything' },
-              ]}
-            />
+            {/*
+              The filter is on by default. Fit is the whole value here.
+
+              It sits inside a Rail band rather than as a bare sibling between
+              bands. As a sibling it had no gutter at all, so the chips started at
+              left 0 while the masthead text above them started at the gutter.
+            */}
+            <Band kind="rail" flush>
+              <div className="px-gutter pt-1">
+                <Tabs
+                  label="Filter the catalogue"
+                  value={onlyMine ? 'mine' : 'all'}
+                  onChange={(value) => setOnlyMine(value === 'mine')}
+                  options={[
+                    { value: 'mine', label: `Fits my ${asset.model}` },
+                    { value: 'all', label: 'Everything' },
+                  ]}
+                />
+              </div>
+            </Band>
 
             {catalogue === null ? (
               <Band kind="data" flush>
@@ -108,14 +125,15 @@ export const OwnerParts = () => {
                   {shown.map((item) => {
                     const quantity = inCart(item.sku);
                     return (
-                      <Row gutter key={item.sku}>
+                      <Row key={item.sku}>
+                        {/*
+                          Thumbnail on the gutter, every text line at
+                          gutter + 48 + 16. `gap-3` is 16px, so the flex child
+                          starts on the `pl-thumb` edge and the title, the SKU line
+                          and the price all share it.
+                        */}
                         <div className="flex items-start gap-3">
-                          {/* Real part imagery, at text-adjacent size. */}
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="h-6 w-6 shrink-0 rounded-control border border-line bg-surface-sunk object-contain"
-                          />
+                          <Thumb src={item.image} alt={item.name} />
                           <div className="min-w-0 flex-1">
                             <p className="text-body text-ink">{item.name}</p>
                             <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -132,24 +150,36 @@ export const OwnerParts = () => {
                                 {money(item.price_jde, item.currency)}
                               </p>
 
+                              {/*
+                                Add is the row's primary action, so it is a filled
+                                compact control rather than a ghost outline.
+                                DESIGN.md section 6: an outlined control is a
+                                secondary by definition.
+                              */}
                               {quantity === 0 ? (
-                                <Button variant="quiet" onClick={() => add(item.sku)}>
+                                <Button
+                                  variant="primary"
+                                  size="compact"
+                                  onClick={() => add(item.sku)}
+                                >
                                   Add
                                 </Button>
                               ) : (
                                 <div className="flex items-center gap-2">
                                   <Button
                                     variant="quiet"
+                                    size="compact"
                                     aria-label={`Remove one ${item.name}`}
                                     onClick={() => setQuantity(item.sku, quantity - 1)}
                                   >
                                     &minus;
                                   </Button>
-                                  <span className="min-w-tap text-center text-body text-ink">
+                                  <span className="w-4 text-center text-body text-ink">
                                     {quantity}
                                   </span>
                                   <Button
                                     variant="quiet"
+                                    size="compact"
                                     aria-label={`Add one ${item.name}`}
                                     onClick={() => setQuantity(item.sku, quantity + 1)}
                                   >
@@ -176,18 +206,14 @@ export const OwnerParts = () => {
                 />
                 <RowList>
                   {cart.map((line) => (
-                    <Row gutter key={line.sku}>
+                    <Row key={line.sku}>
                       <div className="flex items-baseline justify-between gap-3">
                         <p className="min-w-0 text-caption text-ink">
                           {line.quantity} x {productName(line.sku)}
                         </p>
-                        <button
-                          type="button"
-                          onClick={() => setQuantity(line.sku, 0)}
-                          className="shrink-0 text-caption text-accent-ink hover:text-ink"
-                        >
+                        <Button variant="plain" onClick={() => setQuantity(line.sku, 0)}>
                           Remove
-                        </button>
+                        </Button>
                       </div>
                     </Row>
                   ))}
@@ -217,7 +243,7 @@ export const OwnerParts = () => {
                 </dl>
 
                 <div className="border-t border-line px-gutter py-3">
-                  <Button variant="primary" icon="package" block>
+                  <Button variant="primary" size="primary" icon="package" block>
                     Go to checkout
                   </Button>
                   <p className="mt-2 text-caption text-ink3">
@@ -229,17 +255,14 @@ export const OwnerParts = () => {
 
             {/* The seam, stated on screen rather than only in the annotation. */}
             <Band kind="closing" alt>
-              <div className="px-gutter py-3">
+              <div>
                 <Micro className="text-on-band-muted">Behind this screen</Micro>
-                <p className="mt-1 flex items-start gap-2 text-caption text-on-band opacity-80">
-                  <span className="mt-1 shrink-0">
-                    <Icon name="info" />
-                  </span>
-                  <span>
+                <div className="mt-1">
+                  <Note icon="info" tone="text-on-band-muted" onBand>
                     Commerce runs through one adapter, so the platform choice stays open. Prices come
                     from the ERP. Tax is deliberately not calculated here.
-                  </span>
-                </p>
+                  </Note>
+                </div>
                 <div className="mt-2">
                   <Flag tone="warn" icon="alert-triangle">
                     Platform undecided

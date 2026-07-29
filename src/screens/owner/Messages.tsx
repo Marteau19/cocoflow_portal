@@ -211,19 +211,19 @@ export const OwnerMessages = () => {
             <Band kind="data" flush>
               <BandHead icon="file-text" iconTone="neutral" eyebrow="What we already know" title="Attached to this conversation" />
               <RowList>
-                <Row gutter>
+                <Row>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Your system</p>
                     <p className="text-caption text-ink">Ecoflo compact biofilter, EC-5</p>
                   </div>
                 </Row>
-                <Row gutter>
+                <Row>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Next visit</p>
                     <p className="text-caption text-ink">{longDate(visit.scheduledFor)}</p>
                   </div>
                 </Row>
-                <Row gutter>
+                <Row>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Winter access</p>
                     <p className="text-right text-caption text-ink">

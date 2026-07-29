@@ -89,7 +89,7 @@ export const OwnerBook = () => {
               <p className="mt-1 text-body text-ink2">{slot.window}</p>
             </div>
             <RowList className="border-t border-line">
-              <Row gutter>
+              <Row>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Reason</p>
                   <p className="text-caption text-ink">
@@ -97,7 +97,7 @@ export const OwnerBook = () => {
                   </p>
                 </div>
               </Row>
-              <Row gutter>
+              <Row>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Where</p>
                   <p className="text-right text-caption text-ink">
@@ -105,7 +105,7 @@ export const OwnerBook = () => {
                   </p>
                 </div>
               </Row>
-              <Row gutter>
+              <Row>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Team</p>
                   <p className="text-caption text-ink">{servicePoint.name}</p>

@@ -16,6 +16,7 @@
 
 import type { ReactNode } from 'react';
 import { BlueprintPanel } from '../blueprint/BlueprintPanel';
+import { GutterOverlay } from '../dev/GutterOverlay';
 import { DeviceFrame } from './DeviceFrame';
 import { BottomNav, SheetNav, SideNav } from './Nav';
 import { TopBar } from './TopBar';
@@ -31,7 +32,9 @@ const FramedRole = ({ children }: { children: ReactNode }) => {
 
   return (
     <DeviceFrame>
-      <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+      <div className="min-h-0 flex-1 overflow-y-auto" data-content-column>
+        {children}
+      </div>
       <BottomNav role={role} />
     </DeviceFrame>
   );
@@ -44,7 +47,13 @@ const FullBleedRole = ({ children }: { children: ReactNode }) => {
   return (
     <div className="mx-auto flex max-w-shell gap-3 px-gutter py-3">
       <SideNav role={role} />
-      <div className="min-w-0 flex-1">
+      {/*
+        `data-content-column` marks where the gutter is measured from. Without it
+        the alignment instruments measured full-bleed roles from <main>, which
+        includes the sidebar, and reported every heading as sitting 300px off the
+        gutter. An instrument that cannot find the column cannot check it.
+      */}
+      <div className="min-w-0 flex-1" data-content-column>
         <SheetNav role={role} />
         {children}
       </div>
@@ -77,6 +86,12 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
         {framed ? <FramedRole>{children}</FramedRole> : <FullBleedRole>{children}</FullBleedRole>}
       </main>
       <BlueprintPanel />
+      {/*
+        The gutter overlay, Alt+Shift+G. `import.meta.env.DEV` is replaced with a
+        literal at build time, so this branch and the module behind it are dropped
+        from the production bundle rather than shipped and never shown.
+      */}
+      {import.meta.env.DEV && <GutterOverlay />}
     </>
   );
 };

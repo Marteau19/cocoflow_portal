@@ -174,7 +174,7 @@ export const ManagerCustomers = () => {
                   <BandHead eyebrow="Open" title="Needs a reply" />
                   <RowList>
                     {openCases.map((item) => (
-                      <Row gutter key={item.id} tone="warn">
+                      <Row key={item.id} tone="warn">
                         <div className="flex items-baseline justify-between gap-3">
                           <div className="min-w-0">
                             <p className="text-body text-ink">{item.subject}</p>
@@ -204,7 +204,7 @@ export const ManagerCustomers = () => {
                     {timeline.map((entry) => {
                       const visit = entry.kind === 'visit' ? byId(workOrders, entry.id) : undefined;
                       return (
-                        <Row gutter key={entry.id} tone={entry.kind === 'visit' ? 'neutral' : 'none'}>
+                        <Row key={entry.id} tone={entry.kind === 'visit' ? 'neutral' : 'none'}>
                           <div className="flex items-start gap-3">
                             <span className="mt-1 shrink-0 text-ink3">
                               <Icon name={entry.kind === 'visit' ? 'calendar' : 'package'} />

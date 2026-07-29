@@ -115,7 +115,7 @@ export const OwnerSystem = () => {
                 const visit = isVisit ? byId(workOrders, entry.id) : undefined;
 
                 return (
-                  <Row gutter key={entry.id} tone={isVisit ? 'neutral' : 'none'}>
+                  <Row key={entry.id} tone={isVisit ? 'neutral' : 'none'}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-ink3">
                         <Icon name={isVisit ? 'calendar' : 'package'} />
@@ -161,7 +161,7 @@ export const OwnerSystem = () => {
                 { label: 'Care plan', detail: contract.name },
                 { label: 'Owner guide', detail: `For the ${asset.model}` },
               ].map((document) => (
-                <Row gutter key={document.label}>
+                <Row key={document.label}>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <span className="shrink-0 text-ink3">

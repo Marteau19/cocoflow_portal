@@ -24,6 +24,28 @@
   --safe-top: 0px;
 
   /**
+   * Control geometry, DESIGN.md section 6.
+   *
+   * Height is a fixed value rather than a consequence of padding plus line
+   * height. A control that derives its height from its label changes height when
+   * the copy changes, which is how the build ended up with three button heights
+   * nobody chose.
+   *
+   * The label size is its own register. It is deliberately not a step in the
+   * reading scale in section 5, and it does not count toward the four reading
+   * sizes a screen is allowed.
+   */
+  --control-h-primary: 48px;
+  --control-h-secondary: 40px;
+  --control-h-compact: 32px;
+  --control-px-primary: 20px;
+  --control-px-secondary: 16px;
+  --control-px-compact: 12px;
+  --control-label-size: 15px;
+  --control-icon: 16px;
+  --control-gap: 8px;
+
+  /**
    * Aliases for the three steps that change between registers.
    *
    * `applyBrand()` writes --type-* as inline styles on the root element, and an
@@ -79,9 +101,32 @@
   }
 }
 
+/**
+ * The gutter is register-scoped, exactly like the type steps above, and for the
+ * same reason.
+ *
+ * It used to be promoted on `:root` at `min-width: 1024px`, which handed a 420px
+ * phone column inside the device frame the 32px desktop gutter whenever the
+ * browser was wide. Measured on `/route` and `/parts`, that was one of three
+ * faults producing thirteen distinct left edges on a single screen. See
+ * DESIGN.md section 6.
+ *
+ * Framed stays at 20px at every window width, because the framed column is one
+ * width. Only the full-bleed register grows.
+ */
+[data-register='full'] {
+  --gutter: 24px;
+}
+
 @media (min-width: 1024px) {
-  :root {
+  [data-register='full'] {
     --gutter: 32px;
+  }
+}
+
+@media (min-width: 1440px) {
+  [data-register='full'] {
+    --gutter: 40px;
   }
 }
 
@@ -159,6 +204,48 @@
 
   .border-on-sidebar-soft {
     border-color: color-mix(in srgb, var(--color-on-sidebar) 18%, transparent);
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Button state fills, DESIGN.md section 6                                */
+  /* ---------------------------------------------------------------------- */
+
+  /**
+   * Hover is 6% darker and pressed is 12% darker, mixed against black rather
+   * than declared as separate tokens.
+   *
+   * Two reasons it is a mix and not a token pair. It works for every variant
+   * from one rule, including the two dark-band variants, so a new variant cannot
+   * ship without its states. And it keeps the relationship fixed: a token pair
+   * drifts the moment someone hand-picks a hover colour that looks nicer.
+   *
+   * `--btn-fill` is set per variant by the Button primitive as an arbitrary
+   * property, so these three classes never need to know which variant they are on.
+   */
+  .btn-fill {
+    background-color: var(--btn-fill);
+  }
+
+  .btn-fill:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--btn-fill) 94%, black);
+  }
+
+  /* Pressed changes the fill and nothing else. No transform: a control that
+     moves under the finger is a target the user has to re-acquire, and the
+     reduced-motion rule in section 9 would have to disable a transform anyway,
+     which would leave pressed undefined for those users. */
+  .btn-fill:active:not(:disabled) {
+    background-color: color-mix(in srgb, var(--btn-fill) 88%, black);
+  }
+
+  /* Disabled is a ground change, not reduced opacity. Opacity over a coloured
+     fill produces a tint of whatever is behind it, which reads as a different
+     variant rather than as unavailable. */
+  .btn-fill:disabled {
+    background-color: var(--color-surface-sunk);
+    color: var(--color-ink-3);
+    border-color: transparent;
+    cursor: not-allowed;
   }
 
   /* ---------------------------------------------------------------------- */

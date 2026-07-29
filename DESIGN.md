@@ -1308,6 +1308,14 @@ distinct left edge, every shared right edge, the distinct font sizes with counts
 the computed size of every band heading. It is what turned "the alignment feels off"
 into thirteen numbers, and it is how the gutter rule in section 6 is checked.
 
+`scripts/export-copy.mjs` writes `docs/COPY.md` and `docs/COPY-strings.csv`: every
+string the portal renders, by role, screen and band, plus a unique-strings list for
+translation. It reads the running app rather than the source, because much of the
+copy is assembled at render time (dates, counts, durations, the arrival line chosen
+by work order status) and grepping JSX would export templates instead of sentences.
+The CSV marks strings that come from `seedData.ts` as mock content, since a customer
+name and a work order number are the same in every language.
+
 **The dev-only gutter overlay.** `Alt+Shift+G` draws the left and right gutter
 lines, the `gutter + 64` thumbnail text edge, and the band boundaries over the
 running app, in both registers. It is gated on `import.meta.env.DEV` so it cannot

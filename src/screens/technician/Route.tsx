@@ -5,13 +5,16 @@
  *
  * The day as a sequence of stops with travel between them.
  *
- * The map degrades to a list below 1024px, which on this screen means it is
- * almost always a list: the technician is on a phone. That is the right default
- * anyway. What a technician needs at the wheel is the next address and the drive
- * time, not a picture of the county.
+ * The list is the only register. There is no map, at any width.
  *
- * As on the network overview, there is no base geography bundled, so the map
- * that does appear at desktop width is a labelled schematic and says so.
+ * It used to switch on a `lg:` breakpoint, which resolves against the browser
+ * window rather than the device frame, so the "desktop only" band rendered inside
+ * the handset anyway. The role is mobile only, so there was no desktop register
+ * for it to belong to either. See DESIGN.md section 5.
+ *
+ * That is also the right default on its own merits. What a technician needs at the
+ * wheel is the next address and the drive time, not a picture of the county. There
+ * is no base geography bundled in this build, and the closing band says so.
  */
 
 import { Section } from '../../blueprint/Section';
@@ -30,6 +33,7 @@ import {
   Icon,
   Identifier,
   Masthead,
+  Note,
   Row,
   RowList,
   Status,
@@ -87,15 +91,20 @@ export const TechnicianRoute = () => {
           }
         />
 
-        {/* Offline first, as on every technician screen. */}
-        <div className="flex items-center gap-2 rounded-control border border-line bg-surface px-3 py-2">
-          <span className="text-positive">
-            <Icon name="check" />
-          </span>
-          <p className="text-caption text-ink2">
-            Your route is on the device. It stays readable with no signal.
-          </p>
-        </div>
+        {/*
+          Offline first, as on every technician screen.
+
+          It is a Rail band rather than a bare bordered strip between bands. As a
+          sibling it had a 12px inset of its own, so it sat 20px inside the gutter
+          and became one more left edge on a screen that already had thirteen.
+        */}
+        <Band kind="rail" flush>
+          <div className="px-gutter py-2">
+            <Note icon="check" tone="text-positive">
+              Your route is on the device. It stays readable with no signal.
+            </Note>
+          </div>
+        </Band>
 
         <Section id="route">
           <div className="contents">
@@ -112,22 +121,24 @@ export const TechnicianRoute = () => {
                     <div key={job.id}>
                       {/* Travel sits between stops, where it happens. */}
                       {travel !== null && (
-                        <div className="flex items-center gap-2 border-y border-line bg-surface-sunk px-gutter py-2">
-                          <span className="text-ink3">
-                            <Icon name="map-pin" />
-                          </span>
-                          <p className="text-caption text-ink2">
-                            {duration(travel)} to the next stop
-                          </p>
+                        <div className="border-y border-line bg-surface-sunk px-gutter py-2">
+                          <Note icon="map-pin">{duration(travel)} to the next stop</Note>
                         </div>
                       )}
 
-                      <Row gutter
+                      <Row
                         tone={active ? 'strong' : job.status === 'complete' ? 'none' : 'neutral'}
                         to={`/wo/${job.id}`}
                       >
                         <div className="flex items-start gap-3">
-                          <span className="mt-1 shrink-0 font-mono text-caption text-ink3">
+                          {/*
+                            The stop number occupies the same 48px box a thumbnail
+                            would, so the text edge is `gutter + 48 + 16` here and
+                            on `/parts`. Left to size itself it was about 14px wide
+                            and put this screen's body text on a third left edge
+                            that matched nothing else in the build.
+                          */}
+                          <span className="mt-1 w-6 shrink-0 font-mono text-caption text-ink3">
                             {String(index + 1).padStart(2, '0')}
                           </span>
 
@@ -176,7 +187,7 @@ export const TechnicianRoute = () => {
                   // A confirmed customer window is a promise; a booked one is not.
                   const fixed = job.status !== 'booked';
                   return (
-                    <Row gutter key={job.id}>
+                    <Row key={job.id}>
                       <div className="flex items-baseline justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-body text-ink">{account.name}</p>
@@ -196,9 +207,21 @@ export const TechnicianRoute = () => {
               </RowList>
             </Band>
 
-            {/* The map, at desktop width only, and honest about itself. */}
-            <Band kind="data" flush className="hidden lg:block">
-              <BandHead title="The run" eyebrow="Desktop only" />
+            {/*
+              Honest about itself, and now shown at every width.
+
+              This was `hidden lg:block` with a "Desktop only" eyebrow, which was
+              wrong twice. Tailwind's `lg:` resolves against the browser window, so
+              inside a 420px device frame at a 1440px window the band rendered
+              anyway, eyebrow and all, on what is meant to be a phone. And the
+              technician role is mobile only, so it has no desktop register for a
+              "desktop only" band to belong to. See DESIGN.md section 5.
+
+              The content was never desktop specific: it says the drawn map does not
+              exist yet. That is worth saying on a phone too.
+            */}
+            <Band kind="data" flush>
+              <BandHead title="The run" eyebrow="Not drawn yet" />
               <div className="px-gutter py-3">
                 <p className="text-caption text-ink2">
                   All {jobs.length} stops today are inside{' '}

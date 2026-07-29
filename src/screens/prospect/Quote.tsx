@@ -77,13 +77,13 @@ export const ProspectQuote = () => {
           />
           <Band kind="data" flush>
             <RowList>
-              <Row gutter>
+              <Row>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Approved</p>
                   <p className="text-caption text-ink">{money(quote.total_jde, quote.currency)}</p>
                 </div>
               </Row>
-              <Row gutter>
+              <Row>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Reference</p>
                   <Identifier>{quote.id}</Identifier>
@@ -136,7 +136,7 @@ export const ProspectQuote = () => {
               <BandHead eyebrow="Why this system" title="Three reasons" />
               <RowList>
                 {REASONS.map((reason, index) => (
-                  <Row gutter key={reason.label}>
+                  <Row key={reason.label}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 font-mono text-caption text-ink3">
                         {String(index + 1).padStart(2, '0')}
@@ -168,7 +168,7 @@ export const ProspectQuote = () => {
               </div>
               <RowList>
                 {included.map((line) => (
-                  <Row gutter key={line.label}>
+                  <Row key={line.label}>
                     <div className="flex items-baseline justify-between gap-3">
                       <p className="min-w-0 text-caption text-ink">{line.label}</p>
                       <span className="shrink-0 text-caption text-positive">Included</span>
@@ -182,7 +182,7 @@ export const ProspectQuote = () => {
               </div>
               <RowList>
                 {priced.map((line) => (
-                  <Row gutter key={line.label}>
+                  <Row key={line.label}>
                     <div className="flex items-baseline justify-between gap-3">
                       <p className="min-w-0 text-caption text-ink">{line.label}</p>
                       <p className="shrink-0 text-caption text-ink">

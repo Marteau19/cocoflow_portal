@@ -87,7 +87,7 @@ const StockTable = ({
         const product = products.find((p) => p.sku === row.sku);
         const state = standing(row);
         return (
-          <Row gutter key={`${row.sku}-${row.location}`} tone={state.rule}>
+          <Row key={`${row.sku}-${row.location}`} tone={state.rule}>
             <div className="md:grid md:grid-cols-[2fr_repeat(4,minmax(0,1fr))] md:items-baseline md:gap-3">
               <div className="min-w-0">
                 <p className="text-body text-ink">{product?.name ?? row.sku}</p>
@@ -195,7 +195,7 @@ export const ManagerInventory = () => {
               </div>
               <RowList className="border-t border-line">
                 {drivingJobs.map((job) => (
-                  <Row gutter key={job.id}>
+                  <Row key={job.id}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-body text-ink">Filter media replacement</p>

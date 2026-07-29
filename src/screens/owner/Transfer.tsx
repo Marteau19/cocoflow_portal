@@ -110,7 +110,7 @@ export const OwnerTransfer = () => {
             <Band kind="rail" flush>
               <BandHead eyebrow="What is moving" title={asset.product} />
               <RowList>
-                <Row gutter>
+                <Row>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">At</p>
                     <p className="text-right text-caption text-ink">
@@ -118,19 +118,19 @@ export const OwnerTransfer = () => {
                     </p>
                   </div>
                 </Row>
-                <Row gutter>
+                <Row>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Installed</p>
                     <p className="text-caption text-ink">{longDate(asset.installedOn)}</p>
                   </div>
                 </Row>
-                <Row gutter>
+                <Row>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Warranty runs to</p>
                     <p className="text-caption text-ink">{longDate(asset.warrantyEndsOn)}</p>
                   </div>
                 </Row>
-                <Row gutter>
+                <Row>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Service visits on record</p>
                     <p className="text-caption text-ink">{history.length}</p>
@@ -148,7 +148,7 @@ export const OwnerTransfer = () => {
               </div>
               <RowList>
                 {MOVES.map((item) => (
-                  <Row gutter key={item.label}>
+                  <Row key={item.label}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-ink3">
                         <Icon name="chevron-right" />
@@ -167,7 +167,7 @@ export const OwnerTransfer = () => {
               </div>
               <RowList>
                 {STAYS.map((item) => (
-                  <Row gutter key={item.label}>
+                  <Row key={item.label}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-positive">
                         <Icon name="check" />

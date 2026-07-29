@@ -151,6 +151,13 @@ export default {
           fontWeight: 'var(--type-micro-weight)',
         },
       ],
+      // The control register, DESIGN.md section 6. Not a step in the reading
+      // scale, which is why it carries a fixed weight and no tracking: every
+      // button label in the app is this and nothing else.
+      control: [
+        'var(--control-label-size)',
+        { lineHeight: '1', letterSpacing: '0', fontWeight: '500' },
+      ],
     },
 
     // 400, 500, 700. Six hundred is not available, by design.
@@ -185,6 +192,30 @@ export default {
       },
       borderWidth: {
         rule: '3px',
+        // The nav active marker. Two pixels, above the item, no fill.
+        nav: '2px',
+      },
+      // Control geometry, DESIGN.md section 6. Height is fixed per size rather
+      // than derived from padding, so `h-control-primary` is the whole rule.
+      height: {
+        'control-primary': 'var(--control-h-primary)',
+        'control-secondary': 'var(--control-h-secondary)',
+        'control-compact': 'var(--control-h-compact)',
+        icon: 'var(--control-icon)',
+      },
+      width: {
+        icon: 'var(--control-icon)',
+      },
+      padding: {
+        'control-primary': 'var(--control-px-primary)',
+        'control-secondary': 'var(--control-px-secondary)',
+        'control-compact': 'var(--control-px-compact)',
+        // The text edge of a row that leads with a 48px thumbnail:
+        // gutter + thumbnail + 16. See DESIGN.md section 6.
+        thumb: 'calc(var(--gutter) + 64px)',
+      },
+      gap: {
+        control: 'var(--control-gap)',
       },
       maxWidth: {
         // The width of the device screen. Panels that mirror the phone, the role

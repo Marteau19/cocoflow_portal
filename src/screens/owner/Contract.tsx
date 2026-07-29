@@ -98,7 +98,7 @@ export const OwnerContract = () => {
               <BandHead icon="check" eyebrow="What you get" title="Cover" />
               <RowList>
                 {contract.entitlements.map((item) => (
-                  <Row gutter key={item}>
+                  <Row key={item}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-positive">
                         <Icon name="check" />
@@ -122,7 +122,7 @@ export const OwnerContract = () => {
               <BandHead eyebrow="This term" title="What the plan has done" />
               <RowList>
                 {visits.length === 0 ? (
-                  <Row gutter>
+                  <Row>
                     <p className="text-body text-ink2">
                       No visits yet this term. Your first is scheduled automatically when it is due.
                     </p>
@@ -131,7 +131,7 @@ export const OwnerContract = () => {
                   visits.map((visit) => {
                     const done = visit.status === 'complete';
                     return (
-                      <Row gutter key={visit.id} tone={done ? 'neutral' : 'strong'}>
+                      <Row key={visit.id} tone={done ? 'neutral' : 'strong'}>
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <p className="text-body text-ink">

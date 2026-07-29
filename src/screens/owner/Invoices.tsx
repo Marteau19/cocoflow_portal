@@ -151,7 +151,7 @@ export const OwnerInvoices = () => {
             <Band kind="rail" flush>
               <BandHead eyebrow="How you pay" title="Payment method" />
               <RowList>
-                <Row gutter>
+                <Row>
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-body text-ink">Card ending 4417</p>
@@ -167,7 +167,7 @@ export const OwnerInvoices = () => {
                   state they are currently in. The switch shows the state and the
                   action at once.
                 */}
-                <Row gutter tone={autopay ? 'positive' : 'warn'}>
+                <Row tone={autopay ? 'positive' : 'warn'}>
                   <Toggle
                     label={autopay ? 'Autopay is on' : 'Autopay is off'}
                     checked={autopay}
@@ -191,7 +191,7 @@ export const OwnerInvoices = () => {
               />
               <RowList>
                 {invoices.map((invoice) => (
-                  <Row gutter key={invoice.id} to={invoice.relatesTo.to}>
+                  <Row key={invoice.id} to={invoice.relatesTo.to}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-baseline gap-2">

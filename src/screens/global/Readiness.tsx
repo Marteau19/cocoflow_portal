@@ -187,7 +187,6 @@ export const GlobalReadiness = () => {
                     return (
                       <Row
                         key={gate.key}
-                        gutter
                         density="global"
                         tone={pass ? 'none' : 'warn'}
                         // Ground carries state. A failing gate and a passing gate

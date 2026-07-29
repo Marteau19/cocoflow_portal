@@ -126,7 +126,7 @@ export const ProspectInstall = () => {
                 {STAGES.map((stage, index) => {
                   const state = STATE[stage.state];
                   return (
-                    <Row gutter key={stage.label} tone={state.rule}>
+                    <Row key={stage.label} tone={state.rule}>
                       <div className="flex items-start gap-3">
                         <span className="mt-1 shrink-0 font-mono text-caption text-ink3">
                           {String(index + 1).padStart(2, '0')}
@@ -163,7 +163,7 @@ export const ProspectInstall = () => {
               <BandHead eyebrow="Who is coming" title="Your crew" />
               <RowList>
                 {crew.map((person) => (
-                  <Row gutter key={person.id}>
+                  <Row key={person.id}>
                     <div className="flex items-center gap-3">
                       <Avatar
                         name={person.name}
@@ -204,7 +204,7 @@ export const ProspectInstall = () => {
             <Band kind="data" flush>
               <BandHead eyebrow="What you approved" title="Your quote" />
               <RowList>
-                <Row gutter>
+                <Row>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Agreed price</p>
                     <p className="text-caption text-ink">
@@ -212,7 +212,7 @@ export const ProspectInstall = () => {
                     </p>
                   </div>
                 </Row>
-                <Row gutter>
+                <Row>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">Reference</p>
                     <Identifier>{quote.id}</Identifier>

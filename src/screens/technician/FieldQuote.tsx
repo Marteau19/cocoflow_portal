@@ -225,7 +225,7 @@ export const TechnicianFieldQuote = () => {
                 <BandHead title="The quote" eyebrow="Parts from the ERP, labour from the rate card" />
                 <RowList>
                   {lines.map((line) => (
-                    <Row gutter key={line.id}>
+                    <Row key={line.id}>
                       <div className="min-w-0">
                         <p className="text-body text-ink">{line.product?.name ?? line.label}</p>
                         <div className="mt-1 flex flex-wrap items-baseline justify-between gap-2">

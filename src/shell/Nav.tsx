@@ -5,8 +5,17 @@
  *
  * Bottom navigation for the mobile-first roles: four items maximum, icon plus
  * label, labels always visible. Icon-only navigation is both a tell and worse
- * usability, so there is no compact variant. The active item is a filled accent
- * pill, which is the one place the accent fill appears without being an action.
+ * usability, so there is no compact variant.
+ *
+ * The active state is a 2px accent rule above the item plus a weight change, with
+ * no fill anywhere. DESIGN.md section 14 specified this in the Broadsheet rewrite
+ * and it was never implemented: the filled accent pill survived every pass after
+ * it, which left the loudest element on every screen being the navigation.
+ *
+ * Why a rule and not a fill. A filled control in a navigation bar reads as a
+ * button that is somehow already pressed, and at accent saturation it outranks
+ * every real action on the screen. A rule says "you are here" without claiming to
+ * be pressable.
  *
  * A dark sidebar for the manager and global surfaces at desktop width. It is the
  * deep ground that the light workspace sits beside, and it is the primary
@@ -31,32 +40,55 @@ import type { RoleDef } from './roles';
 /* ------------------------------------------------------------------ */
 
 export const BottomNav = ({ role }: { role: RoleDef }) => (
+  /*
+    The bar sits on the sunk ground with a `--line-strong` hairline above it.
+    On `--surface` with a hairline it read as an unattached white slab floating
+    below the content, because the band above it was often also `--surface` and
+    there was nothing to say the bar was chrome rather than one more band.
+  */
   <nav
     aria-label={`${role.label} navigation`}
-    className="z-nav shrink-0 border-t border-line bg-surface"
+    className="z-nav shrink-0 border-t border-line-strong bg-surface-sunk"
   >
-    <ul className="flex items-stretch p-1">
+    {/*
+      No padding on the list, so the 2px active rule can sit flush against the
+      bar's own top hairline. Inset by even 4px it reads as a floating dash.
+    */}
+    <ul className="flex items-stretch">
       {role.nav.map((item) => (
         <li key={item.to} className="flex-1">
           <NavLink
             to={item.to}
             end={item.to === role.home}
             className={({ isActive }) =>
-              `flex min-h-tap flex-col items-center justify-center gap-1 rounded-control px-1 py-2 transition-colors duration-state ease-ease ${
+              `flex min-h-tap flex-col items-center justify-center gap-1 border-t-nav px-1 py-2 transition-colors duration-state ease-ease ${
                 isActive
-                  ? 'bg-accent text-on-accent'
-                  : 'text-ink3 hover:bg-surface-sunk hover:text-ink2'
+                  ? 'border-t-accent text-ink'
+                  : 'border-t-transparent text-ink2 hover:text-ink'
               }`
             }
           >
             {({ isActive }) => (
               <>
                 {item.icon && (
-                  <span className="text-body font-medium leading-none">
+                  <span className="leading-none">
                     <Icon name={item.icon} />
                   </span>
                 )}
-                <span className={`text-caption ${isActive ? 'font-medium' : ''}`}>
+                {/*
+                  Weight 500 on the active label, 400 on the rest, and the ink step
+                  changes with it.
+
+                  Inactive is `--ink-2`, not `--ink-3`. The bar sits on the sunk
+                  ground now, and `ink-3` on `surface-sunk` measures 3.19:1 legacy
+                  and 3.29:1 next. That clears the 3:1 metadata floor but a nav
+                  label is text a person reads in order to navigate, so it owes
+                  4.5:1. `ink-2` on sunk is 5.09:1 and 5.32:1.
+
+                  The active state still separates clearly: 12.14:1 against 5.09:1,
+                  plus the weight change, plus the 2px rule above.
+                */}
+                <span className={`text-caption ${isActive ? 'font-medium' : 'font-normal'}`}>
                   {item.label}
                 </span>
               </>
@@ -74,7 +106,11 @@ export const BottomNav = ({ role }: { role: RoleDef }) => (
 
 /**
  * `onDark` switches the list between the sidebar and the sheet. The sheet is a
- * light surface at phone width, so the same active pill has to work on both.
+ * light surface at phone width, so the same active treatment has to work on both.
+ *
+ * The sidebar is a vertical list, so its active marker is a 3px rule on the
+ * leading edge rather than a 2px rule above: in a column, "above" belongs to the
+ * previous item. DESIGN.md section 14.
  */
 const NavList = ({
   role,
@@ -85,7 +121,7 @@ const NavList = ({
   onDark: boolean;
   onNavigate?: () => void;
 }) => (
-  <ul className="flex flex-col gap-1">
+  <ul className="flex flex-col">
     {role.nav.map((item) => (
       <li key={item.to}>
         <NavLink
@@ -93,12 +129,18 @@ const NavList = ({
           end={item.to === role.home}
           onClick={onNavigate}
           className={({ isActive }) => {
+            // `border-l-rule` on every state, transparent when inactive, so the
+            // label never shifts horizontally as the active item changes.
             const shell =
-              'flex min-h-tap items-center rounded-control px-3 text-body transition-colors duration-state ease-ease';
-            if (isActive) return `${shell} bg-accent font-medium text-on-accent`;
+              'flex min-h-tap items-center border-l-rule px-3 text-body transition-colors duration-state ease-ease';
+            if (isActive) {
+              return onDark
+                ? `${shell} border-l-accent-on-band font-medium text-on-sidebar`
+                : `${shell} border-l-accent font-medium text-ink`;
+            }
             return onDark
-              ? `${shell} text-sidebar-muted hover:bg-on-sidebar-soft hover:text-on-sidebar`
-              : `${shell} text-ink2 hover:bg-surface-sunk hover:text-ink`;
+              ? `${shell} border-l-transparent font-normal text-sidebar-muted hover:text-on-sidebar`
+              : `${shell} border-l-transparent font-normal text-ink2 hover:text-ink`;
           }}
         >
           {item.label}

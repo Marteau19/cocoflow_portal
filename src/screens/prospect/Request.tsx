@@ -87,19 +87,19 @@ export const ProspectRequest = () => {
               </div>
             </div>
             <RowList className="border-t border-line">
-              <Row gutter>
+              <Row>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Property</p>
                   <p className="text-right text-caption text-ink">{lead.city}, Québec</p>
                 </div>
               </Row>
-              <Row gutter>
+              <Row>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Requested</p>
                   <p className="text-caption text-ink">{longDate(lead.createdOn)}</p>
                 </div>
               </Row>
-              <Row gutter>
+              <Row>
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-caption text-ink2">Your reference</p>
                   <Identifier>{lead.id}</Identifier>
@@ -127,7 +127,7 @@ export const ProspectRequest = () => {
             </div>
             <RowList className="border-t border-line">
               {team.map((person) => (
-                <Row gutter key={person.id}>
+                <Row key={person.id}>
                   <div className="flex items-center gap-3">
                     <Avatar
                       name={person.name}
@@ -157,7 +157,7 @@ export const ProspectRequest = () => {
           <BandHead eyebrow="What happens next" title="Four steps" />
           <RowList>
             {STEPS.map((step, index) => (
-              <Row gutter key={step.label} tone={step.state === 'next' ? 'strong' : 'neutral'}>
+              <Row key={step.label} tone={step.state === 'next' ? 'strong' : 'neutral'}>
                 <div className="flex items-start gap-3">
                   <span className="mt-1 shrink-0 font-mono text-caption text-ink3">
                     {String(index + 1).padStart(2, '0')}

@@ -152,8 +152,23 @@ export const OwnerHome = () => {
             you, and you do not have to be home.
           </p>
 
-          {/* The one accent fill on this screen. */}
-          <ButtonLink to="/messages" variant="primary" icon="message-square" className="mt-4">
+          {/*
+            The screen's primary action, so it takes the 48px size.
+
+            `onBand` swaps the accent fill for `--surface` with an `--ink` label.
+            An accent fill here vibrated against the deep band and read as a
+            default control, and it also spent this screen's one accent on the
+            Masthead, where the hero date is already carrying all the emphasis
+            that block needs. DESIGN.md section 6.
+          */}
+          <ButtonLink
+            to="/messages"
+            variant="primary"
+            size="primary"
+            onBand
+            icon="message-square"
+            className="mt-4"
+          >
             Message {technician.name.split(' ')[0]}
           </ButtonLink>
         </Band>
@@ -165,7 +180,7 @@ export const OwnerHome = () => {
       <Band kind="reading" flush className="py-0">
         <RowList>
           {rows.map((row) => (
-            <Row key={row.to} to={row.to} gutter>
+            <Row key={row.to} to={row.to}>
               <div className="flex items-center gap-3">
                 <div className="min-w-0 flex-1">
                   <Micro>{row.label}</Micro>
@@ -186,9 +201,14 @@ export const OwnerHome = () => {
       {/* ------------------------------------------------------------------ */}
       <Section id="sp-contact">
         <Band kind="data" flush>
-          <div className="px-gutter">
+          {/*
+            No `px-gutter` on this wrapper. BandHead carries its own now, so a
+            wrapper that also carried it put the eyebrow and the title at 40px on a
+            20px gutter, which is the double indent DESIGN.md section 6 calls out.
+          */}
+          <div>
             <BandHead eyebrow="Your Service Point team" title={servicePoint.name} />
-            <p className="max-w-reading pb-4 text-body text-ink2">
+            <p className="max-w-reading px-gutter pb-4 text-body text-ink2">
               The same team looks after every system in this area, including yours.
             </p>
           </div>
@@ -196,9 +216,19 @@ export const OwnerHome = () => {
             {resources
               .filter((r) => r.territoryId === servicePoint.id && r.role !== 'installer')
               .map((person) => (
-                <Row key={person.id} gutter>
+                <Row key={person.id}>
+                  {/*
+                    `lg` is the 48px avatar, so this list's text edge is
+                    `gutter + 48 + 16`, the same edge the parts rows and the route
+                    stops use. At the default 32px it sat on an edge of its own.
+                  */}
                   <div className="flex items-center gap-3">
-                    <Avatar name={person.name} initials={person.initials} photo={person.photo} />
+                    <Avatar
+                      name={person.name}
+                      initials={person.initials}
+                      photo={person.photo}
+                      size="lg"
+                    />
                     <div className="min-w-0">
                       <p className="text-body text-ink">{person.name}</p>
                       <p className="text-caption text-ink2">

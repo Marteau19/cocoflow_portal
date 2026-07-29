@@ -110,7 +110,7 @@ export const ManagerMarcom = () => {
                     const open = selected === item.id;
                     return (
                       <div key={item.id}>
-                        <Row gutter>
+                        <Row>
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-baseline gap-2">
@@ -231,7 +231,7 @@ export const ManagerMarcom = () => {
                     const status = ORDER_STATUS[order.status];
                     const cost = item.unitPrice * order.quantity;
                     return (
-                      <Row gutter
+                      <Row
                         key={order.id}
                         tone={order.leadsAttributed ? 'strong' : 'neutral'}
                       >
@@ -274,7 +274,7 @@ export const ManagerMarcom = () => {
                 <BandHead title="Leads from these channels" eyebrow="Traced back" />
                 <RowList>
                   {attributableLeads.map((lead) => (
-                    <Row gutter key={lead.id}>
+                    <Row key={lead.id}>
                       <div className="flex items-baseline justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-body text-ink">{lead.name}</p>

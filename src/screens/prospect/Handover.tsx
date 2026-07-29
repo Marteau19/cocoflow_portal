@@ -71,7 +71,7 @@ export const ProspectHandover = () => {
             </div>
               <RowList className="border-t border-line">
                 {WHAT_YOU_HAVE.map((item) => (
-                  <Row key={item.label} gutter>
+                  <Row key={item.label}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-positive">
                         <Icon name="check" />
@@ -101,7 +101,7 @@ export const ProspectHandover = () => {
             </div>
               <RowList className="border-t border-line">
                 {contract.entitlements.map((entitlement) => (
-                  <Row key={entitlement} gutter>
+                  <Row key={entitlement}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-ink3">
                         <Icon name="check" />
@@ -129,7 +129,7 @@ export const ProspectHandover = () => {
               <BandHead icon="calendar" eyebrow="Already booked" title="Your first check up" />
             </div>
               <RowList className="border-t border-line">
-                <Row gutter>
+                <Row>
                   <div className="flex items-baseline justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-body text-ink">Annual inspection</p>

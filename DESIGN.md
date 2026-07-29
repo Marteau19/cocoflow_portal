@@ -303,14 +303,37 @@ Five roles. A token belongs to exactly one.
 
 ### How status is shown
 
-Any of these, and at least one that is not colour alone:
+**One system, not a menu.** The previous version of this section listed four
+permitted treatments and let the call site pick, which is how `/route` ended up
+looking like it had two systems in a single list.
 
-- A pill: solid signal colour on the matching `-soft` ground
-- A dot plus a label
-- **A tinted row ground**: `--warn-soft`, `--alert-soft`, `--positive-soft`
-- A text label in `micro`
+The system:
 
-A dot with no label is banned. Colour alone is not an accessible signal.
+1. **A discrete state of an object is a pill.** `micro` label on a ground that
+   contrasts with the band beneath it.
+2. **Within one list, every row carries a pill, including the unremarkable state.**
+   Pills on the exceptions only is what makes the remaining rows read as unlabelled
+   rather than as normal.
+3. **A tinted row ground is additive and never a substitute.** It marks a row that
+   needs acting on. The pill still says what the state is.
+4. **Bare text is not a status treatment.** Neither is a dot alone. Colour alone is
+   not an accessible signal.
+5. **A pill must contrast with its own band.** This is the rule that was missing.
+
+Rule 5 has a measured cause. `/route` was reported as showing "FIXED as a pill and
+CAN MOVE as bare text in the same list". Both are pills in the source. The `neutral`
+pill ground was `--surface-sunk` and the Rail band it sits on is also
+`--surface-sunk`, so the neutral pill was the same colour as its ground and only its
+label was visible. It read as bare text because it was, visually, bare text.
+
+So the neutral pill is now `--surface` fill with a `--line-strong` hairline. On a
+Rail or Closing band the fill separates it; on a Data band the hairline does. The
+signal pills keep their `-soft` grounds, which contrast with every band level in
+section 3.
+
+A pill never sits on a Masthead. On a dark band a state is `--on-band` text at
+weight 500 with an `--on-band-muted` label above it, because a `-soft` tint on
+`--band-deep` is a grey smudge.
 
 **The 3px left rule is banned.** It was a status treatment in both previous
 directions, and it is out for two reasons found in the build.
@@ -430,6 +453,21 @@ pair the first table never checked. It was missed because Rail bands did not exi
 when that table was written, so accent text had never sat on the sunk level before.
 `scripts/audit-contrast.mjs` now covers the pair.
 
+**A fourth, from the navigation rebuild.** Moving the bottom bar to the sunk ground
+put the inactive nav label on `ink-3` over `surface-sunk`, which the table above
+records at **3.19 legacy and 3.29 next**. That clears the 3:1 metadata floor, and
+`ink-3` is listed as metadata, so the audit passed it. It is still wrong: a nav
+label is text a person reads in order to navigate, not metadata beside a value, so
+it owes 4.5:1. The inactive state is `ink-2`, at 5.09 and 5.32, and section 14 is
+updated to say so.
+
+The general lesson, which is the third time this pass has produced it: **a token's
+contrast floor is a property of the job the text is doing, not of the token.**
+`ink-3` is metadata in a row and body text in a nav bar, and no per-token table can
+express that. The audit checks the floor a token is usually held to, so it will
+keep passing cases like this one. Whoever moves text onto a new ground has to ask
+what that text is for.
+
 ---
 
 ## 5. Type
@@ -460,6 +498,70 @@ applies is decided by the frame, not by the browser window.** See below.
 
 Framed steps: 48, 32, 24, 16, 13, 11. Ratios 1.50, 1.33, 1.50, 1.23, 1.18. Three
 wide gaps at the top where drama lives, two narrow at the bottom where labels sit.
+
+### How many sizes may appear on one screen
+
+Having a scale is not the same as using it sparingly. The rules:
+
+1. **All band headings on a screen use one step, `h1`.** A screen with two band
+   headings at different sizes has no heading level, it has two accidents.
+2. **Only the screen hero uses the `hero` step.** Section 7 already says this; it
+   is repeated here because it is a type rule as much as a composition one.
+3. **`display` is permitted at most once per screen**, for the single secondary
+   figure, and not at all on a screen whose hero is a number.
+4. **Four sizes carry the reading hierarchy on any one screen.** In practice that
+   is hero, `h1`, `body`, `caption`, and a screen that needs a fifth reading size
+   is a screen doing two jobs.
+
+Two registers sit outside that count, and this is a deliberate reading of the rule
+rather than a loophole:
+
+- **`micro` at 11px** is a label register. It names a value, it is never read as
+  prose, and removing it would push eyebrows onto `caption` where they would stop
+  being distinguishable from row metadata.
+- **The control label at 15px** is a control register, specified in section 6.
+
+So a fully loaded screen shows six physical sizes: four reading, two functional.
+Counting only the reading hierarchy is what makes "four" achievable at all, because
+hero, `h1`, `body` and `caption` already fill it before a single button or eyebrow
+is placed. **This is worth an explicit decision rather than an assumption.** If the
+intent is a literal four including labels and controls, the way to get there is to
+delete `caption` and set all secondary row detail in `body`, which costs roughly
+20% more vertical space on the technician and manager screens. That trade has not
+been made here.
+
+Measured before this rule existed: `/route` showed **five** reading sizes
+(48, 24, 16, 13, 11) and `/parts` showed four (48, 16, 13, 11).
+
+One note on a finding I could not reproduce. The report was that "What is fixed"
+and "The run" render at different sizes on `/route`. Measured at 1440px and 500px,
+in both registers, all three band headings on that screen compute to **24px**. What
+is real on `/route` is the size count above and the fact that "The run" renders at
+all on a phone, which section 6 of this document and the breakpoint rule below now
+forbid. If a size difference is still visible after this pass, it is a different
+defect and I have not found it yet.
+
+### Rag: no hero ends on an orphan
+
+**No hero may break to leave a single word on its last line.** Measured on
+`/parts`: "Parts for your system" at 48px in a 356px column sets to two lines as
+"Parts for your / system", one orphan.
+
+The fix is never to shrink the hero. Either the copy changes to a length that rags
+cleanly at the framed column width, or the intended break is set explicitly. A hero
+is four words at most in the framed register.
+
+### Breakpoints key off the register too
+
+The same fault as type size, in a second place. `md:` and `lg:` utilities resolve
+against the **browser window**, so inside a 420px device frame at a 1440px window
+every `lg:` rule is true. That is why the `/route` map band, marked `hidden lg:block`
+and captioned "Desktop only", rendered inside the handset with its eyebrow visible.
+
+**A framed role may not use a viewport breakpoint to switch layout.** Either the
+layout is the same at all widths, because the framed column is one width, or the
+switch is driven by the register attribute. Viewport breakpoints remain correct on
+`sp-manager` and `ptwe-global`, which are genuinely responsive.
 
 ### Type size keys off the frame, never off the viewport
 
@@ -505,13 +607,124 @@ much as the extra size: 15/22 is a dense ratio that reads as a form field.
 
 ---
 
-## 6. Space, shape, elevation
+## 6. Space, shape, controls
 
 **Spacing** on a 4px base: 8, 12, 16, 24, 32, 48, plus **64** and **96** for band
 padding, which the old scale topped out too low to express.
 
-Gutters: 20px mobile, 32px desktop. Band vertical padding: 32px mobile, 48px
-desktop, and 64px for a Masthead.
+Band vertical padding: 32px mobile, 48px desktop, and 64px for a Masthead.
+
+### The gutter
+
+**There is exactly one content gutter, and every horizontal edge on the screen
+resolves to it.** This was the largest unspecified thing in the system and it is
+why the build read as misaligned rather than as merely plain.
+
+Measured on `/route` and `/parts` before writing this, as distinct left edges in
+px from the content column, framed register at a 1440px window:
+
+```
+/route   0, 32, 45, 54, 60, 64, 169, 185, 192, 298, 329, 335, 393
+/parts   0, 32, 40, 64, 89, 96, 127, 139, 244, 306, 346, 393
+```
+
+Thirteen and twelve distinct left edges on two screens. The gutter was 32px, so
+the only two edges that were correct were `32` and `96`, and `96` only by accident.
+
+Three separate faults produced that:
+
+1. **`--gutter` was keyed to the window, not to the register.** It was declared on
+   `:root` and promoted from 20px to 32px at `min-width: 1024px`, so a 420px phone
+   column inside the device frame was given the 32px desktop gutter. This is the
+   same fault section 5 fixes for type, in the same file, missed because the gutter
+   was treated as a layout constant rather than as a register-scoped one.
+2. **`Band flush` dropped the gutter and nothing put it back.** `BandHead` had no
+   horizontal padding of its own, so every band eyebrow and heading rendered at
+   **left 0** while the rows inside the same band sat at 32. That is the specific
+   defect visible on `/route`.
+3. **Content outside a band had no gutter at all.** The `/parts` filter chips and
+   the technician offline strip were rendered as bare siblings between bands, so
+   they took whatever padding they happened to carry.
+
+The rules:
+
+- **One token, `--gutter`, scoped to `[data-register]`.** 20px framed at every
+  window width. 24px full bleed, 32px at 1024px, 40px at 1440px. A framed role
+  never reads the full-bleed value, at any window size.
+- **Everything aligns to it**: band eyebrows, band headings, rows, chips, controls,
+  captions, flags, empty states, annotations. There is no "nearly the gutter".
+- **Rules and dividers run full bleed or inset to the gutter on both sides.**
+  Inset on one edge only is banned. It reads as a mistake because it is one.
+- **Rows with a leading box** put the box on the gutter and start text at
+  `gutter + box + 16`. Every text line in that row starts on that edge, including
+  the price and the metadata line, not just the title. Two box sizes are in use and
+  no others: **48px** for list thumbnails, avatars and the route's stop number, and
+  **72px** for the technician's portrait on the client home, where the face is the
+  reassurance the screen is built on. A row's stop number gets the same 48px box a
+  thumbnail would, so an indexed list and a thumbnail list share one text edge.
+- **Rows with a leading icon** put the icon in a fixed 16px box with a 12px gap, so
+  the text edge is `gutter + 28` whatever the row's font size. Written inline, the
+  icon inherits `1em`, which put the same pattern at `gutter + 28` in a `body` row
+  and `gutter + 25` in a `caption` row. Three pixels is invisible alone and is how
+  a build accumulates twelve left edges. The `Note` primitive is the only way to
+  write one.
+- **Right-aligned elements share one right gutter**, equal to the left. A trailing
+  chevron, a status pill and an action all end on the same edge.
+- **A flush band owns no padding, so its children each carry the gutter.** A
+  non-flush band already has it, and a child that adds `px-gutter` again produces
+  the 64px double indent seen on `/parts`.
+
+Enforcement is `scripts/measure-align.mjs`, which prints every distinct left and
+right edge per route, and the dev-only gutter overlay described in section 19. The
+target is **two left edges on a screen without thumbnails** (the gutter, and
+`gutter + 64` where a row is indexed) and three where there are.
+
+### Buttons
+
+The previous document specified no control geometry at all, so height came from
+padding plus line-height and drifted with the label. This is the specification.
+
+| Size | Height | Horizontal padding | Use |
+|---|---|---|---|
+| Primary | 48px | 20px | The one main action on a screen |
+| Secondary | 40px | 16px | Supporting actions |
+| Compact | 32px | 12px | Inside a row, or beside a field |
+
+**Height is fixed, never derived from padding.** A control whose height depends on
+its label is a control that changes height when the copy changes.
+
+- **Label is always 15px, weight 500.** Never 400, never 700. 15px is a control
+  register, not a step in the reading scale, which is why it does not appear in
+  section 5.
+- **Icon is 16px** at every button size, optically centred to the cap height rather
+  than to the line box, with an **8px gap** to the label.
+- **On a dark band the primary button is `--surface` fill with `--ink` label.** Not
+  accent. A saturated accent against `--band-deep` vibrates at the edge and reads
+  as a default control rather than as a considered one, and it also spends the one
+  accent the screen is allowed on a surface that does not need it.
+- **A ghost outline is never a screen's primary action.** An outlined control is a
+  secondary by definition. Where the primary action was outlined, it becomes a
+  filled control at the size the placement allows: the `/parts` row Add button
+  becomes a compact filled control, not a bordered one.
+
+Five states, all defined, none optional:
+
+| State | Treatment |
+|---|---|
+| Rest | The variant fill and label |
+| Hover | Fill 6% darker, via `color-mix` against black. Label unchanged |
+| Pressed | Fill 12% darker. **No transform**, no scale, no lift |
+| Disabled | `--surface-sunk` fill, `--ink-3` label, no border. Not the rest fill at reduced opacity |
+| Loading | Label replaced by a 16px spinner, **width locked** to the rest width so nothing reflows |
+
+Disabled is a fill change rather than an opacity change because opacity on a
+coloured fill produces a tint of the canvas that reads as a different variant, and
+because 40% opacity on a dark label fails contrast while `--ink-3` on
+`--surface-sunk` clears 3:1 as metadata.
+
+Pressed carries no transform because a button that moves under the finger on a
+touch surface is a shift the user has to re-target, and because the reduced-motion
+rule in section 9 would have to disable it anyway, leaving pressed undefined.
 
 **Radius.** Bands have **no radius**: they are full bleed and their edges are the
 content column edges. Radius belongs to objects inside bands.
@@ -872,11 +1085,17 @@ Rules:
 screen: a filled accent pill behind the active tab, competing with content and
 reading as a framework default.
 
+**This section was written in the Broadsheet rewrite and then never implemented.**
+The accent pill survived every pass after it, in `BottomNav` and in the sidebar
+`NavList`, so it stayed the loudest element in the build while the document said it
+was gone. A rule that lives only in prose is not a rule, which is why section 19
+now checks this one.
+
 The active state is solved without a fill:
 
 | Surface | Inactive | Active |
 |---|---|---|
-| Bottom nav | `--ink-3` icon and label | `--ink` icon and label, weight 500, plus a 2px `--accent` rule directly above the icon |
+| Bottom nav | `--ink-2` icon and label, weight 400 | `--ink` icon and label, weight 500, plus a 2px `--accent` rule directly above the icon |
 | Sidebar | `--sidebar-muted` | `--on-band`, weight 500, plus a 3px `--accent-on-band` rule on the leading edge |
 | Tabs and filters | Bordered `--surface` | `--ink` text, weight 500, plus a 2px `--ink` rule beneath. No fill |
 
@@ -930,6 +1149,19 @@ in prose.
 | A chart with no fill and no baseline | Section 12 |
 | `600` font weight | 500 or 700 |
 | Em-dashes in any UI copy | Comma, colon or full stop |
+| A filled pill behind the active nav item | 2px rule above, weight 500. Section 14 |
+| A button height derived from padding | The three fixed heights. Section 6 |
+| An accent fill on a dark band | `--surface` fill, `--ink` label. Section 6 |
+| A ghost outline as a screen's primary action | A filled control. Section 6 |
+| A pressed state that transforms or lifts | Fill 12% darker, no movement. Section 6 |
+| Disabled as reduced opacity | `--surface-sunk` fill, `--ink-3` label. Section 6 |
+| A rule or divider inset on one edge only | Full bleed, or inset both sides to the gutter. Section 6 |
+| A second left edge that is not the gutter | One gutter, section 6 |
+| A status pill on the same ground as its band | A pill that contrasts. Section 4 |
+| Pills on the exceptions only, bare text on the rest | Every row in the list gets one. Section 4 |
+| A viewport breakpoint inside the device frame | Register-scoped, or no switch. Section 5 |
+| A hero that rags to a single orphan word | Shorter copy, or an explicit break. Section 5 |
+| Band headings at two different sizes | One step, `h1`. Section 5 |
 
 Dropped from the old list, because the new rules cover them better or they were
 never the problem: "full-width progress bars" (a numeric value is already the
@@ -1029,5 +1261,27 @@ for this direction, because the current checks would pass a wireframe:
 | Type distribution | More than 85% of characters at a single step |
 | Chart anchoring | A line series with no area fill, or a plot under 240px tall |
 | Blueprint delta | Canvas shift below ΔL\* 6 with Blueprint on |
+| Nav has no fill | Any nav item has a background colour in its active state |
+| Button geometry | A control whose height is not 48, 40 or 32, or whose label is not 15px/500 |
+| No accent on dark | An accent-filled control inside a band with ΔL\* below 30 |
+| Gutter unity | More than 3 distinct left edges, or a right edge not equal to the left gutter |
+| One-sided inset | A border-bottom or border-top whose width is neither full bleed nor gutter-inset both sides |
+| Band heading step | Two `h2` elements on a screen at different computed sizes |
+| Reading sizes | More than 4 distinct sizes outside the 11px and 15px functional registers |
+| Pill contrast | A status pill whose background equals its band's background |
+| Hero rag | The hero's last line contains one word and the hero wraps |
+| Framed breakpoints | A `md:` or `lg:` class inside a framed role that changes layout |
 
 `scripts/audit-contrast.mjs` gains the L\* metric and every pair in section 4.
+
+`scripts/measure-align.mjs` is the gutter instrument: given routes, it prints every
+distinct left edge, every shared right edge, the distinct font sizes with counts, and
+the computed size of every band heading. It is what turned "the alignment feels off"
+into thirteen numbers, and it is how the gutter rule in section 6 is checked.
+
+**The dev-only gutter overlay.** `Alt+Shift+G` draws the left and right gutter
+lines, the `gutter + 64` thumbnail text edge, and the band boundaries over the
+running app, in both registers. It is gated on `import.meta.env.DEV` so it cannot
+reach a production bundle. Reason it exists: alignment is the one class of defect
+that is invisible when you already know what the layout is supposed to be, and
+obvious to everyone else.

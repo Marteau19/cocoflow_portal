@@ -108,7 +108,7 @@ export const OwnerRecommended = () => {
   const decline = (id: string) => setDeclined((current) => [...current, id]);
 
   const Item = ({ item }: { item: Recommendation }) => (
-    <Row gutter tone={item.urgency === 'due' ? 'strong' : 'neutral'}>
+    <Row tone={item.urgency === 'due' ? 'strong' : 'neutral'}>
       <div className="min-w-0">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <p className="text-body text-ink">{item.label}</p>

@@ -12,7 +12,7 @@
  * a label, no weight 600, no hex value anywhere below this line.
  */
 
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ButtonHTMLAttributes, CSSProperties, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { icons, type IconName } from './icons';
 
@@ -112,75 +112,204 @@ export const Identifier = ({
  */
 type ButtonVariant = 'primary' | 'positive' | 'negative' | 'dark' | 'quiet' | 'plain';
 
-// `whitespace-nowrap` is load bearing: an action label that wraps to two lines
-// inside a 48px control is the first thing a reviewer notices, and it happens at
-// phone width wherever a button sits beside content.
-const buttonBase =
-  'inline-flex min-h-tap items-center justify-center gap-2 whitespace-nowrap rounded-control px-4 text-body font-medium transition-colors duration-state ease-ease disabled:opacity-40';
+/**
+ * Three sizes, DESIGN.md section 6. Height is a fixed value, never a consequence
+ * of padding plus line height, because a control that derives its height from its
+ * label changes height when the copy changes.
+ */
+export type ButtonSize = 'primary' | 'secondary' | 'compact';
 
-const buttonVariants: Record<ButtonVariant, string> = {
-  // The accent fill. One per screen: a screen with two of these is a bug. The
-  // label is dark, and hover lightens. See DESIGN.md section 2.
-  primary: 'bg-accent text-on-accent hover:bg-accent-hover',
-  positive: 'bg-positive text-on-positive hover:opacity-90',
-  negative: 'bg-negative text-on-negative hover:opacity-90',
-  dark: 'bg-ink text-canvas hover:opacity-90',
-  // Everything else that needs a boundary.
-  quiet: 'border border-line-strong bg-surface text-ink hover:bg-surface-sunk',
-  // Text action, for tertiary placement inside rows. No control height: it sits
-  // in a line of copy, so it must not push the line taller than its neighbours.
-  plain: 'min-h-0 px-0 text-accent-ink hover:text-ink',
+const buttonSizes: Record<ButtonSize, string> = {
+  primary: 'h-control-primary px-control-primary',
+  secondary: 'h-control-secondary px-control-secondary',
+  compact: 'h-control-compact px-control-compact',
 };
+
+/**
+ * `whitespace-nowrap` is load bearing: an action label that wraps to two lines
+ * inside a fixed-height control is the first thing a reviewer notices, and it
+ * happens at phone width wherever a button sits beside content.
+ *
+ * The label is `text-control`, which is 15px weight 500 and is the only size a
+ * button label is ever set at. It is a control register rather than a step in the
+ * reading scale, so it does not count toward the four reading sizes a screen is
+ * allowed. See DESIGN.md section 5.
+ */
+const buttonBase =
+  'btn-fill inline-flex shrink-0 items-center justify-center gap-control whitespace-nowrap rounded-control text-control transition-colors duration-state ease-ease';
+
+/**
+ * Fill and label per variant.
+ *
+ * `--btn-fill` is what the three `.btn-fill` state rules in `index.css` read, so
+ * hover at 6% darker, pressed at 12% darker and the disabled ground come from one
+ * place and cannot be forgotten when a variant is added.
+ */
+const buttonVariants: Record<ButtonVariant, { className: string; fill?: string }> = {
+  // The accent fill. One per screen on a light ground. See `onBand` below for
+  // what happens on a dark one.
+  primary: { className: 'text-on-accent', fill: 'var(--color-accent)' },
+  positive: { className: 'text-on-positive', fill: 'var(--color-positive)' },
+  negative: { className: 'text-on-negative', fill: 'var(--color-negative)' },
+  dark: { className: 'text-canvas', fill: 'var(--color-ink)' },
+  // A boundary rather than a fill. Secondary by definition: DESIGN.md section 6
+  // forbids an outlined control as a screen's primary action.
+  quiet: {
+    className: 'border border-line-strong text-ink',
+    fill: 'var(--color-surface)',
+  },
+  // Text action, for tertiary placement inside a row. No control height, because
+  // it sits in a line of copy and must not push that line taller.
+  plain: { className: 'h-auto px-0 text-accent-ink hover:text-ink', fill: 'transparent' },
+};
+
+/**
+ * The dark-band override, DESIGN.md section 6.
+ *
+ * A saturated accent against `--band-deep` vibrates at the edge and reads as a
+ * default control rather than a considered one, and it spends the screen's one
+ * accent on a surface that does not need it. So on a dark band the primary action
+ * is a `--surface` fill with an `--ink` label, and the secondary is an on-band
+ * hairline.
+ */
+const onBandVariants: Partial<Record<ButtonVariant, { className: string; fill: string }>> = {
+  primary: { className: 'text-ink', fill: 'var(--color-surface)' },
+  quiet: {
+    className: 'border border-on-band-soft text-on-band',
+    fill: 'transparent',
+  },
+  plain: { className: 'h-auto px-0 text-on-band underline', fill: 'transparent' },
+};
+
+/**
+ * A 16px spinner. Replaces the label while loading, with the button's width
+ * locked so nothing around it reflows.
+ *
+ * `motion-reduce:animate-none` leaves a static ring, which still reads as "busy"
+ * because the label is gone, so the state is not lost for those users.
+ */
+const Spinner = () => (
+  <span
+    aria-hidden
+    className="h-icon w-icon shrink-0 animate-spin rounded-pill border-2 border-current border-t-transparent opacity-70 motion-reduce:animate-none"
+  />
+);
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
+  size?: ButtonSize;
   icon?: IconName;
   /** Fills the container. Used by the technician sticky action bar. */
   block?: boolean;
+  /** Sits on a dark band, so primary becomes a surface fill. */
+  onBand?: boolean;
+  /** Swaps the label for a spinner and locks the width. */
+  loading?: boolean;
 }
+
+/**
+ * Resolves the class list and the `--btn-fill` value for a variant, size and
+ * ground. Shared by Button and ButtonLink so the two cannot drift.
+ */
+const buttonStyle = (
+  variant: ButtonVariant,
+  size: ButtonSize,
+  onBand: boolean,
+  block: boolean,
+  className: string,
+) => {
+  const resolved = (onBand && onBandVariants[variant]) || buttonVariants[variant];
+  return {
+    className: `${buttonBase} ${variant === 'plain' ? '' : buttonSizes[size]} ${
+      resolved.className
+    } ${block ? 'w-full' : ''} ${className}`,
+    style: { '--btn-fill': resolved.fill } as CSSProperties,
+  };
+};
 
 export const Button = ({
   variant = 'quiet',
+  size = 'secondary',
   icon,
   block = false,
+  onBand = false,
+  loading = false,
   children,
   className = '',
+  disabled,
   ...rest
-}: ButtonProps) => (
-  <button
-    type="button"
-    className={`${buttonBase} ${buttonVariants[variant]} ${block ? 'w-full' : ''} ${className}`}
-    {...rest}
-  >
-    {icon && <Icon name={icon} />}
-    {children}
-  </button>
-);
+}: ButtonProps) => {
+  const { className: cls, style } = buttonStyle(variant, size, onBand, block, className);
+  return (
+    <button
+      type="button"
+      className={cls}
+      style={style}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      {...rest}
+    >
+      {loading ? (
+        <>
+          <Spinner />
+          {/*
+            The label stays in the flow but invisible, so the control keeps the
+            exact width it had at rest. Locking the width with a measured pixel
+            value would be a second source of truth for the same number.
+          */}
+          <span className="sr-only">{children}</span>
+          <span aria-hidden className="invisible">
+            {children}
+          </span>
+        </>
+      ) : (
+        <>
+          {/* Optically centred to the cap height rather than to the line box:
+              a 16px glyph on a 15px label sits low without the nudge. */}
+          {icon && (
+            <span className="-mt-px flex h-icon w-icon shrink-0 items-center justify-center">
+              <Icon name={icon} />
+            </span>
+          )}
+          {children}
+        </>
+      )}
+    </button>
+  );
+};
 
 /** Same shape as Button, but navigates. */
 export const ButtonLink = ({
   to,
   variant = 'quiet',
+  size = 'secondary',
   icon,
   block = false,
+  onBand = false,
   children,
   className = '',
 }: {
   to: string;
   variant?: ButtonVariant;
+  size?: ButtonSize;
   icon?: IconName;
   block?: boolean;
+  onBand?: boolean;
   children: ReactNode;
   className?: string;
-}) => (
-  <Link
-    to={to}
-    className={`${buttonBase} ${buttonVariants[variant]} ${block ? 'w-full' : ''} ${className}`}
-  >
-    {icon && <Icon name={icon} />}
-    {children}
-  </Link>
-);
+}) => {
+  const { className: cls, style } = buttonStyle(variant, size, onBand, block, className);
+  return (
+    <Link to={to} className={cls} style={style}>
+      {icon && (
+        <span className="-mt-px flex h-icon w-icon shrink-0 items-center justify-center">
+          <Icon name={icon} />
+        </span>
+      )}
+      {children}
+    </Link>
+  );
+};
 
 /**
  * The floating action button.
@@ -200,20 +329,29 @@ export const Fab = ({
   to?: string;
   onClick?: () => void;
 }) => {
+  // Primary geometry and the shared state fills, on a pill instead of a control
+  // radius. It is a primary action, so it takes the 48px height and 20px padding.
   const shell =
-    'fixed bottom-6 right-gutter z-bar inline-flex min-h-tap items-center gap-2 rounded-pill bg-accent px-4 text-body font-medium text-on-accent shadow-raised transition-colors duration-state ease-ease hover:bg-accent-hover';
+    'btn-fill fixed bottom-6 right-gutter z-bar inline-flex h-control-primary items-center gap-control rounded-pill px-control-primary text-control text-on-accent shadow-raised transition-colors duration-state ease-ease';
+  const style = { '--btn-fill': 'var(--color-accent)' } as CSSProperties;
+  const inner = (
+    <>
+      <span className="-mt-px flex h-icon w-icon shrink-0 items-center justify-center">
+        <Icon name={icon} />
+      </span>
+      {label}
+    </>
+  );
   if (to) {
     return (
-      <Link to={to} className={shell}>
-        <Icon name={icon} />
-        {label}
+      <Link to={to} className={shell} style={style}>
+        {inner}
       </Link>
     );
   }
   return (
-    <button type="button" onClick={onClick} className={shell}>
-      <Icon name={icon} />
-      {label}
+    <button type="button" onClick={onClick} className={shell} style={style}>
+      {inner}
     </button>
   );
 };
@@ -332,18 +470,12 @@ export const Row = ({
   tone = 'none',
   children,
   className = '',
-  gutter = false,
   density = 'client',
 }: {
   to?: string;
   tone?: RowTone;
   children: ReactNode;
   className?: string;
-  /**
-   * Aligns the row to the page gutter instead of the card inset. Used by rows
-   * that sit directly on a band, which is now most of them.
-   */
-  gutter?: boolean;
   /** DESIGN.md section 11. Row height is set by role, not globally. */
   density?: 'client' | 'technician' | 'manager' | 'global';
 }) => {
@@ -353,9 +485,17 @@ export const Row = ({
     manager: 'py-2',
     global: 'py-3',
   }[density];
-  const shell = `block w-full ${rowTones[tone]} ${
-    gutter ? 'px-gutter' : 'px-4'
-  } ${pad} text-left transition-colors duration-state ease-ease ${className}`;
+  /*
+    A row always sits on the gutter. There used to be a `gutter` boolean that
+    chose between `px-gutter` and a 16px card inset, defaulting to the inset, and
+    87 of the 155 rows in the build never passed it. That is where the second and
+    third left edges on a screen came from.
+
+    The prop is gone rather than defaulted, because a default that is wrong at 87
+    call sites is not a default, and leaving it accepted would let the misalignment
+    back in. There are no cards left in any screen for the inset to serve.
+  */
+  const shell = `block w-full ${rowTones[tone]} px-gutter ${pad} text-left transition-colors duration-state ease-ease ${className}`;
 
   if (to) {
     return (
@@ -394,7 +534,7 @@ export const Field = ({
   value: ReactNode;
   mono?: boolean;
 }) => (
-  <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+  <div className="flex items-baseline justify-between gap-3 px-gutter py-3">
     <dt className="text-caption text-ink2">{label}</dt>
     <dd className={`text-right text-caption text-ink ${mono ? 'font-mono uppercase' : ''}`}>
       {value}
@@ -416,7 +556,19 @@ export type StatusTone = 'neutral' | 'warn' | 'alert' | 'good' | 'accent';
  * colours are shared across both brands for exactly this reason.
  */
 const statusTones: Record<StatusTone, { pill: string; dot: string; text: string }> = {
-  neutral: { pill: 'bg-surface-sunk text-ink2', dot: 'bg-ink3', text: 'text-ink2' },
+  /*
+    Neutral is a `--surface` fill with a hairline, not a `--surface-sunk` fill.
+
+    It was sunk, which is also the ground of every Rail and Closing band, so a
+    neutral pill on those bands was the same colour as the band and only its label
+    showed. That is why `/route` looked like it had two status systems in one list:
+    "FIXED" is a warn pill on a soft ground and "CAN MOVE" is a neutral pill, and
+    the neutral one was invisible, so it read as bare text.
+
+    Surface plus a hairline is visible on every band level in DESIGN.md section 3:
+    the fill separates it on Rail and Closing, the hairline on Data.
+  */
+  neutral: { pill: 'border border-line-strong bg-surface text-ink2', dot: 'bg-ink3', text: 'text-ink2' },
   warn: { pill: 'bg-warn-soft text-warn', dot: 'bg-warn', text: 'text-warn' },
   alert: { pill: 'bg-alert-soft text-alert', dot: 'bg-alert', text: 'text-alert' },
   good: { pill: 'bg-positive-soft text-positive', dot: 'bg-positive', text: 'text-positive' },
@@ -494,30 +646,32 @@ export const Flag = ({
 /* ------------------------------------------------------------------ */
 
 /**
- * A row of filter pills. The active one is filled, the rest are bordered.
+ * A row of filter tabs. DESIGN.md section 14: active is `--ink` text at weight
+ * 500 with a 2px `--ink` rule beneath, and there is no fill on either state.
  *
- * The fill defaults to `ink` rather than `accent`, because a tab strip is
- * navigation and the accent belongs to the screen's primary action. Pass
- * `fill="accent"` only on a screen that has no other accent fill.
+ * This used to fill the active tab, which made a filter look like the screen's
+ * primary action. A filter is navigation: it changes what you are looking at, it
+ * does not commit anything, so it should not carry the weight of a button.
+ *
+ * The strip aligns to the gutter and its own baseline rule runs full width, so it
+ * reads as one control rather than as a scatter of chips. It is a tablist, so the
+ * `fill` prop is gone rather than deprecated: leaving it would let a caller put
+ * the fill back.
  */
 export const Tabs = <T extends string>({
   options,
   value,
   onChange,
-  fill = 'ink',
   label,
 }: {
   options: readonly { value: T; label: string }[];
   value: T;
   onChange: (value: T) => void;
-  fill?: 'ink' | 'accent';
   label: string;
 }) => (
-  <div role="tablist" aria-label={label} className="flex flex-wrap gap-2">
+  <div role="tablist" aria-label={label} className="flex items-stretch gap-5 border-b border-line">
     {options.map((option) => {
       const active = option.value === value;
-      const activeFill =
-        fill === 'accent' ? 'bg-accent text-on-accent' : 'bg-ink text-canvas';
       return (
         <button
           key={option.value}
@@ -525,8 +679,12 @@ export const Tabs = <T extends string>({
           role="tab"
           aria-selected={active}
           onClick={() => onChange(option.value)}
-          className={`inline-flex min-h-tap items-center whitespace-nowrap rounded-pill px-4 text-caption font-medium transition-colors duration-state ease-ease ${
-            active ? activeFill : 'border border-line-strong bg-surface text-ink2 hover:bg-surface-sunk'
+          // The 2px rule sits on the strip's own hairline, so the active tab
+          // overprints it rather than floating above it.
+          className={`-mb-px inline-flex min-h-tap items-center whitespace-nowrap border-b-nav text-body transition-colors duration-state ease-ease ${
+            active
+              ? 'border-b-ink font-medium text-ink'
+              : 'border-b-transparent font-normal text-ink3 hover:text-ink2'
           }`}
         >
           {option.label}
@@ -774,6 +932,7 @@ export const BandHead = ({
   iconTone = 'accent',
   action,
   onBand = false,
+  gutter = true,
 }: {
   eyebrow?: string;
   title: string;
@@ -782,8 +941,23 @@ export const BandHead = ({
   iconTone?: ChipTone;
   action?: ReactNode;
   onBand?: boolean;
+  /**
+   * On by default, and this is the fix for the worst alignment defect in the build.
+   *
+   * A `flush` Band drops its own `px-gutter` so a chart or a photograph can run
+   * edge to edge, and almost every Data and Rail band is flush because its rows
+   * carry their own gutter. BandHead had no horizontal padding at all, so on those
+   * bands every eyebrow and heading rendered at left 0 while the rows beneath sat
+   * at the gutter. Measured on `/route`: headings at 0, rows at 32.
+   *
+   * Pass `gutter={false}` only inside a band that is not flush, where the band has
+   * already applied it and a second would double the indent.
+   */
+  gutter?: boolean;
 }) => (
-  <div className="flex items-end justify-between gap-3 pb-3 pt-4">
+  <div
+    className={`flex items-end justify-between gap-3 pb-3 pt-4 ${gutter ? 'px-gutter' : ''}`}
+  >
     <div className="flex min-w-0 items-center gap-3">
       {icon && <IconChip name={icon} tone={onBand ? 'on-dark' : iconTone} />}
       <div className="min-w-0">
@@ -854,7 +1028,7 @@ export const Empty = ({
   line: string;
   action?: { label: string; to: string };
 }) => (
-  <div className="px-4 py-6">
+  <div className="px-gutter py-6">
     <p className="text-body text-ink2">{line}</p>
     {action && (
       <ButtonLink to={action.to} variant="quiet" className="mt-3">
@@ -863,6 +1037,80 @@ export const Empty = ({
     )}
   </div>
 );
+
+/**
+ * An icon beside a line of explanation: the offline strip, the travel gap between
+ * stops, the "behind this screen" note.
+ *
+ * The icon sits in a fixed 16px box with a 12px gap, so the text edge is always
+ * `gutter + 28` regardless of the row's font size. Written inline, the icon
+ * inherited `1em` from its context, so the same pattern landed at 48px in a `body`
+ * row and 45px in a `caption` row. Three pixels is invisible on its own and is
+ * exactly how a build accumulates twelve left edges.
+ */
+export const Note = ({
+  icon,
+  tone = 'text-ink3',
+  children,
+  onBand = false,
+}: {
+  icon: IconName;
+  /** The icon's colour. The text is always secondary ink. */
+  tone?: string;
+  children: ReactNode;
+  onBand?: boolean;
+}) => (
+  <div className="flex items-start gap-2">
+    <span className={`mt-px flex h-icon w-icon shrink-0 items-center justify-center ${tone}`}>
+      <Icon name={icon} />
+    </span>
+    <p
+      className={`max-w-reading text-caption ${onBand ? 'text-on-band opacity-80' : 'text-ink2'}`}
+    >
+      {children}
+    </p>
+  </div>
+);
+
+/* ------------------------------------------------------------------ */
+/* Objects                                                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * A 48px product thumbnail, and the gutter anchor for any row that leads with
+ * one.
+ *
+ * The size is fixed at 48 for two reasons. It is the tap target, so the image and
+ * the row's minimum height agree. And it makes the text edge of the row a
+ * calculable constant: `gutter + 48 + 16`, which is the `pl-thumb` utility and the
+ * only second left edge DESIGN.md section 6 permits.
+ *
+ * 48px is what `/parts` already rendered, since `h-6` resolves to `--space-6`. The
+ * value of putting it here is that the number is now stated once and the text edge
+ * is derived from it, rather than both being open-coded per row and agreeing by
+ * luck.
+ *
+ * `src` may be null. Where there is no photograph of a thing, this renders a
+ * labelled placeholder rather than a stand-in from a neighbouring category,
+ * because a confidently wrong picture is worse than an admitted gap.
+ */
+export const Thumb = ({ src, alt }: { src: string | null; alt: string }) =>
+  src ? (
+    <img
+      src={src}
+      alt={alt}
+      className="h-6 w-6 shrink-0 rounded-control border border-line bg-surface object-contain"
+    />
+  ) : (
+    <span
+      className="grid h-6 w-6 shrink-0 place-items-center rounded-control border border-line bg-surface-sunk"
+      title="No photograph on file for this part"
+    >
+      {/* `micro` rather than an icon: the icon budget has no "no image" glyph, and
+          spending one on an absence would be the wrong trade. */}
+      <span className="text-micro text-ink3">N/A</span>
+    </span>
+  );
 
 /* ------------------------------------------------------------------ */
 /* People                                                             */

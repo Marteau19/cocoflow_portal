@@ -133,7 +133,7 @@ export const GlobalBenchmarking = () => {
                   const best = bestFor(measure);
                   const region = regions.find((r) => r.id === best.regionId);
                   return (
-                    <Row gutter key={measure.key}>
+                    <Row key={measure.key}>
                       <div className="flex items-baseline justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-body text-ink">{measure.label}</p>
@@ -180,7 +180,7 @@ export const GlobalBenchmarking = () => {
                     const ratio = alert.gap / alert.measure.tolerance;
                     const level = severity(ratio);
                     return (
-                      <Row gutter
+                      <Row
                         key={`${alert.measure.key}-${alert.sp.id}`}
                         tone={level.rule}
                         to={`/network/${alert.sp.regionId}`}
@@ -236,7 +236,7 @@ export const GlobalBenchmarking = () => {
               </div>
               <RowList>
                 {servicePoints.map((sp) => (
-                  <Row gutter key={sp.id}>
+                  <Row key={sp.id}>
                     <div className="md:grid md:grid-cols-[1.4fr_repeat(5,minmax(0,1fr))] md:items-baseline md:gap-3">
                       <p className="text-body text-ink">{sp.name}</p>
                       <div className="mt-2 grid grid-cols-3 gap-3 md:contents">

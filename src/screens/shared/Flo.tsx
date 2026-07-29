@@ -208,7 +208,7 @@ export const Flo = () => {
               />
               <RowList>
                 {inScope.map((article) => (
-                  <Row gutter key={article.id}>
+                  <Row key={article.id}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-body text-ink">{article.title}</p>

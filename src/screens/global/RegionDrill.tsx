@@ -150,7 +150,7 @@ export const GlobalRegionDrill = () => {
                   const above = sp.servicePct >= target;
 
                   return (
-                    <Row gutter key={sp.id} tone={above ? 'strong' : 'warn'}>
+                    <Row key={sp.id} tone={above ? 'strong' : 'warn'}>
                       <div className="flex flex-wrap items-baseline justify-between gap-2">
                         <div className="min-w-0">
                           <p className="text-body text-ink">{sp.name}</p>
@@ -202,7 +202,7 @@ export const GlobalRegionDrill = () => {
                 {ranked
                   .filter((sp) => sp.servicePct < target)
                   .map((sp) => (
-                    <Row gutter key={sp.id} tone="warn">
+                    <Row key={sp.id} tone="warn">
                       <p className="text-body text-ink">{sp.name}</p>
                       <p className="mt-1 max-w-reading text-caption text-ink2">
                         {percent(target - sp.servicePct)} of service share to find.{' '}
@@ -213,7 +213,7 @@ export const GlobalRegionDrill = () => {
                     </Row>
                   ))}
                 {ranked.every((sp) => sp.servicePct >= target) && (
-                  <Row gutter>
+                  <Row>
                     <p className="text-body text-ink2">
                       Every Service Point in this region is at or above the target.
                     </p>

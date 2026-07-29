@@ -19,7 +19,6 @@ import {
   Band,
   BandHead,
   Flag,
-  Icon,
   Identifier,
   Masthead,
   Micro,
@@ -48,7 +47,7 @@ const STAGES: Array<{ label: string; detail: string; when: string | null; state:
   },
   {
     label: 'System designed',
-    detail: 'Drawings finished and checked against your soil test',
+    detail: 'Checked against your soil test',
     when: '2026-07-29',
     state: 'done',
   },
@@ -60,19 +59,19 @@ const STAGES: Array<{ label: string; detail: string; when: string | null; state:
   },
   {
     label: 'Installation',
-    detail: 'Two days on site. We will confirm the dates once the permit clears.',
+    detail: 'Two days on site, dates once the permit clears',
     when: null,
     state: 'later',
   },
   {
     label: 'Yard restored',
-    detail: 'Levelled, seeded and cleaned. You should not be able to tell we were there.',
+    detail: 'Levelled, seeded and cleaned',
     when: null,
     state: 'later',
   },
   {
     label: 'Handover',
-    detail: 'We walk you through it and your care plan starts',
+    detail: 'We walk you through it, and your care plan starts',
     when: null,
     state: 'later',
   },
@@ -93,9 +92,9 @@ export const ProspectInstall = () => {
     <>
       <div className="contents">
         <Masthead
-          eyebrow="Your installation"
+          eyebrow={`${done} of ${STAGES.length} stages done`}
           subject="Where your project is"
-          lead={`${done} of ${STAGES.length} stages done. We update this as each one finishes.`}
+
         />
 
         <Section id="install-tracking">
@@ -107,13 +106,15 @@ export const ProspectInstall = () => {
                   <Flag tone="warn" icon="alert-triangle">
                     Waiting on the municipality
                   </Flag>
+                  {/*
+                    Two paragraphs became one. The filing date and the two to four
+                    week range are facts a customer cannot infer. "We chase it
+                    weekly" repeats the stage row, which already says "We chase it,
+                    you do not have to", and that is the better version of it.
+                  */}
                   <p className="mt-2 max-w-reading text-body text-ink">
-                    Your permit was filed on {longDate(waiting.when ?? '')}. Towns in this region
-                    usually take two to four weeks. We chase it weekly and will tell you the moment
-                    it clears.
-                  </p>
-                  <p className="mt-2 text-caption text-ink2">
-                    Nothing is needed from you, and this does not change what you were quoted.
+                    Filed {longDate(waiting.when ?? '')}. Towns here take two to four weeks. Nothing
+                    is needed from you.
                   </p>
                 </div>
               </Band>
@@ -121,7 +122,7 @@ export const ProspectInstall = () => {
 
             {/* Stages as a sequence. Never a bar. */}
             <Band kind="rail" flush>
-              <BandHead eyebrow="Six stages" title="What happens, and when" />
+              <BandHead title="What happens, and when" />
               <RowList>
                 {STAGES.map((stage, index) => {
                   const state = STATE[stage.state];
@@ -192,17 +193,16 @@ export const ProspectInstall = () => {
 
             {/* Photos from site, when there are any. Real content only. */}
             <Band kind="rail" flush>
-              <BandHead eyebrow="From site" title="Photos" />
+              <BandHead title="Photos" />
               <div className="px-gutter py-6">
-                <p className="text-body text-ink2">
-                  Photos will appear here once work starts on the property.
-                </p>
+                {/* An honest missing-data line, kept. */}
+                <p className="text-body text-ink2">Photos appear here once work starts.</p>
               </div>
             </Band>
 
             {/* What was agreed, so it stays visible through the project. */}
             <Band kind="data" flush>
-              <BandHead eyebrow="What you approved" title="Your quote" />
+              <BandHead title="What you approved" />
               <RowList>
                 <Row>
                   <div className="flex items-baseline justify-between gap-3">
@@ -220,15 +220,10 @@ export const ProspectInstall = () => {
                 </Row>
               </RowList>
               <div className="border-t border-line px-gutter py-3">
+                {/* The screen's one reassurance, and it sits with the figure it is about. */}
                 <Micro>Nothing charged yet</Micro>
-                <p className="mt-1 flex items-start gap-2 text-caption text-ink2">
-                  <span className="mt-1 shrink-0">
-                    <Icon name="info" />
-                  </span>
-                  <span>
-                    You are invoiced after the work is finished and you are happy with it, not
-                    before.
-                  </span>
+                <p className="mt-1 text-caption text-ink2">
+                  You are invoiced after the work is finished, not before.
                 </p>
               </div>
             </Band>

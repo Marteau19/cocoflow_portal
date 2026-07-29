@@ -23,11 +23,8 @@ import {
   BandHead,
   Button,
   Empty,
-  Flag,
   Identifier,
   Masthead,
-  Micro,
-  Note,
   Row,
   RowList,
   Tabs,
@@ -253,22 +250,20 @@ export const OwnerParts = () => {
               </Band>
             )}
 
-            {/* The seam, stated on screen rather than only in the annotation. */}
-            <Band kind="closing" alt>
-              <div>
-                <Micro className="text-on-band-muted">Behind this screen</Micro>
-                <div className="mt-1">
-                  <Note icon="info" tone="text-on-band-muted" onBand>
-                    Commerce runs through one adapter, so the platform choice stays open. Prices come
-                    from the ERP. Tax is deliberately not calculated here.
-                  </Note>
-                </div>
-                <div className="mt-2">
-                  <Flag tone="warn" icon="alert-triangle">
-                    Platform undecided
-                  </Flag>
-                </div>
-              </div>
+            {/*
+              The commerce seam was stated here, on the customer's screen: one
+              adapter, ERP prices, tax deliberately uncalculated, and a "Platform
+              undecided" flag. All of it is already in the `parts-store` annotation,
+              in integration and openDecision. A homeowner buying a filter does not
+              read about the platform selection.
+
+              What survives on screen is the one thing a customer needs: tax is
+              calculated at checkout, which the order summary already says.
+            */}
+            <Band kind="closing">
+              <p className="max-w-reading text-caption text-ink2">
+                Delivered to {asset.model} owners in the Eastern Townships within a week.
+              </p>
             </Band>
           </div>
         </Section>

@@ -22,8 +22,6 @@ import {
   Band,
   BandHead,
   Button,
-  Flag,
-  Icon,
   Identifier,
   Masthead,
   Micro,
@@ -36,18 +34,15 @@ import {
 const REASONS = [
   {
     label: 'Your soil drains slowly',
-    detail:
-      'The test showed a clay layer about 600mm down. A conventional leaching bed would saturate in spring.',
+    detail: 'Clay 600mm down. A leaching bed would saturate in spring.',
   },
   {
     label: 'The lot is tight to the lake',
-    detail:
-      'Setback rules leave a narrow band to build in. The compact biofilter fits it where a larger field does not.',
+    detail: 'Setbacks leave a narrow band. This fits it.',
   },
   {
     label: 'The property is seasonal',
-    detail:
-      'It handles being left unused for months and coming back to full load on a long weekend.',
+    detail: 'Handles months unused, then a full weekend.',
   },
 ];
 
@@ -71,9 +66,9 @@ export const ProspectQuote = () => {
       <>
         <div className="contents">
           <Masthead
-            eyebrow="Quote approved"
+            eyebrow={quote.id}
             subject="We are booking your installation"
-            lead={`${manager.name} will call you within a working day to agree dates.`}
+            lead={`${manager.name} will call within a working day to agree dates.`}
           />
           <Band kind="data" flush>
             <RowList>
@@ -91,10 +86,7 @@ export const ProspectQuote = () => {
               </Row>
             </RowList>
             <div className="border-t border-line px-gutter py-3">
-              <p className="text-caption text-ink2">
-                Nothing is charged yet. We file the permits first, and you will see each stage as it
-                happens.
-              </p>
+              <p className="text-caption text-ink2">Nothing is charged yet. Permits come first.</p>
             </div>
           </Band>
         </div>
@@ -106,10 +98,14 @@ export const ProspectQuote = () => {
   return (
     <>
       <div className="contents">
+        {/*
+          "Your solution" above "The system we designed for your property" is one
+          idea twice, and the lead announced the page's own structure. What survives
+          is the orientation the heading cannot give: which property this is about.
+        */}
         <Masthead
-          eyebrow="Your solution"
           subject="The system we designed for your property"
-          lead={`Based on what we found at ${lead.city}. Here is why this one, and what it costs.`}
+          lead={`Based on what we found at ${lead.city}`}
         />
 
         <Section id="quote-reveal">
@@ -125,15 +121,15 @@ export const ProspectQuote = () => {
                 <Micro>Recommended</Micro>
                 <h2 className="mt-1 text-h1 text-ink">Ecoflo compact biofilter</h2>
                 <p className="mt-2 text-body text-ink2">
-                  A coconut husk filter that treats wastewater without electricity or chemicals. No
-                  moving parts to fail, and it sits low enough to keep your view.
+                  Coconut husk filter. No electricity, no moving parts, and low enough to keep your
+                  view.
                 </p>
               </div>
             </Band>
 
             {/* Why this one. Three reasons, tied to the soil test. */}
             <Band kind="rail" flush>
-              <BandHead eyebrow="Why this system" title="Three reasons" />
+              <BandHead title="Why this system" />
               <RowList>
                 {REASONS.map((reason, index) => (
                   <Row key={reason.label}>
@@ -154,8 +150,7 @@ export const ProspectQuote = () => {
             {/* Itemised. Included lines shown as included, not omitted. */}
             <Band kind="data" flush>
               <BandHead
-                eyebrow="What it costs"
-                title="Itemised"
+                title="What it costs"
                 action={
                   <Status tone={expiresIn > 7 ? 'neutral' : 'warn'}>
                     {`VALID ${expiresIn} DAYS`}
@@ -164,7 +159,7 @@ export const ProspectQuote = () => {
               />
 
               <div className="border-b border-line bg-surface-sunk px-gutter py-2">
-                <Micro>Already done, at no cost</Micro>
+                <Micro>Already done</Micro>
               </div>
               <RowList>
                 {included.map((line) => (
@@ -224,26 +219,25 @@ export const ProspectQuote = () => {
             <Button variant="primary" icon="check" block onClick={() => setApproved(true)}>
               Approve quote
             </Button>
+            {/*
+              This screen's single reassurance, and it sits next to the action rather
+              than one per band. The "at no cost" strip above and the post-approval
+              "nothing is charged yet" line were saying the same thing a third and
+              second time.
+            */}
             <p className="text-caption text-ink3">
-              Approving does not charge you. We file the permits first, and you can stop at any point
-              before work starts.
+              Approving does not charge you. You can stop any time before work starts.
             </p>
 
             <Band kind="data" flush>
               <div className="px-gutter py-3">
-                <Flag tone="warn" icon="alert-triangle">
-                  How this quote is assembled is undecided
-                </Flag>
-                <p className="mt-2 flex items-start gap-2 text-caption text-ink2">
-                  <span className="mt-1 shrink-0">
-                    <Icon name="info" />
-                  </span>
-                  <span>
-                    Prices come from the ERP. Which quoting platform assembles them, and how pricing
-                    governance works, is an open decision, so the shape of this record is provisional.
-                  </span>
-                </p>
-                <p className="mt-2">
+                {/*
+                  The CPQ open decision used to be stated here, on the customer's
+                  screen. It lives in the `quote-reveal` annotation's openDecision,
+                  which is where a reviewer looks for it. A homeowner approving a
+                  quote does not read about quoting platforms.
+                */}
+                <p>
                   <Identifier className="text-ink3">{`${quote.id}, issued ${longDate(quote.issuedOn)}`}</Identifier>
                 </p>
               </div>

@@ -211,24 +211,42 @@ for (const brand of ['legacy', 'next']) {
       }
 
       /* --- Hero rag: no orphan on the last line -------------------------- */
+      /*
+        Counts the words on the final visual line, by measuring a Range over each
+        word and grouping by its top offset.
+
+        The first version compared the last line's width against 45% of the box,
+        which flagged a legitimately balanced two-line break: "Your system" over
+        "is live" is short on the second line and is not an orphan. The rule is
+        about a single stranded word, so count words.
+      */
       const hero = [...host.querySelectorAll('p, h1, h2')]
         .filter(shown)
-        .find((e) => parseFloat(getComputedStyle(e).fontSize) >= 40 && e.textContent.trim().length > 6);
-      if (hero) {
-        const range = document.createRange();
-        range.selectNodeContents(hero);
-        const tops = [...new Set([...range.getClientRects()].filter((r) => r.width > 1).map((r) => Math.round(r.top)))];
+        .find(
+          (e) =>
+            parseFloat(getComputedStyle(e).fontSize) >= 40 && e.textContent.trim().length > 6,
+        );
+      if (hero && hero.firstChild && hero.firstChild.nodeType === Node.TEXT_NODE) {
+        const raw = hero.firstChild.textContent;
+        const tops = [];
+        const re = /\S+/g;
+        let m;
+        while ((m = re.exec(raw))) {
+          const range = document.createRange();
+          range.setStart(hero.firstChild, m.index);
+          range.setEnd(hero.firstChild, m.index + m[0].length);
+          const rect = range.getBoundingClientRect();
+          if (rect.width > 0) tops.push(Math.round(rect.top));
+        }
         if (tops.length > 1) {
-          // Measure the final word's own rect: if it alone occupies the last line,
-          // it is an orphan.
-          const words = hero.textContent.trim().split(/\s+/);
-          const last = words[words.length - 1];
           const lastTop = Math.max(...tops);
-          const onLast = [...range.getClientRects()].filter((r) => Math.round(r.top) === lastTop);
-          const width = onLast.reduce((w, r) => w + r.width, 0);
-          // A single short word on the last line: compare against the full text.
-          if (width < hero.getBoundingClientRect().width * 0.45 && last.length <= 10) {
-            problems.push({ rule: 'hero-rag', detail: `"${hero.textContent.trim()}" orphans "${last}"` });
+          const onLastLine = tops.filter((t) => t === lastTop).length;
+          const lines = new Set(tops).size;
+          if (lines > 1 && onLastLine === 1) {
+            problems.push({
+              rule: 'hero-rag',
+              detail: `"${hero.textContent.trim()}" strands one word on line ${lines}`,
+            });
           }
         }
       }

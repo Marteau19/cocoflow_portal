@@ -29,7 +29,6 @@ import {
   Band,
   BandHead,
   Flag,
-  Icon,
   Identifier,
   Kpi,
   Masthead,
@@ -208,17 +207,10 @@ export const ManagerInventory = () => {
                   </Row>
                 ))}
               </RowList>
-              <div className="border-t border-line px-gutter py-3">
-                <p className="flex items-start gap-2 text-caption text-ink2">
-                  <span className="mt-1 shrink-0">
-                    <Icon name="info" />
-                  </span>
-                  <span>
-                    Stock levels themselves are mastered in the ERP. This screen reads them and adds
-                    the forecast, which is the part the service schedule contributes.
-                  </span>
-                </p>
-              </div>
+              {/*
+                "Stock levels are mastered in the ERP" was here. It is already the
+                first sentence of the `inventory` annotation's integration field.
+              */}
             </Band>
           </div>
         </Section>

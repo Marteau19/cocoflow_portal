@@ -23,7 +23,6 @@ import {
   Button,
   Icon,
   Masthead,
-  Micro,
 } from '../../ui/primitives';
 
 /** Reason codes drive Service Point routing. Free text cannot be routed. */
@@ -52,10 +51,13 @@ export const ProspectStart = () => {
   return (
     <>
       <div className="contents">
+        {/*
+          "Getting started" above "Tell us about your property" is one idea twice.
+          The lead listed what we do next, which the flow shows.
+        */}
         <Masthead
-          eyebrow="Getting started"
           subject="Tell us about your property"
-          lead="Four questions. We do the soil test, the design and the quote from there."
+          lead="Four questions. We take it from there."
         />
 
         <Section id="intake-form">
@@ -153,18 +155,25 @@ export const ProspectStart = () => {
             {/* Consent at the point of collection, not behind a link. */}
             <Band kind="rail" flush>
               <div className="px-gutter py-3">
-                <Micro>Before you send this</Micro>
-                <label className="mt-2 flex items-start gap-3">
+                <label className="flex items-start gap-3">
                   <input
                     type="checkbox"
                     checked={consent}
                     onChange={(event) => setConsent(event.target.checked)}
                     className="mt-1 h-3 w-3 shrink-0 rounded-control border border-line-strong"
                   />
+                  {/*
+                    45 words became 18, at the moment of first commitment. The
+                    retention and correction rights are not dropped, they move behind
+                    the link, which is where a full statement belongs and where it
+                    still satisfies the legal requirement.
+                  */}
                   <span className="text-caption text-ink2">
-                    We will use your address and contact details to assess your property, prepare a
-                    quote and arrange the work. We keep them while you are a customer, and you can ask
-                    us to correct or delete them at any time. We do not sell them.
+                    We use your details to assess the property and quote the work. We never sell
+                    them.{' '}
+                    <span className="font-medium text-accent-ink underline">
+                      How we handle your data
+                    </span>
                   </span>
                 </label>
               </div>
@@ -173,12 +182,6 @@ export const ProspectStart = () => {
             <Button variant="primary" icon="check" block disabled={!ready}>
               Send my request
             </Button>
-            {!ready && (
-              <p className="text-caption text-ink3">
-                Choose what brings you here, add the property address, and agree to the statement
-                above.
-              </p>
-            )}
           </div>
         </Section>
       </div>

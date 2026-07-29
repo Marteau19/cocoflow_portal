@@ -211,11 +211,14 @@ export const GlobalNetwork = () => {
                   <Flag tone="warn" icon="alert-triangle">
                     Base geography not yet supplied
                   </Flag>
+                  {/*
+                    The Flag above already states the gap. What survives is why the
+                    markers can still be trusted and why nothing was invented. What
+                    went is the reason this build has no boundary file.
+                  */}
                   <p className="mt-2 text-caption text-ink2">
-                    Markers sit at their true coordinates, but there is no province outline behind
-                    them: the prototype makes no external calls, so a boundary file has to be bundled
-                    and none was supplied. Drawing an invented Québec would look finished and be
-                    wrong.
+                    Markers sit at their true coordinates. An invented outline would look
+                    finished and be wrong.
                   </p>
                 </div>
               </div>

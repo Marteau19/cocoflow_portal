@@ -44,13 +44,11 @@ Route `/start`
 **Outside any band**
 
 - Send my request
-- Choose what brings you here, add the property address, and agree to the statement above.
 
 **Band: masthead**
 
-- Getting started
 - Tell us about your property
-- Four questions. We do the soil test, the design and the quote from there.
+- Four questions. We take it from there.
 
 **Band: data**
 
@@ -82,8 +80,7 @@ Route `/start`
 
 **Band: rail**
 
-- Before you send this
-- We will use your address and contact details to assess your property, prepare a quote and arrange the work. We keep them while you are a customer, and you can ask us to correct or delete them at any time. We do not sell them.
+- We use your details to assess the property and quote the work. We never sell them. How we handle your data
 
 ### Request received, team assigned
 
@@ -93,12 +90,12 @@ Route `/request`
 
 - Request received
 - Thanks, Chloé
-- We have your request and a team is assigned. Here is what happens next.
+- A team is assigned.
 
 **Band: data**
 
 - Your account is ready
-- Everything from here, the soil test, the quote, the install and the paperwork, lives in this one place. You will not have to explain yourself twice.
+- Soil test, quote, install and paperwork, all in one place.
 - Property
 - Bromont, Québec
 - Requested
@@ -111,7 +108,7 @@ Route `/request`
 - Looking after you
 - Service Point Estrie
 - ASSIGNED
-- One team owns your whole job, from the first visit to the last. They cover a 180 km area around Bromont.
+- One team from first visit to last, covering 180 km around Bromont.
 - Marc Bouchard
 - Technician
 - Priya Nadeau
@@ -127,17 +124,16 @@ Route `/request`
 **Band: data**
 
 - What happens next
-- Four steps
 - 01
 - We call you
 - NEXT
 - Within one working day, to understand the property
 - 02
 - We visit and test the soil
-- About an hour on site, no cost to you
+- About an hour on site, no charge
 - 03
 - We design your system and quote it
-- You approve or you do not. No pressure either way
+- You approve, or you do not
 - 04
 - We install, and file the permits
 - We handle the municipality
@@ -145,7 +141,7 @@ Route `/request`
 **Band: rail**
 
 - Already had your soil test?
-- If we have been out to the property, your findings and your quote are waiting.
+- Your findings and quote are waiting.
 - See the soil test
 - See the quote
 
@@ -155,52 +151,44 @@ Route `/soil-test`
 
 **Band: masthead**
 
-- Your soil test
+- 23 July 2026, an hour on site
 - What we found on your land
 - How fast the ground drains
 - Slowly
-- Rules out a conventional leaching bed
-- We spent an hour on the property. Here is what the ground told us, in plain language.
 
 **Band: data**
 
 - Marc Bouchard tested your land
-- 23 July 2026, about an hour on site
+- No charge for the test
 - REPORT READY
-- There is nothing to pay for the test. It is part of how we work out what your property needs.
 - Image alt text: Marc Bouchard
 
 **Band: rail**
 
-- Four things we measured
 - What the ground told us
-- There is a clay layer about 600mm down. Water sits on it rather than soaking away, which is why a conventional leaching bed would flood in spring.
+- Clay layer 600mm down
 - How deep we can dig
 - Not far
-- Bedrock sits close to the surface on the lake side of the lot. A deep system is not an option here.
+- Bedrock close to the surface
 - Distance to the lake
 - Tight
-- Provincial setback rules leave a narrow band we are allowed to build in, closer to the house than you might expect.
+- Setback rules leave a narrow band
 - The water table
 - High in spring
-- It rises with the thaw. Whatever we install has to keep working when the ground is saturated.
+- Rises with the thaw
 
 **Band: data**
 
-- What this means
 - What we can install
-- Your lot rules out a conventional leaching bed. What it suits is a compact system that treats the water above the problem layer rather than relying on the ground to do the work.
-- That is not a sales answer. If your soil drained well and the lot were larger, a simpler and cheaper system would be the right call, and we would have said so.
+- Your lot needs a compact system that treats the water above the clay, rather than relying on the ground.
 - See what we recommend
 
 **Band: closing**
 
-- For your records
 - The full report
 - Soil assessment, Bromont
-- The measurements, the method, and the standard they are read against
-- If you are getting other quotes
-- This report is yours. You are welcome to share it with anyone else you are talking to, and you do not need our permission.
+- Measurements, method and standard
+- Yours to keep, and to share with anyone.
 
 ### Your solution and quote
 
@@ -209,41 +197,38 @@ Route `/quote`
 **Outside any band**
 
 - Approve quote
-- Approving does not charge you. We file the permits first, and you can stop at any point before work starts.
+- Approving does not charge you. You can stop any time before work starts.
 
 **Band: masthead**
 
-- Your solution
 - The system we designed for your property
-- Based on what we found at Bromont. Here is why this one, and what it costs.
+- Based on what we found at Bromont
 
 **Band: data**
 
 - Recommended
 - Ecoflo compact biofilter
-- A coconut husk filter that treats wastewater without electricity or chemicals. No moving parts to fail, and it sits low enough to keep your view.
+- Coconut husk filter. No electricity, no moving parts, and low enough to keep your view.
 - Image alt text: An Ecoflo compact biofilter installed at a property
 
 **Band: rail**
 
 - Why this system
-- Three reasons
 - 01
 - Your soil drains slowly
-- The test showed a clay layer about 600mm down. A conventional leaching bed would saturate in spring.
+- Clay 600mm down. A leaching bed would saturate in spring.
 - 02
 - The lot is tight to the lake
-- Setback rules leave a narrow band to build in. The compact biofilter fits it where a larger field does not.
+- Setbacks leave a narrow band. This fits it.
 - 03
 - The property is seasonal
-- It handles being left unused for months and coming back to full load on a long weekend.
+- Handles months unused, then a full weekend.
 
 **Band: data**
 
 - What it costs
-- Itemised
 - VALID 11 DAYS
-- Already done, at no cost
+- Already done
 - Soil test and report
 - Included
 - System design, permits filed for you
@@ -266,8 +251,6 @@ Route `/quote`
 
 **Band: data**
 
-- How this quote is assembled is undecided
-- Prices come from the ERP. Which quoting platform assembles them, and how pricing governance works, is an open decision, so the shape of this record is provisional.
 - QTE-2026-0331, issued 24 July 2026
 
 ### Installation and project tracking
@@ -276,19 +259,16 @@ Route `/install`
 
 **Band: masthead**
 
-- Your installation
+- 2 of 6 stages done
 - Where your project is
-- 2 of 6 stages done. We update this as each one finishes.
 
 **Band: data**
 
 - Waiting on the municipality
-- Your permit was filed on 4 August 2026. Towns in this region usually take two to four weeks. We chase it weekly and will tell you the moment it clears.
-- Nothing is needed from you, and this does not change what you were quoted.
+- Filed 4 August 2026. Towns here take two to four weeks. Nothing is needed from you.
 
 **Band: rail**
 
-- Six stages
 - What happens, and when
 - 01
 - Quote approved
@@ -297,7 +277,7 @@ Route `/install`
 - 26 July
 - 02
 - System designed
-- Drawings finished and checked against your soil test
+- Checked against your soil test
 - 29 July
 - 03
 - Permit filed
@@ -307,13 +287,13 @@ Route `/install`
 - 04
 - Installation
 - TO COME
-- Two days on site. We will confirm the dates once the permit clears.
+- Two days on site, dates once the permit clears
 - 05
 - Yard restored
-- Levelled, seeded and cleaned. You should not be able to tell we were there.
+- Levelled, seeded and cleaned
 - 06
 - Handover
-- We walk you through it and your care plan starts
+- We walk you through it, and your care plan starts
 
 **Band: data**
 
@@ -331,20 +311,18 @@ Route `/install`
 
 **Band: rail**
 
-- From site
 - Photos
-- Photos will appear here once work starts on the property.
+- Photos appear here once work starts.
 
 **Band: data**
 
 - What you approved
-- Your quote
 - Agreed price
 - $14,850
 - Reference
 - QTE-2026-0331
 - Nothing charged yet
-- You are invoiced after the work is finished and you are happy with it, not before.
+- You are invoiced after the work is finished, not before.
 
 ### Handover to owner
 
@@ -352,9 +330,8 @@ Route `/handover`
 
 **Band: masthead**
 
-- Handover
 - Your system is live
-- Commissioned and running. Service Point Estrie looks after it from here.
+- Service Point Estrie looks after it from here.
 - COMMISSIONED
 
 **Band: data**
@@ -373,7 +350,7 @@ Route `/handover`
 
 - Keeping it that way
 - Proactive Care
-- A system like yours needs the filter media replaced every few years and a check up once a year. The care plan covers both, and it means we come to you before something goes wrong rather than after.
+- We come to you before something goes wrong, not after.
 - Annual inspection
 - Filter media replacement when due
 - Priority response within 48h
@@ -386,16 +363,16 @@ Route `/handover`
 
 - Already booked
 - Your first check up
-- We will confirm a window with you nearer the time
+- We confirm a window nearer the time
 - 10 August 2027
 
 **Band: closing**
 
 - What changes for you
 - Same login, new view
-- Nothing to sign up for and nothing to re-enter. The account you have been using to follow the project becomes the account you use to run the system. Your soil test, your design and your permit stay with it.
+- The account you used to follow the project is the one you use to run the system. Your soil test, your design and your permit stay with it.
 - Go to my system
-- In the prototype this switches the role. For a real customer it is the same screen they were already on. Installed against QTE-2026-0331. Warranty and documents live under My system.
+- Installed against QTE-2026-0331. Warranty and documents live under My system.
 
 ## Client, system owner
 
@@ -699,9 +676,7 @@ Route `/parts`
 
 **Band: closing**
 
-- Behind this screen
-- Commerce runs through one adapter, so the platform choice stays open. Prices come from the ERP. Tax is deliberately not calculated here.
-- Platform undecided
+- Delivered to EC-5 owners in the Eastern Townships within a week.
 
 ### Messages
 
@@ -981,7 +956,6 @@ Route `/wo/WO-2026-0412`
 - What the customer will read
 - Show
 - Your checklist is not what the customer sees. A plain-language summary is generated from it, and you can edit it before the job closes.
-- How this is generated is undecided
 - Pre-job safety check
 - Before work starts
 - Quote extra work
@@ -1046,7 +1020,7 @@ Route `/route`
 
 - Not drawn yet
 - The run
-- All 3 stops today are inside Service Point Estrie. A drawn route needs base geography, which is not bundled in this build, so the ordered list above is the route until it is.
+- All 3 stops are inside Service Point Estrie. Base geography not yet supplied, so the list above is the route.
 
 ### Field quote
 
@@ -1483,15 +1457,10 @@ Route `/sp/inventory`
 - Filter media replacement
 - Scheduled 2026-08-12, 2 parts claimed
 - WO-2026-0412
-- Stock levels themselves are mastered in the ERP. This screen reads them and adds the forecast, which is the part the service schedule contributes.
 
 ### Team and capacity
 
 Route `/sp/team`
-
-**Outside any band**
-
-- Qualifications and absence are held here for the prototype. Neither has a home in the data model yet, which is a gap worth closing before this ships.
 
 **Band: masthead**
 
@@ -1627,7 +1596,7 @@ Route `/network`
 - Montérégie
 - 29.1% service, $2.6M
 - Base geography not yet supplied
-- Markers sit at their true coordinates, but there is no province outline behind them: the prototype makes no external calls, so a boundary file has to be bundled and none was supplied. Drawing an invented Québec would look finished and be wrong.
+- Markers sit at their true coordinates. An invented outline would look finished and be wrong.
 
 **Band: rail**
 

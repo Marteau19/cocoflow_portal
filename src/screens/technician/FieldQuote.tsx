@@ -219,10 +219,11 @@ export const TechnicianFieldQuote = () => {
               </div>
             </Band>
 
-            {/* The price. Parts from the ERP, labour from the rate card. */}
+            {/* Parts priced from the ERP, labour from the rate card. Naming those
+                systems is Blueprint language, so the eyebrow states the split only. */}
             {lines.length > 0 && (
               <Band kind="data" flush>
-                <BandHead title="The quote" eyebrow="Parts from the ERP, labour from the rate card" />
+                <BandHead title="The quote" eyebrow="Parts and labour" />
                 <RowList>
                   {lines.map((line) => (
                     <Row key={line.id}>

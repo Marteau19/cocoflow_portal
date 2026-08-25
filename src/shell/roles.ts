@@ -68,11 +68,28 @@ export const roles: Record<RoleKey, RoleDef> = {
     who: 'Sarah and Julien Lavoie, lakeside property in the Eastern Townships',
     viewport: 'mobile',
     home: '/home',
+    /*
+      Four nouns. Home, System, Shop, Account.
+
+      Book left the bar. Booking is a task with a start and an end, done once or
+      twice a year, and a tab is for a place you return to. It is now a primary
+      action on Home and on System, and the "something seems wrong" route deep
+      links into it, so it is reachable in fewer taps than it was while occupying
+      none of the four slots a customer navigates by.
+
+      Parts became Shop, because the tab sat directly under a masthead reading
+      "Parts and filters" and a nav label should not be the third statement of the
+      same word on one screen.
+
+      Account is new. It did not exist at all: "Signed in as Sarah Lavoie" was
+      grey text at the foot of an infinite scroll, and the language toggle a
+      Quebec product needs had nowhere to live.
+    */
     nav: [
       { label: 'Home', to: '/home', icon: 'home' },
-      { label: 'My system', to: '/system', icon: 'file-text' },
-      { label: 'Book', to: '/book', icon: 'calendar' },
-      { label: 'Parts', to: '/parts', icon: 'package' },
+      { label: 'System', to: '/system', icon: 'file-text' },
+      { label: 'Shop', to: '/parts', icon: 'package' },
+      { label: 'Account', to: '/account', icon: 'user' },
     ],
   },
 
@@ -163,6 +180,7 @@ export const routeOwners: Array<{ pattern: string; owners: RoleKey[] }> = [
   { pattern: '/book', owners: ['client-owner'] },
   { pattern: '/parts', owners: ['client-owner'] },
   { pattern: '/messages', owners: ['client-owner'] },
+  { pattern: '/account', owners: ['client-owner'] },
   { pattern: '/recommended', owners: ['client-owner'] },
 
   { pattern: '/day', owners: ['sp-technician'] },

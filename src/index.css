@@ -147,6 +147,29 @@
 }
 
 /**
+ * The customer register: prospect and system owner.
+ *
+ * `hero` resolves to the `display` values, so the ceiling on a customer screen
+ * is 32px. Set by AppShell as data-persona="customer" on the same element that
+ * carries data-register, which is what lets it win against the inline --type-*
+ * values applyBrand() writes on the root.
+ *
+ * Not a component change, and deliberately not one. Capping it here means one
+ * rule covers both brands, every customer screen present and future, and no
+ * screen can opt out of it by forgetting. It also leaves `hero` intact for the
+ * Global surfaces, where it sets a figure against a target rather than a title.
+ *
+ * It sits after the full-bleed block so that a customer role, which is always
+ * framed, is never promoted by it.
+ */
+[data-persona='customer'] {
+  --step-hero-size: var(--type-display-size);
+  --step-hero-line: var(--type-display-line);
+  --step-hero-tracking: var(--type-display-tracking);
+  --step-hero-weight: var(--type-display-weight);
+}
+
+/**
  * The gutter is register-scoped, exactly like the type steps above, and for the
  * same reason.
  *

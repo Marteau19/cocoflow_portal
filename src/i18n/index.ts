@@ -23,6 +23,7 @@
  * `shop.filter.fitsMyModel`. Shared strings live under `common.`.
  */
 
+import { useSyncExternalStore } from 'react';
 import { en } from './en';
 import { fr } from './fr';
 
@@ -47,9 +48,36 @@ let locale: Locale = 'en';
 
 export const getLocale = (): Locale => locale;
 
-export const setLocale = (next: Locale): void => {
-  locale = next;
+/**
+ * Everything that has to re-render when the language changes.
+ *
+ * `t()` is a plain function, not a hook, so a component calling it has no
+ * subscription to the locale and will happily keep rendering the old language
+ * forever. Rather than make every call site a hook, the shell subscribes once
+ * and keys its subtree on the result, so a language change re-renders the app
+ * the same way a role change does.
+ */
+const listeners = new Set<() => void>();
+
+const subscribe = (listener: () => void): (() => void) => {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
 };
+
+export const setLocale = (next: Locale): void => {
+  if (next === locale) return;
+  locale = next;
+  listeners.forEach((listener) => listener());
+};
+
+/**
+ * Subscribe to the active locale. One caller, in the shell.
+ *
+ * `useSyncExternalStore` rather than an effect and a state, because the locale
+ * is genuinely external state and this is what it is for: no tearing between
+ * components that read it during the same render, and no stale first paint.
+ */
+export const useLocale = (): Locale => useSyncExternalStore(subscribe, getLocale, getLocale);
 
 /** Reads `?lang=` once at boot. Anything unrecognised leaves the default alone. */
 export const initLocale = (): Locale => {

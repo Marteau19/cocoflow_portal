@@ -347,6 +347,46 @@ export const sections: Section[] = [
     phase: 'V1',
   },
   {
+    id: 'account-identity',
+    callout: 1,
+    screen: '/account',
+    roles: ['client-owner'],
+    title: 'Profile and properties',
+    business:
+      'Who the customer is, and which properties they own. Built for more than one property from the start, because a second cottage should not need a second login.',
+    primaryUser: 'System owner',
+    systemOfRecord: ['Entra External ID', 'Salesforce'],
+    dataDirection: 'read-write',
+    integration:
+      'Identity and credentials in Entra External ID; name, contact details and the property list in Salesforce. The two are joined on a federated identifier written at account creation. A person owns N Accounts, and the active one scopes every other screen.',
+    bf: ['BF1'],
+    openDecision:
+      'Whether a second property is a second Account or an Account with several service addresses. The prototype assumes the former, which is what the current object model supports, but the answer changes what a property switcher is switching.',
+    phase: 'V1',
+    privacy:
+      'Name, address, contact details and payment method all reachable from this screen. Access, correction and portability rights under Law 25 land here.',
+  },
+  {
+    id: 'account-preferences',
+    callout: 2,
+    screen: '/account',
+    roles: ['client-owner'],
+    title: 'Language and notifications',
+    business:
+      'Language and how we get in touch, chosen by the customer rather than assumed from their postcode.',
+    primaryUser: 'System owner',
+    systemOfRecord: ['Salesforce'],
+    dataDirection: 'read-write',
+    integration:
+      'Language preference has to reach every outbound channel, not just the portal: invoices, appointment reminders, the field technician\u2019s copy of the visit summary. That makes it a customer attribute on the CRM record rather than a portal setting, and it is read by the document generator and the notification platform as well as by the interface.',
+    bf: ['BF1', 'BF2'],
+    openDecision:
+      'Which platform owns transactional notification delivery, and whether per-channel opt-out is per-channel or per-topic. Quebec anti-spam rules constrain the answer.',
+    phase: 'V1',
+    privacy:
+      'Consent state for commercial messages is a Law 25 record with its own retention requirement. It is not the same thing as a notification toggle and must not be stored as one.',
+  },
+  {
     id: 'messages',
     callout: 1,
     screen: '/messages',

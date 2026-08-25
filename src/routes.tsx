@@ -23,6 +23,7 @@ import { ManagerInventory } from './screens/manager/Inventory';
 import { ManagerLeads } from './screens/manager/Leads';
 import { ManagerMarcom } from './screens/manager/Marcom';
 import { ManagerTeam } from './screens/manager/Team';
+import { OwnerAccount } from './screens/owner/Account';
 import { OwnerBook } from './screens/owner/Book';
 import { OwnerContract } from './screens/owner/Contract';
 import { OwnerHome } from './screens/owner/Home';
@@ -110,6 +111,7 @@ export const AppRoutes = () => (
       }
     />
     <Route path="/messages" element={<OwnerMessages />} />
+    <Route path="/account" element={<OwnerAccount />} />
     <Route path="/system/transfer" element={<OwnerTransfer />} />
     <Route path="/recommended" element={<OwnerRecommended />} />
 

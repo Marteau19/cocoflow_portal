@@ -20,6 +20,8 @@ import { GutterOverlay } from '../dev/GutterOverlay';
 import { DeviceFrame } from './DeviceFrame';
 import { BottomNav, SheetNav, SideNav } from './Nav';
 import { TopBar } from './TopBar';
+import { useLocale } from '../i18n';
+import { isCustomerRole } from './roles';
 import { useRole } from './useRole';
 
 /**
@@ -63,6 +65,7 @@ const FullBleedRole = ({ children }: { children: ReactNode }) => {
 
 export const AppShell = ({ children }: { children: ReactNode }) => {
   const { role } = useRole();
+  const locale = useLocale();
   const framed = role.viewport === 'mobile';
 
   return (
@@ -82,7 +85,30 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
         cross fades and the hero re-counts. That transition is the architectural
         argument made visible, which is why it is the longest in the app.
       */}
-      <main className="pt-6" data-register={framed ? 'framed' : 'full'} key={role.key}>
+      {/*
+        `data-persona` caps the type scale for the two customer roles.
+
+        Their `hero` step was never a figure. It was the screen's own name set at
+        48px, three of four tabs opened with one, and on an iPhone SE `/system`
+        spent an entire viewport on the words "Ecoflo compact biofilter". Above
+        the fold has to carry state, not a title card.
+
+        It is an attribute remap in index.css rather than an edit to every
+        customer screen, for the same reason `data-register` is: one rule, both
+        brands, zero component changes, and a screen cannot opt out of it by
+        accident. `hero` stays available to the Global surfaces, where it sets a
+        real number against a target, which is the job DESIGN.md section 7
+        describes.
+      */}
+      <main
+        className="pt-6"
+        data-register={framed ? 'framed' : 'full'}
+        data-persona={isCustomerRole(role.key) ? 'customer' : 'operator'}
+        // Locale is in the key for the same reason role is: `t()` is a plain
+        // function with no subscription, so the language control changes module
+        // state and this remount is what makes the app read it.
+        key={`${role.key}-${locale}`}
+      >
         {framed ? <FramedRole>{children}</FramedRole> : <FullBleedRole>{children}</FullBleedRole>}
       </main>
       <BlueprintPanel />

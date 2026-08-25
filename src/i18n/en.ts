@@ -113,4 +113,55 @@ export const en = {
   'book.done.where': 'Where',
   'book.done.team': 'Team',
   'book.done.change': 'Need to change it? Message your team and we will move it.',
+
+  /* ---------------------------------------------------------------- */
+  /* Account, screen 35                                                */
+  /* ---------------------------------------------------------------- */
+  'account.masthead.eyebrow': 'Account',
+  'account.masthead.title': 'Your account',
+
+  'account.you.title': 'You',
+  'account.you.email': 'Email',
+  'account.you.phone': 'Phone',
+  'account.you.edit': 'Edit your details',
+
+  'account.property.titleOne': 'Your property',
+  'account.property.titleOther': 'Your properties',
+  'account.property.system': '{product}, installed {date}',
+  'account.property.add': 'Add a property',
+  'account.property.addHint': 'Own more than one Ecoflo? Add it here and it joins this account.',
+
+  'account.plan.title': 'Care plan',
+  'account.plan.renews': 'Renews {date}',
+  'account.plan.autopayOn': 'Autopay is on',
+  'account.plan.autopayOff': 'Autopay is off',
+  'account.plan.manage': 'Manage your plan',
+  'account.plan.invoices': 'Invoices and payment',
+  'account.plan.invoicesDetail': 'All clear',
+  'account.plan.card': 'Card ending {last4}',
+
+  'account.prefs.title': 'Preferences',
+  'account.prefs.language': 'Language',
+  'account.prefs.languageHint': 'Applies to the portal, your invoices and what your technician brings to the door.',
+  'account.prefs.notifications': 'Tell me about',
+  'account.prefs.visitReminders': 'Visit reminders',
+  'account.prefs.visitRemindersHint': 'Two days before, and on the morning.',
+  'account.prefs.visitReports': 'Visit summaries',
+  'account.prefs.visitReportsHint': 'What we did, after each visit.',
+  'account.prefs.planNotices': 'Plan and billing',
+  'account.prefs.planNoticesHint': 'Renewals, receipts and anything that needs a decision.',
+  'account.prefs.offers': 'Offers and advice',
+  'account.prefs.offersHint': 'Seasonal advice and occasional offers. Off by default.',
+
+  'account.help.title': 'Help',
+  'account.help.messages': 'Message your Service Point',
+  'account.help.messagesDetail': 'We reply within one working day.',
+  'account.help.messagesUnreadOne': '{count} unread',
+  'account.help.messagesUnreadOther': '{count} unread',
+  'account.help.call': 'Call {servicePoint}',
+  'account.help.documents': 'Your documents',
+  'account.help.documentsDetail': 'Certificate, warranty, plan and owner guide.',
+
+  'account.signOut': 'Sign out',
+  'account.signedInAs': 'Signed in as {name}.',
 } as const;

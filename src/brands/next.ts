@@ -104,7 +104,7 @@ export const next: Brand = {
     section: { size: '19px', line: '26px', tracking: '-0.01em', weight: 500 },
     body: { size: '16px', line: '25px', tracking: '0', weight: 400 },
     caption: { size: '13px', line: '19px', tracking: '0', weight: 400 },
-    micro: { size: '11px', line: '14px', tracking: '0.08em', weight: 500, transform: 'uppercase' },
+    micro: { size: '11px', line: '14px', tracking: '0.08em', weight: 500 },
     heroLg: { size: '72px', line: '68px', tracking: '-0.035em', weight: 700 },
     displayLg: { size: '42px', line: '44px', tracking: '-0.02em', weight: 700 },
     h1Lg: { size: '28px', line: '34px', tracking: '-0.015em', weight: 700 },

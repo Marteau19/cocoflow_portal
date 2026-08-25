@@ -16,8 +16,11 @@ import { useEffect, useState } from 'react';
 import { Section } from '../../blueprint/Section';
 import {
   GOLDEN,
+  assets,
   byId,
   cases,
+  messagesForAccount,
+  type CaseMessage,
   contacts,
   resources,
   territories,
@@ -39,53 +42,15 @@ import {
   Status,
 } from '../../ui/primitives';
 
-interface Message {
-  from: 'you' | 'team';
-  authorId?: string;
-  at: string;
-  body: string;
-  /** What this message is about, shown as context rather than a ticket id. */
-  about?: string;
-}
-
-/**
- * The thread, grounded in the cases that exist in seedData. The customer-facing
- * subject comes from the case; the queue and status never surface.
- */
-const THREAD: Message[] = [
-  {
-    from: 'you',
-    at: '2026-06-02',
-    body: 'Quick question. The driveway is not ploughed in winter and the lid is under snow. Is that a problem for the visit?',
-    about: 'Question about winter access',
-  },
-  {
-    from: 'team',
-    authorId: 'RES-003',
-    at: '2026-06-02',
-    body: 'Good question, and thanks for flagging it early. We need a clear path to the lid on the day. If the drive is not ploughed we can either shift the visit to a thaw week or you can clear a path the day before. We will call you two days ahead either way so it is never a surprise.',
-  },
-  {
-    from: 'you',
-    at: '2026-06-03',
-    body: 'A thaw week works better for us. Thank you.',
-  },
-  {
-    from: 'team',
-    authorId: 'RES-003',
-    at: '2026-06-03',
-    body: 'Noted on your property record, so whoever is scheduling next winter will see it without you having to explain again.',
-  },
-];
-
 export const OwnerMessages = () => {
   const servicePoint = byId(territories, GOLDEN.territoryId)!;
+  const asset = byId(assets, GOLDEN.assetId)!;
   const primary = contacts.find((c) => c.accountId === GOLDEN.accountId && c.isPrimary)!;
   const visit = byId(workOrders, GOLDEN.workOrderId)!;
   const openCase = cases.find((c) => c.accountId === GOLDEN.accountId);
 
   const [draft, setDraft] = useState('');
-  const [sent, setSent] = useState<Message[]>([]);
+  const [sent, setSent] = useState<CaseMessage[]>([]);
 
   /*
     Unread is captured once, on mount, and then cleared.
@@ -101,13 +66,19 @@ export const OwnerMessages = () => {
     markRead(GOLDEN.accountId);
   }, []);
 
-  const messages = [...THREAD, ...sent];
+  const messages = [...messagesForAccount(GOLDEN.accountId), ...sent];
 
   const send = () => {
     if (draft.trim().length === 0) return;
     setSent((current) => [
       ...current,
-      { from: 'you', at: visit.scheduledFor, body: draft.trim() },
+      {
+        caseId: openCase?.id ?? '',
+        from: 'customer',
+        authorId: null,
+        at: visit.scheduledFor,
+        body: draft.trim(),
+      },
     ]);
     setDraft('');
   };
@@ -153,7 +124,7 @@ export const OwnerMessages = () => {
                     message.from === 'team' && message.authorId
                       ? byId(resources, message.authorId)
                       : undefined;
-                  const mine = message.from === 'you';
+                  const mine = message.from === 'customer';
 
                   /*
                     The divider marks where the reader left off, above the first
@@ -200,12 +171,6 @@ export const OwnerMessages = () => {
                             </p>
                             <span className="text-caption text-ink3">{shortDate(message.at)}</span>
                           </div>
-
-                          {message.about && (
-                            <p className="mt-1 text-caption text-ink3">
-                              {t('messages.about', { subject: message.about })}
-                            </p>
-                          )}
 
                           <p className="mt-1 max-w-reading text-body text-ink">{message.body}</p>
                         </div>
@@ -256,7 +221,12 @@ export const OwnerMessages = () => {
                 <Row>
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-caption text-ink2">{t('messages.context.system')}</p>
-                    <p className="text-caption text-ink">Ecoflo compact biofilter, EC-5</p>
+                    <p className="text-caption text-ink">
+                      {t('messages.context.systemValue', {
+                        product: asset.product,
+                        model: asset.model,
+                      })}
+                    </p>
                   </div>
                 </Row>
                 <Row>

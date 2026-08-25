@@ -196,8 +196,20 @@ export interface TypeStep {
   line: string;
   tracking: string;
   weight: 400 | 500 | 700;
-  transform?: 'uppercase';
 }
+
+/*
+  `transform: 'uppercase'` used to sit on this interface and on the `micro` step,
+  and `applyBrand()` never wrote it to a custom property, so no element in the
+  build was ever uppercased by it. Every eyebrow has always rendered sentence
+  case with the wide tracking doing the work of separating it from body copy.
+
+  It is removed rather than implemented. A token that silently does nothing is
+  worse than no token, because a reader of this file believes the opposite of
+  what the screen shows. And the direction is sentence case: uppercasing strips
+  accents in some renderers, which in a French Quebec product turns a label into
+  a spelling mistake.
+*/
 
 export const legacy: Brand = {
   id: 'legacy',
@@ -289,7 +301,7 @@ export const legacy: Brand = {
     section: { size: '19px', line: '26px', tracking: '-0.01em', weight: 500 },
     body: { size: '16px', line: '25px', tracking: '0', weight: 400 },
     caption: { size: '13px', line: '19px', tracking: '0', weight: 400 },
-    micro: { size: '11px', line: '14px', tracking: '0.08em', weight: 500, transform: 'uppercase' },
+    micro: { size: '11px', line: '14px', tracking: '0.08em', weight: 500 },
     // The full-bleed register: manager and global. Applied by attribute, not by
     // media query. See the interface comment.
     heroLg: { size: '72px', line: '68px', tracking: '-0.035em', weight: 700 },

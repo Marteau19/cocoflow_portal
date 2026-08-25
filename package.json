@@ -11,7 +11,8 @@
     "audit:contrast": "node scripts/audit-contrast.mjs",
     "audit:design": "node scripts/audit-design.mjs",
     "shots": "node scripts/shoot.mjs",
-    "i18n:todo": "node scripts/i18n-todo.mjs"
+    "i18n:todo": "node scripts/i18n-sync.mjs && node scripts/i18n-todo.mjs",
+    "i18n:sync": "node scripts/i18n-sync.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.454.0",

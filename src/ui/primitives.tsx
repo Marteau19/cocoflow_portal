@@ -30,7 +30,18 @@ export type ChipTone = 'accent' | 'neutral' | 'positive' | 'warn' | 'alert' | 'o
 
 const chipTones: Record<ChipTone, string> = {
   accent: 'bg-accent-soft text-accent-ink',
-  neutral: 'bg-surface-sunk text-ink2',
+  /*
+    Surface plus a hairline, not a sunk fill.
+
+    `--surface-sunk` is also the ground of every Rail and Closing band, so a
+    neutral chip on one of those bands was exactly the colour of the band behind
+    it and only the glyph showed. `Status` learned this two passes ago and its
+    neutral pill already carries the fix; this is the same bug in the other
+    primitive that tints a ground, and it stayed hidden until a Rail band on the
+    care plan screen actually asked for a neutral chip. The hairline separates it
+    on Rail and Closing, the fill separates it on Data.
+  */
+  neutral: 'border border-line-strong bg-surface text-ink2',
   positive: 'bg-positive-soft text-positive',
   warn: 'bg-warn-soft text-warn',
   alert: 'bg-alert-soft text-alert',

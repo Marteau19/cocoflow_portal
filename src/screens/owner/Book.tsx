@@ -292,9 +292,25 @@ export const OwnerBook = () => {
                     </div>
                   ))}
                 </div>
-                <div className="border-t border-line px-gutter py-3">
-                  <p className="text-caption text-ink2">{t('book.slot.window')}</p>
-                </div>
+                {/*
+                  The window rationale, folded away.
+
+                  It used to sit open at the foot of the picker: "A window, not a
+                  time. We would rather arrive inside two hours than miss a
+                  promise by ten minutes." Charming on a first booking and
+                  friction on a third, and it was two sentences of brand voice
+                  standing between the reader and the button. As a question it
+                  costs one line, it answers the objection at the exact moment
+                  somebody has it, and it is silent for everybody who does not.
+                */}
+                <details className="border-t border-line px-gutter py-2">
+                  <summary className="inline-flex min-h-tap cursor-pointer list-none items-center text-control font-medium text-accent-ink transition-colors duration-state ease-ease hover:text-ink">
+                    {t('book.slot.why')}
+                  </summary>
+                  <p className="max-w-reading pb-2 text-caption text-ink2">
+                    {t('book.slot.whyAnswer')}
+                  </p>
+                </details>
               </Band>
             </div>
 

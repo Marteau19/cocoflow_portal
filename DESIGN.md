@@ -538,7 +538,7 @@ not by the browser window.** See below.
 | **section** | 19 / 26 | 19 / 26 | -0.01em | 500 | Card headers, and the heading level inside a band |
 | body | 16 / 25 | 16 / 25 | 0 | 400 | All prose. 500 for emphasis |
 | caption | 13 / 19 | 13 / 19 | 0 | 400 | Metadata, secondary row detail |
-| micro | 11 / 14 | 11 / 14 | +0.08em | 500, upper | Eyebrows and labels above values. Four words maximum |
+| micro | 11 / 14 | 11 / 14 | +0.08em | 500 | Eyebrows and labels above values. Sentence case. Four words maximum |
 
 Framed steps: 48, 32, 24, 19, 16, 13, 11.
 
@@ -589,6 +589,15 @@ rather than a loophole:
 - **`micro` at 11px** is a label register. It names a value, it is never read as
   prose, and removing it would push eyebrows onto `caption` where they would stop
   being distinguishable from row metadata.
+
+  It is **sentence case**, not uppercase. The token carried an `uppercase`
+  transform that `applyBrand()` never wrote to a custom property, so nothing in
+  the build was ever uppercased by it and every eyebrow has always rendered
+  sentence case with the tracking doing the separating. The dead field is removed
+  rather than implemented, for two reasons: a token that silently does nothing is
+  worse than no token, because this document then says the opposite of what the
+  screen shows; and uppercasing strips accents in some renderers, which in a
+  French Quebec product turns a label into a spelling mistake.
 - **The control label at 15px** is a control register, specified in section 6.
 
 So a fully loaded screen shows six physical sizes: four reading, two functional.

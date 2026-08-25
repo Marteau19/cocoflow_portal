@@ -504,7 +504,7 @@ Route `/system`
 **Band: closing**
 
 - Moving out
-- Selling the property? The system, its history and its care plan can move to the new owner.
+- The system, its history and its plan can move to the new owner.
 - Transfer to a new owner
 
 ### Invoices and payment
@@ -515,13 +515,12 @@ Route `/invoices`
 
 - Billing
 - Invoices and payment
-- Everything you have been charged, and what it was for.
 
 **Band: data**
 
 - Outstanding
-- Nothing
-- You are up to date. Your care plan is paid to 14 May 2027.
+- All clear
+- Paid to 14 May 2027.
 - Paid this year
 - $68
 - Next charge
@@ -529,21 +528,19 @@ Route `/invoices`
 
 **Band: rail**
 
-- How you pay
 - Payment method
 - Card ending 4417
 - Expires 09 / 2028
 - Change
 - Autopay is on
-- Your care plan renews and pays itself. We email you a week before.
+- Your plan renews and pays itself. We email you a week before.
 
 **Band: data**
 
-- Everything so far
 - Invoice history
 - 3 invoices
 - Parts order
-- PAID
+- Paid
 - 2 x LID-SEAL-05
 - INV-2026-1188
 - 2 March
@@ -559,7 +556,7 @@ Route `/invoices`
 - 14 May
 - SC-2026-00871
 - $320
-- Every invoice points at the visit or the order that caused it. Tap one to see what happened.
+- Each invoice points at what caused it.
 
 ### Maintenance contract
 
@@ -576,7 +573,7 @@ Route `/contract`
 - Per year
 - $320
 - Renews 14 May 2027, in 275 days. Paid automatically.
-- ACTIVE
+- Active
 - Covering since
 - 14 May 2019
 - Plan reference
@@ -591,7 +588,7 @@ Route `/contract`
 - Priority response within 48h
 - Parts discount
 - Not covered
-- Damage from something outside the system, and parts you order for yourself. We tell you before any work that falls outside the plan, never after.
+- Outside damage, and parts you order yourself. We tell you before such work, never after.
 
 **Band: data**
 
@@ -599,9 +596,9 @@ Route `/contract`
 - What the plan has done
 - Filter media replacement
 - 12 August 2026
-- SCHEDULED
+- Scheduled
 - Included
-- DONE
+- Done
 - 11 June 2020
 - 24 June 2021
 - 5 July 2022
@@ -618,9 +615,9 @@ Route `/contract`
 - If you want to change it
 - Your options
 - Move the renewal date
-- Useful if you would rather be billed at a different time of year.
+- For billing at a different time of year.
 - End the plan
-- You can stop at any time. Cover runs to 14 May 2027 and we do not charge again after that.
+- Stop any time. Cover runs to 14 May 2027, with no further charge.
 - Ask about my plan
 
 ### Book an appointment
@@ -663,12 +660,13 @@ Route `/book`
 - 15:00 to 17:00
 - Tuesday 25 August
 - in 13 days
-- A window, not a time. We would rather arrive inside two hours than miss a promise by ten minutes.
+- Why a window and not a time?
+- We would rather arrive inside two hours than miss a promise by ten minutes.
 
 **Band: rail**
 
 - Covered by Proactive Care
-- Your care plan covers a check up on the EC-5 each year, so there is nothing to pay for this visit.
+- Your plan covers a yearly check up, so this visit is free.
 
 **Band: data**
 
@@ -742,7 +740,7 @@ Route `/account`
 - 148 chemin du Lac
 - Lac-Brome, QC
 - EC-5, installed 14 May 2019
-- Own more than one Ecoflo? Add it here and it joins this account.
+- A second Ecoflo joins this same account.
 
 **Band: data**
 
@@ -759,7 +757,7 @@ Route `/account`
 - Language
 - English
 - Français
-- Applies to the portal, your invoices and what your technician brings to the door.
+- Applies to the portal, your invoices and your visit summaries.
 - Tell me about
 - Visit reminders
 - Two days before, and on the morning.
@@ -797,7 +795,7 @@ Route `/messages`
 
 **Band: data**
 
-- We reply within one working day. For anything urgent, call the Service Point.
+- We reply within one working day. Call for anything urgent.
 
 **Band: rail**
 
@@ -806,7 +804,6 @@ Route `/messages`
 - SL
 - You
 - 2 June
-- About: Question about winter access
 - Quick question. The driveway is not ploughed in winter and the lid is under snow. Is that a problem for the visit?
 - Louis Tremblay
 - Good question, and thanks for flagging it early. We need a clear path to the lid on the day. If the drive is not ploughed we can either shift the visit to a thaw week or you can clear a path the day before. We will call you two days ahead either way so it is never a surprise.
@@ -830,16 +827,11 @@ Route `/messages`
 - 12 August 2026
 - Winter access
 - Thaw weeks preferred, noted 2026
-- Whoever replies can see all of this. You should never have to explain your property twice.
+- Whoever replies sees all of this. Never explain your property twice.
 
 ### Transfer ownership
 
 Route `/system/transfer`
-
-**Outside any band**
-
-- Start the transfer
-- Signed in as Sarah Lavoie. Nothing moves until the new owner accepts, and you can cancel before then.
 
 **Band: masthead**
 
@@ -862,8 +854,6 @@ Route `/system/transfer`
 
 **Band: data**
 
-- Read this part
-- What transfers, and what does not
 - Goes with the property
 - The system and its serial number
 - It is bolted into the ground
@@ -887,7 +877,7 @@ Route `/system/transfer`
 
 - Your care plan
 - Proactive Care
-- Your plan is paid to 14 May 2027. The new owner can take it over from the transfer date, or let it lapse and decide for themselves. If they take it over, we refund you the unused part.
+- Paid to 14 May 2027. The new owner can take it over or let it lapse. We refund any unused part.
 
 **Band: data**
 
@@ -902,6 +892,11 @@ Route `/system/transfer`
 - This shares your system history
 - I agree to transfer the system, its warranty and its service history to the person named above, and I confirm they are buying this property. My contact details, invoices and messages are not shared.
 
+**Band: data**
+
+- Start the transfer
+- Cancel any time before they accept.
+
 ### Recommended for your property
 
 Route `/recommended`
@@ -910,16 +905,15 @@ Route `/recommended`
 
 - For your property
 - Worth knowing about
-- Based on your EC-5 at Lac-Brome, its age, and what we have seen on site.
+- From your own records and what technicians noted on site.
 
 **Band: rail**
 
 - Due now
-- 1 thing we would do next
-- NO CHARGE
-- An outlet filter check, added to your next visit
+- We would do this next
 - No charge
-- Systems of this age start to show partial blockages at the outlet. Yours is 7 years old and has not had one flagged, which is normal, but it is worth looking while we are there.
+- An outlet filter check, added to your next visit
+- Outlets start to partially block around this age. Yours never has, which is normal, but it is worth a look while we are there.
 - Based on: Installed 14 May 2019
 - Avoids: A backup during heavy spring flow
 - Add it to my visit
@@ -930,22 +924,22 @@ Route `/recommended`
 - No rush
 - A taller lid riser
 - $78
-- Your property is seasonal and the lid sits below the snow line. A taller riser means we can reach it in winter without you clearing the drive.
+- Your lid sits below the snow line. A taller riser lets us reach it in winter without you clearing the drive.
 - Based on: Your note about winter access, June 2026
 - ACC-RISER-6
 - Avoids: A visit moved because we could not reach the lid
 - See it in parts
 - A spare lid seal
 - $34
-- The seal on your EC-5 is replaced during the visit on 12 August 2026. Keeping a spare means a perished seal is never a reason to book a second visit.
+- Yours is replaced on 12 August 2026. A spare means a perished seal never costs a second visit.
 - Based on: WO-2026-0412, scheduled
 - LID-SEAL-05
 - Avoids: A callout for a ten dollar part
 
 **Band: rail**
 
-- How we decide what to put here
-- Only your own records: the age of your system, what technicians recorded on site, and what your Proactive Care already covers. We do not put something here because other customers bought it.
+- How we decide
+- Your records only. Never because other customers bought it.
 
 ## Service Point, technician
 

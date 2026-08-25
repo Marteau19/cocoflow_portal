@@ -17,13 +17,12 @@ import { useState } from 'react';
 import { Section } from '../../blueprint/Section';
 import {
   GOLDEN,
-  accounts,
   assets,
   byId,
-  contracts,
   products,
   workOrders,
 } from '../../data/seedData';
+import { plural, t } from '../../i18n';
 import { daysFromToday, longDate, money } from '../../lib/format';
 import {
   Band,
@@ -54,9 +53,7 @@ interface Recommendation {
 }
 
 export const OwnerRecommended = () => {
-  const account = byId(accounts, GOLDEN.accountId)!;
   const asset = byId(assets, GOLDEN.assetId)!;
-  const contract = byId(contracts, GOLDEN.contractId)!;
   const nextVisit = byId(workOrders, GOLDEN.workOrderId)!;
 
   const [declined, setDeclined] = useState<string[]>([]);
@@ -72,30 +69,30 @@ export const OwnerRecommended = () => {
   const RECOMMENDATIONS: Recommendation[] = [
     {
       id: 'winter-riser',
-      label: 'A taller lid riser',
-      why: `Your property is seasonal and the lid sits below the snow line. A taller riser means we can reach it in winter without you clearing the drive.`,
-      basedOn: 'Your note about winter access, June 2026',
-      prevents: 'A visit moved because we could not reach the lid',
+      label: t('recommended.riser.label'),
+      why: t('recommended.riser.why'),
+      basedOn: t('recommended.riser.basedOn'),
+      prevents: t('recommended.riser.prevents'),
       price: riser?.price_jde ?? null,
       urgency: 'worth-knowing',
       sku: riser?.sku,
     },
     {
       id: 'spare-seal',
-      label: 'A spare lid seal',
-      why: `The seal on your ${asset.model} is replaced during the visit on ${longDate(nextVisit.scheduledFor)}. Keeping a spare means a perished seal is never a reason to book a second visit.`,
-      basedOn: `${nextVisit.id}, scheduled`,
-      prevents: 'A callout for a ten dollar part',
+      label: t('recommended.seal.label'),
+      why: t('recommended.seal.why', { date: longDate(nextVisit.scheduledFor) }),
+      basedOn: t('recommended.seal.basedOn', { id: nextVisit.id }),
+      prevents: t('recommended.seal.prevents'),
       price: seal?.price_jde ?? null,
       urgency: 'worth-knowing',
       sku: seal?.sku,
     },
     {
       id: 'effluent-filter',
-      label: 'An outlet filter check, added to your next visit',
-      why: `Systems of this age start to show partial blockages at the outlet. Yours is ${yearsInstalled} years old and has not had one flagged, which is normal, but it is worth looking while we are there.`,
-      basedOn: `Installed ${longDate(asset.installedOn)}`,
-      prevents: 'A backup during heavy spring flow',
+      label: t('recommended.filter.label'),
+      why: t('recommended.filter.why', { years: yearsInstalled }),
+      basedOn: t('recommended.filter.basedOn', { date: longDate(asset.installedOn) }),
+      prevents: t('recommended.filter.prevents'),
       price: null,
       urgency: 'due',
     },
@@ -152,9 +149,9 @@ export const OwnerRecommended = () => {
     <>
       <div className="contents">
         <Masthead
-          eyebrow="For your property"
-          subject="Worth knowing about"
-          lead={`Based on your ${asset.model} at ${account.city}, its age, and what we have seen on site.`}
+          eyebrow={t('recommended.eyebrow')}
+          subject={t('recommended.title')}
+          lead={t('recommended.lead', { model: asset.model })}
         />
 
         <Section id="recommended">
@@ -162,10 +159,12 @@ export const OwnerRecommended = () => {
             {shown.length === 0 ? (
               <Band kind="data" flush>
                 <div className="px-gutter py-6">
-                  <p className="text-body text-ink2">
-                    Nothing to suggest right now. We will only put something here when your own
-                    records give us a reason to.
-                  </p>
+                  {/*
+                    An empty state is an invitation, not an apology. "Nothing to
+                    suggest right now" opens by naming an absence; the fact worth
+                    leading with is that the system is covered.
+                  */}
+                  <p className="max-w-reading text-body text-ink2">{t('recommended.empty')}</p>
                 </div>
               </Band>
             ) : (
@@ -174,8 +173,8 @@ export const OwnerRecommended = () => {
                   <Band kind="rail" flush>
                     <BandHead
                       eyebrow="Due now"
-                      title={`${due.length} ${due.length === 1 ? 'thing' : 'things'} we would do next`}
-                      action={<Status tone="good">NO CHARGE</Status>}
+                      title={t('recommended.due.title')}
+                      action={<Status tone="good">{t('recommended.due.noCharge')}</Status>}
                     />
                     <RowList>
                       {due.map((item) => (
@@ -188,8 +187,8 @@ export const OwnerRecommended = () => {
                 {later.length > 0 && (
                   <Band kind="data" flush>
                     <BandHead
-                      eyebrow="No rush"
-                      title="Worth knowing about"
+                      eyebrow={t('recommended.later.eyebrow')}
+                      title={t('recommended.later.title')}
                     />
                     <RowList>
                       {later.map((item) => (
@@ -204,16 +203,16 @@ export const OwnerRecommended = () => {
             {/* How this list is built. Said out loud rather than implied. */}
             <Band kind="rail" flush>
               <div className="px-gutter py-3">
-                <Micro>How we decide what to put here</Micro>
+                <Micro>{t('recommended.method.label')}</Micro>
                 <p className="mt-1 max-w-reading text-caption text-ink2">
-                  Only your own records: the age of your system, what technicians recorded on site,
-                  and what your {contract.name} already covers. We do not put something here because
-                  other customers bought it.
+                  {t('recommended.method.detail')}
                 </p>
                 {declined.length > 0 && (
                   <p className="mt-2 text-caption text-ink3">
-                    {declined.length} {declined.length === 1 ? 'suggestion' : 'suggestions'} hidden.
-                    We will not raise them again.
+                    {plural(declined.length, {
+                      one: 'recommended.hiddenOne',
+                      other: 'recommended.hiddenOther',
+                    })}
                   </p>
                 )}
               </div>

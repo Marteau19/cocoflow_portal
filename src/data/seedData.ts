@@ -1029,3 +1029,68 @@ export const propertiesForContact = (contactId: string): Account[] => {
 /** The system installed at a property. One today; the model allows more. */
 export const systemsForProperty = (accountId: string): Asset[] =>
   assets.filter((a) => a.accountId === accountId);
+
+/* ------------------------------------------------------------------ */
+/* Conversations                                                       */
+/* ------------------------------------------------------------------ */
+
+export interface CaseMessage {
+  caseId: string;
+  from: 'customer' | 'team';
+  /** Null when the customer wrote it. */
+  authorId: string | null;
+  at: string;
+  body: string;
+}
+
+/**
+ * The thread, grounded in the cases above.
+ *
+ * Here rather than inside the Messages screen, and that is a classification fix
+ * rather than a tidy-up. A message somebody wrote is a record, exactly like a
+ * visit summary or an invoice line, and the copy export was counting these four
+ * paragraphs as interface copy and putting them in front of a copy reviewer as
+ * something to edit. They are also the wrong thing to translate: a customer's own
+ * words do not get rewritten into French, they stay as they were sent.
+ *
+ * The customer-facing subject comes from the case. Its queue and status never
+ * surface.
+ */
+export const caseMessages: CaseMessage[] = [
+  {
+    caseId: 'CAS-2026-2214',
+    from: 'customer',
+    authorId: null,
+    at: '2026-06-02',
+    body: 'Quick question. The driveway is not ploughed in winter and the lid is under snow. Is that a problem for the visit?',
+  },
+  {
+    caseId: 'CAS-2026-2214',
+    from: 'team',
+    authorId: 'RES-003',
+    at: '2026-06-02',
+    body: 'Good question, and thanks for flagging it early. We need a clear path to the lid on the day. If the drive is not ploughed we can either shift the visit to a thaw week or you can clear a path the day before. We will call you two days ahead either way so it is never a surprise.',
+  },
+  {
+    caseId: 'CAS-2026-2214',
+    from: 'customer',
+    authorId: null,
+    at: '2026-06-03',
+    body: 'A thaw week works better for us. Thank you.',
+  },
+  {
+    caseId: 'CAS-2026-2214',
+    from: 'team',
+    authorId: 'RES-003',
+    at: '2026-06-03',
+    body: 'Noted on your property record, so whoever is scheduling next winter will see it without you having to explain again.',
+  },
+];
+
+/** Every message on a property's conversations, oldest first. */
+export const messagesForAccount = (accountId: string): CaseMessage[] => {
+  const ids = cases.filter((c) => c.accountId === accountId).map((c) => c.id);
+  return caseMessages
+    .filter((m) => ids.includes(m.caseId))
+    .sort((a, b) => a.at.localeCompare(b.at));
+};

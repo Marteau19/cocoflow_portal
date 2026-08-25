@@ -31,6 +31,24 @@
   --safe-top: 0px;
 
   /**
+   * The home indicator inset, and the breathing room at the end of a scroll.
+   *
+   * `--safe-bottom` is real hardware and resolves to 0 everywhere there is none,
+   * which includes the device frame: the drawn handset has no gesture bar, so
+   * the frame does not need clearing and the value correctly stays 0 there.
+   * It needs `viewport-fit=cover` in index.html to resolve to anything at all.
+   *
+   * `--scroll-end` is the pad at the foot of every scroll column. The bottom
+   * navigation is a flex sibling of that column rather than an overlay, so it
+   * does not occlude content and the pad does not have to clear its height. What
+   * it does fix is content ending exactly on the column's clip boundary, which
+   * is what cut the booking helper line in half: the last line of text had no
+   * room beneath it and the overflow clipped its descenders.
+   */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --scroll-end: calc(var(--space-4) + var(--safe-bottom));
+
+  /**
    * Control geometry, DESIGN.md section 6.
    *
    * Height is a fixed value rather than a consequence of padding plus line
@@ -355,6 +373,56 @@
   [data-content-column] {
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
+  }
+
+  /**
+   * The pad at the foot of a scroll column, and the one on the bar below it.
+   *
+   * Applied to the scrolling column rather than to the last band, because "the
+   * last band" is a different component on every screen and three of them have
+   * already been the wrong one.
+   */
+  [data-content-column] {
+    padding-bottom: var(--scroll-end);
+  }
+
+  /**
+   * A bar stuck to the foot of a scroll column.
+   *
+   * Two negatives, and they undo two different things. Measured before them, the
+   * bar rested 24px above the navigation with the page ground showing through the
+   * gap, in both the stuck state and the resting one.
+   *
+   * `bottom` handles the stuck state. A sticky element is constrained by the
+   * scrollport *reduced by the container's padding*, not by the container's
+   * border box, so `bottom: 0` pins it to the top edge of the column's end pad
+   * rather than to the bottom of the column. Offsetting by the pad puts it back
+   * on the border box.
+   *
+   * `margin-bottom` handles the resting state. A sticky element stops sticking
+   * once it reaches its own place in the flow, and its place is the end of the
+   * content, above that same pad. Pulling the following pad up by its own height
+   * closes the gap there too.
+   *
+   * Neither removes the pad itself, which every screen without a sticky bar still
+   * needs: it is what stops the last line of text being clipped by the column's
+   * own overflow boundary.
+   */
+  .sticky-foot {
+    position: sticky;
+    bottom: calc(-1 * var(--scroll-end));
+    margin-bottom: calc(-1 * var(--scroll-end));
+  }
+
+  /**
+   * The bottom navigation clears the home indicator by growing, not by moving.
+   *
+   * Padding rather than margin so the bar's own ground still runs to the bottom
+   * edge of the display. With a margin the sunk fill would stop above the
+   * indicator and the page canvas would show through in the gap.
+   */
+  .nav-safe {
+    padding-bottom: var(--safe-bottom);
   }
 
   /* Inert until there is a frame to sit in. */

@@ -91,7 +91,7 @@ export const GlobalReadiness = () => {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead. The hero is how many could be switched on today.         */}
       {/* ------------------------------------------------------------------ */}
-      <Section id="readiness" onDark>
+      <Section id="readiness">
         <Band kind="masthead">
           <Micro className="text-on-band-muted">Rollout</Micro>
           <p className="mt-1 text-h1 text-on-band">Service Point readiness</p>

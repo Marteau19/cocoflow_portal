@@ -1124,7 +1124,19 @@ export const Note = ({
  * labelled placeholder rather than a stand-in from a neighbouring category,
  * because a confidently wrong picture is worse than an admitted gap.
  */
-export const Thumb = ({ src, alt }: { src: string | null; alt: string }) =>
+export const Thumb = ({
+  src,
+  alt,
+  label,
+  title,
+}: {
+  src: string | null;
+  alt: string;
+  /** The part number, shown in place of a photograph. */
+  label?: string;
+  /** What the absence means, for a pointer. */
+  title?: string;
+}) =>
   src ? (
     <img
       src={src}
@@ -1132,15 +1144,77 @@ export const Thumb = ({ src, alt }: { src: string | null; alt: string }) =>
       className="h-6 w-6 shrink-0 rounded-control border border-line bg-surface object-contain"
     />
   ) : (
+    /*
+      The fallback used to read "N/A" in grey on a sunk square.
+
+      Three things were wrong with it. It was the only place in the product that
+      spoke in form-field abbreviation. It sat beside real photography, so a row
+      with no picture read as a row with a broken picture. And it said nothing:
+      "N/A" beside a $615 pump answers no question a person looking at that row
+      is asking.
+
+      What it says now is what the row is: a part, and which part. The accent
+      tint reads as a deliberate placeholder rather than a failure, the outline
+      glyph carries the category, and the part number is the thing a customer
+      matching a component against the one in their hand actually needs. No new
+      icon: `package` is already in the budget and a part in a box is exactly
+      what it means.
+    */
     <span
-      className="grid h-6 w-6 shrink-0 place-items-center rounded-control border border-line bg-surface-sunk"
-      title="No photograph on file for this part"
+      className="flex h-6 w-6 shrink-0 flex-col items-center justify-center gap-px rounded-control border border-line bg-accent-soft px-px text-accent-ink"
+      title={title}
     >
-      {/* `micro` rather than an icon: the icon budget has no "no image" glyph, and
-          spending one on an absence would be the wrong trade. */}
-      <span className="text-micro text-ink3">N/A</span>
+      <Icon name="package" />
+      {label && (
+        <span className="w-full truncate text-center font-mono text-micro leading-none">
+          {label}
+        </span>
+      )}
     </span>
   );
+
+/**
+ * An undo strip.
+ *
+ * A destructive action a person can reverse does not need a confirmation dialog
+ * in front of it. A dialog taxes every correct removal to catch the rare wrong
+ * one; an undo taxes nothing and catches all of them. It is also the only one of
+ * the two that works when the mistake is noticed a second later rather than a
+ * second earlier.
+ *
+ * Presentational on purpose: no portal, no fixed positioning, no timer of its
+ * own. It renders where it is placed, and the screen that owns it decides when it
+ * appears and when it goes. A toast that positions itself is a toast that
+ * eventually lands on top of something it should not, and inside a scrolling
+ * column with a sticky bar beneath it, that something is always the sticky bar.
+ *
+ * The action is a real 48px control rather than a text link, for the same reason
+ * the thing that caused it is: an undo you have to aim at is an undo you lose.
+ */
+export const Toast = ({
+  message,
+  actionLabel,
+  onAction,
+}: {
+  message: string;
+  actionLabel: string;
+  onAction: () => void;
+}) => (
+  <div
+    role="status"
+    aria-live="polite"
+    className="flex items-center justify-between gap-3 border-t border-line bg-band-deep px-gutter py-2 text-on-band"
+  >
+    <p className="min-w-0 text-caption">{message}</p>
+    <button
+      type="button"
+      onClick={onAction}
+      className="-mr-control-compact inline-flex min-h-tap shrink-0 items-center px-control-compact text-control font-medium text-on-band underline underline-offset-2"
+    >
+      {actionLabel}
+    </button>
+  </div>
+);
 
 /* ------------------------------------------------------------------ */
 /* People                                                             */

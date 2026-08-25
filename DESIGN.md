@@ -279,10 +279,18 @@ Five roles. A token belongs to exactly one.
 
 ### Rules
 
-1. **One primary action per screen.** Revised from "one accent per screen", which
-   was too blunt and is what starved the build of colour. Exactly one control
-   carries `--accent` as a fill. Colour is free to work structurally everywhere
-   else: in bands, in data, in status, in tinted grounds.
+1. **One primary action per screen, and buying.** Revised from "one accent per
+   screen", which was too blunt and is what starved the build of colour. Exactly
+   one control carries `--accent` as a fill, plus commerce. Colour is free to work
+   structurally everywhere else: in bands, in data, in status, in tinted grounds.
+
+   Commerce is an exception because a catalogue's whole job is to offer the same
+   buying action once per row. A shop list with one Add button in accent and five
+   in grey is not a screen obeying the rule, it is a screen with one product for
+   sale. The accent is reserved for the primary action **and for buying**: add,
+   the order bar, checkout. Mark those subtrees `data-commerce` so
+   `audit-design.mjs` can tell the exception from the drift, and so that an
+   unmarked second accent fill on a shop screen still fails the audit.
 2. **`--field-line` is a separate token** because an input outline must clear
    3:1 as a meaningful non-text control, while a structural hairline only has to
    be perceptible. Conflating them is why inputs read as unbordered.
@@ -972,7 +980,7 @@ is the largest single gap between intent and build in the whole project.
 | Element | Default | Blueprint |
 |---|---|---|
 | Canvas | `--canvas` | `--canvas-blueprint`, a real blue grey. ΔL\* **8.5** legacy, **9.7** next |
-| Callout | 12px pill, `--ink-3` on white | **28px square**, `--ink` fill, `--on-band` mono numeral, at the band's left edge |
+| Callout | **Nothing** | **28px square**, `--ink` fill, `--on-band` mono numeral, at the band's left edge |
 | Leader line | 3px stub | Full rule from the callout to the band's right edge, 1px `--field-line`, **drawn in over 240ms** |
 | Band boundary | Nothing | 1px dashed `--field-line` at top and bottom of every annotated band |
 | Index panel | List of callouts | Same, plus the count as a `display` figure and Export spec as the primary action |
@@ -982,6 +990,27 @@ The numbers stay an index into the exported spec rather than decoration, which i
 what earns them the size. Spend the boldness here: this is the mechanism that lets
 one build serve leadership and DEV, and it is the thing no competing prototype
 will have.
+
+### The default state shows no callout at all
+
+Changed in the client-owner pass. The default state used to be a small
+hairline-outlined marker at the header baseline, on the argument that it was low
+contrast and therefore easy to ignore while demoing the product.
+
+It was not ignorable. A sequence reading 01, 02, 03 down the right edge of a page
+is read as step numbering by anyone who does not already know what Blueprint mode
+is, and that is every customer and most of the room in a leadership review. On
+`/system` it numbered three unrelated blocks as though they were stages of a task.
+A marker that has to be explained before it can be ignored is not low contrast; it
+is a question the screen keeps asking.
+
+Nothing is lost from the spec layer. Every annotation is still reachable in
+Blueprint mode and from the Blueprint panel, which lists all of them and is where
+Export spec already lives. The callouts are now revealed by the mode built to
+reveal them, instead of being half revealed all of the time. That also sharpens
+the mode change this section opens by demanding: going from no callouts to
+twenty-eight numbered ones is legible from across a room in a way that going from
+small grey to large black never was.
 
 ---
 

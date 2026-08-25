@@ -110,7 +110,7 @@ export const OwnerHome = () => {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead. The hero, and the only dark band on this screen.         */}
       {/* ------------------------------------------------------------------ */}
-      <Section id="next-visit" onDark>
+      <Section id="next-visit">
         <Band kind="masthead">
           <Micro className="text-on-band-muted">Your next visit</Micro>
 

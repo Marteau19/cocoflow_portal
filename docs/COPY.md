@@ -592,10 +592,6 @@ Route `/contract`
 
 Route `/book`
 
-**Outside any band**
-
-- Choose what it is about and pick a window to continue.
-
 **Band: masthead**
 
 - Book a visit
@@ -639,6 +635,10 @@ Route `/book`
 - Covered by Proactive Care
 - Your care plan covers a check up on the EC-5 each year, so there is nothing to pay for this visit.
 
+**Band: data**
+
+_No text._
+
 ### Parts store
 
 Route `/parts`
@@ -663,7 +663,7 @@ Route `/parts`
 - Inspection lid seal
 - LID-SEAL-05
 - $34
-- N/A
+- PMP
 - Effluent pump, 1/2 hp
 - PMP-EFF-12
 - $615

@@ -79,6 +79,8 @@ export const en = {
   'book.masthead.title': 'When suits you?',
   'book.masthead.lead': 'Pick a window and {servicePoint} will confirm it.',
 
+  'book.step.one': 'Step one',
+  'book.step.two': 'Step two',
   'book.reason.title': 'What is it about?',
   'book.reason.inspection': 'A check up',
   'book.reason.inspectionDetail': 'Included in your care plan',
@@ -93,7 +95,8 @@ export const en = {
   'book.slot.title': 'Choose an arrival window',
   'book.slot.daysOpenOne': '{count} day open',
   'book.slot.daysOpenOther': '{count} days open',
-  'book.slot.inDays': 'in {count} days',
+  'book.slot.inDaysOne': 'in {count} day',
+  'book.slot.inDaysOther': 'in {count} days',
   'book.slot.window': 'A window, not a time. We would rather arrive inside two hours than miss a promise by ten minutes.',
   'book.slot.missing': 'Pick an arrival window to continue.',
 

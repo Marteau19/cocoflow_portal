@@ -10,7 +10,8 @@
     "typecheck": "tsc -b --noEmit",
     "audit:contrast": "node scripts/audit-contrast.mjs",
     "audit:design": "node scripts/audit-design.mjs",
-    "shots": "node scripts/shoot.mjs"
+    "shots": "node scripts/shoot.mjs",
+    "i18n:todo": "node scripts/i18n-todo.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.454.0",

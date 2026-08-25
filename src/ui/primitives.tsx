@@ -1046,6 +1046,102 @@ export const Kpi = ({
   );
 };
 
+/**
+ * One of three figures in a row.
+ *
+ * A card rather than a `Kpi` on a band, because these three are read against
+ * each other and a row of bare figures on one ground has nothing to say where
+ * one ends and the next begins. At 375px three cards is 105px each, which is why
+ * the label is `micro`, the figure is `section` rather than `display`, and the
+ * note is allowed to wrap to two lines and no more.
+ *
+ * `tone` colours the figure, not the card. A tinted card in a row of three reads
+ * as the important one, and these are peers.
+ */
+export const Metric = ({
+  label,
+  value,
+  unit,
+  note,
+  tone = 'ink',
+  to,
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+  note?: string;
+  tone?: 'ink' | 'positive' | 'warn' | 'info';
+  to?: string;
+}) => {
+  const tones = {
+    ink: 'text-ink',
+    positive: 'text-positive',
+    warn: 'text-warn',
+    info: 'text-info',
+  } as const;
+
+  const body = (
+    <>
+      <Micro className="text-ink3">{label}</Micro>
+      <p className={`mt-1 text-h1 ${tones[tone]}`}>
+        {value}
+        {unit && <span className="text-section">{unit}</span>}
+      </p>
+      {note && <p className="mt-1 text-caption text-ink2">{note}</p>}
+    </>
+  );
+
+  const shell = 'flex-1 rounded-card border border-line bg-surface p-2 text-left';
+
+  return to ? (
+    <Link to={to} className={`${shell} transition-colors duration-state ease-ease hover:bg-surface-sunk`}>
+      {body}
+    </Link>
+  ) : (
+    <div className={shell}>{body}</div>
+  );
+};
+
+/**
+ * A journey, drawn as a track.
+ *
+ * Only ever paired with the same figure in words beside it. A bar on its own is
+ * a shape a reader has to estimate, and "about two thirds of the way" is not
+ * what somebody waiting for a technician wants to know. `aria-hidden` for the
+ * same reason: the sentence next to it already carries the value, and announcing
+ * a percentage after "arrives in twelve minutes" is noise.
+ */
+export const Track = ({ progress, onBand = false }: { progress: number; onBand?: boolean }) => (
+  <div
+    aria-hidden
+    className={`h-1 w-full overflow-hidden rounded-pill ${
+      onBand ? 'bg-on-band-soft' : 'bg-surface-sunk'
+    }`}
+  >
+    <div
+      className={`h-full rounded-pill transition-[width] duration-sheet ease-out ${
+        onBand ? 'bg-accent-on-band' : 'bg-accent'
+      }`}
+      style={{ width: `${Math.round(Math.min(1, Math.max(0, progress)) * 100)}%` }}
+    />
+  </div>
+);
+
+/**
+ * A chip carrying one fact.
+ *
+ * The counterpart to the copy rule in the brief: three facts stated as three
+ * chips beat the same three facts buried in twenty-five words of prose, because
+ * a chip can be scanned and a sentence has to be read. Unlike `Status` this
+ * carries no tone, because these are facts rather than states, and colouring a
+ * fact invents a judgement about it.
+ */
+export const Fact = ({ children }: { children: string }) => (
+  <span className="inline-flex shrink-0 items-center rounded-pill border border-line bg-surface px-2 py-1 text-caption text-ink2">
+    {children}
+  </span>
+);
+
 /* ------------------------------------------------------------------ */
 /* Empty state                                                        */
 /* ------------------------------------------------------------------ */

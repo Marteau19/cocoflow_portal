@@ -115,6 +115,19 @@ export interface WorkOrder {
   durationMin: number;
   lineItems: WorkOrderLineItem[];
   checklist: ChecklistItem[];
+  /**
+   * Live progress, reported by the field app while a technician is travelling.
+   *
+   * Both null on every visit that is not happening right now, which is all of
+   * them but one. They are modelled rather than faked from a clock because an
+   * arrival state is the single thing the home screen exists to answer, and a
+   * screen that says "on the way" without saying when is the complaint this
+   * pair was added to fix.
+   *
+   * This is a field-app dependency. Nothing produces these values today.
+   */
+  enRouteSince: string | null;
+  etaAt: string | null;
   /** What the technician records */
   technicianNotes: string | null;
   /** What the customer reads. Generated from the checklist at closure. */
@@ -141,6 +154,15 @@ export interface Case {
   status: 'new' | 'in-progress' | 'resolved';
   openedOn: string;
   lastMessageOn: string;
+  /**
+   * Messages on this case the customer has not opened yet.
+   *
+   * Read state is per participant in any real messaging system: the Service
+   * Point has its own, and neither side's is derivable from the case status. A
+   * resolved case can still hold a reply nobody has read, which is exactly the
+   * state below.
+   */
+  unreadForCustomer: number;
 }
 
 export interface Lead {
@@ -378,6 +400,8 @@ export const workOrders: WorkOrder[] = [
       { id: 'CL-7', label: 'Site left clean', type: 'check', required: true, value: null },
       { id: 'CL-8', label: 'Observations', type: 'note', required: false, value: null },
     ],
+    enRouteSince: '08:30',
+    etaAt: '09:00',
     technicianNotes: null,
     customerSummary: null,
     signedBy: null,
@@ -398,6 +422,8 @@ export const workOrders: WorkOrder[] = [
     durationMin: 45,
     lineItems: [],
     checklist: [],
+    enRouteSince: null,
+    etaAt: null,
     technicianNotes: 'Media at 70 percent life. Outlet filter partially blocked, cleared on site. Recommend FMR within 6 months.',
     customerSummary:
       'Everything is working as it should. We cleared a partial blockage while we were there, and the filter has about six months of life left. We will be in touch to schedule the replacement before it is needed.',
@@ -419,6 +445,8 @@ export const workOrders: WorkOrder[] = [
     durationMin: 75,
     lineItems: [],
     checklist: [],
+    enRouteSince: null,
+    etaAt: null,
     technicianNotes: null,
     customerSummary: null,
     signedBy: null,
@@ -456,6 +484,8 @@ export const workOrders: WorkOrder[] = [
     durationMin: 420,
     lineItems: [],
     checklist: [],
+    enRouteSince: null,
+    etaAt: null,
     technicianNotes: null,
     customerSummary:
       'We installed your Ecoflo compact biofilter, filled the filter media and tested the system through a full cycle. Everything ran as it should.',
@@ -477,6 +507,8 @@ export const workOrders: WorkOrder[] = [
     durationMin: 60,
     lineItems: [],
     checklist: [],
+    enRouteSince: null,
+    etaAt: null,
     technicianNotes: null,
     customerSummary:
       'First yearly check. The filter media had settled as expected and the effluent was clear. Nothing needed doing.',
@@ -498,6 +530,8 @@ export const workOrders: WorkOrder[] = [
     durationMin: 60,
     lineItems: [],
     checklist: [],
+    enRouteSince: null,
+    etaAt: null,
     technicianNotes: null,
     customerSummary:
       'Yearly check. We cleared some leaf litter off the lid and reseated it. The system itself was working normally.',
@@ -521,6 +555,8 @@ export const workOrders: WorkOrder[] = [
       { id: 'WOL-H1', description: 'Filter media, coconut husk', sku: 'FM-EC5-COCO', quantity: 1, consumesInventory: true },
     ],
     checklist: [],
+    enRouteSince: null,
+    etaAt: null,
     technicianNotes: null,
     customerSummary:
       'We replaced the coconut husk filter media and took the old media away. This is the routine replacement your plan covers, and the next one is due in about four years.',
@@ -543,6 +579,8 @@ export const workOrders: WorkOrder[] = [
     durationMin: 60,
     lineItems: [],
     checklist: [],
+    enRouteSince: null,
+    etaAt: null,
     technicianNotes: null,
     customerSummary:
       'Yearly check, first one on the new media. Effluent was clear and the bed had bedded in well.',
@@ -566,6 +604,8 @@ export const workOrders: WorkOrder[] = [
       { id: 'WOL-H2', description: 'Inspection lid seal', sku: 'LID-SEAL-05', quantity: 1, consumesInventory: true },
     ],
     checklist: [],
+    enRouteSince: null,
+    etaAt: null,
     technicianNotes: null,
     customerSummary:
       'Yearly check. The lid seal had perished at one edge so we fitted a new one. Everything else was normal.',
@@ -587,6 +627,8 @@ export const workOrders: WorkOrder[] = [
     durationMin: 60,
     lineItems: [],
     checklist: [],
+    enRouteSince: null,
+    etaAt: null,
     technicianNotes: null,
     customerSummary:
       'Yearly check. No change since last year. We noted that the media will be due for replacement next summer and will book it in for you.',
@@ -608,6 +650,8 @@ export const workOrders: WorkOrder[] = [
     durationMin: 60,
     lineItems: [],
     checklist: [],
+    enRouteSince: null,
+    etaAt: null,
     technicianNotes: null,
     customerSummary:
       'Yearly check. The media is at the end of its life as expected, so we have booked the replacement for August. Nothing to do before then.',
@@ -703,8 +747,8 @@ export const knowledgeBase: KnowledgeArticle[] = [
 ];
 
 export const cases: Case[] = [
-  { id: 'CAS-2026-2201', accountId: 'ACC-QC-004233', assetId: 'AST-QC-004233-1', subject: 'Odour after heavy rain', queue: 'post-sale', status: 'in-progress', openedOn: '2026-07-19', lastMessageOn: '2026-07-24' },
-  { id: 'CAS-2026-2214', accountId: GOLDEN.accountId, assetId: GOLDEN.assetId, subject: 'Question about winter access', queue: 'post-sale', status: 'resolved', openedOn: '2026-06-02', lastMessageOn: '2026-06-03' },
+  { id: 'CAS-2026-2201', accountId: 'ACC-QC-004233', assetId: 'AST-QC-004233-1', subject: 'Odour after heavy rain', queue: 'post-sale', status: 'in-progress', openedOn: '2026-07-19', lastMessageOn: '2026-07-24', unreadForCustomer: 0 },
+  { id: 'CAS-2026-2214', accountId: GOLDEN.accountId, assetId: GOLDEN.assetId, subject: 'Question about winter access', queue: 'post-sale', status: 'resolved', openedOn: '2026-06-02', lastMessageOn: '2026-06-03', unreadForCustomer: 1 },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -985,3 +1029,7 @@ export const propertiesForContact = (contactId: string): Account[] => {
 /** The system installed at a property. One today; the model allows more. */
 export const systemsForProperty = (accountId: string): Asset[] =>
   assets.filter((a) => a.accountId === accountId);
+
+/** Messages waiting for the customer, across every conversation on a property. */
+export const unreadMessages = (accountId: string): number =>
+  cases.filter((c) => c.accountId === accountId).reduce((n, c) => n + c.unreadForCustomer, 0);

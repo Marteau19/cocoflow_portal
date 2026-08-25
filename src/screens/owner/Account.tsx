@@ -30,6 +30,7 @@ import {
   propertiesForContact,
   systemsForProperty,
   territories,
+  unreadMessages,
 } from '../../data/seedData';
 import { getLocale, plural, setLocale, t, type Locale } from '../../i18n';
 import { longDate } from '../../lib/format';
@@ -46,9 +47,6 @@ import {
   Tabs,
   Toggle,
 } from '../../ui/primitives';
-
-/** Unread messages from the team. One thread, so this is a count on it. */
-const UNREAD = 1;
 
 /**
  * Notification topics.
@@ -76,6 +74,7 @@ export const OwnerAccount = () => {
   const property = properties[0];
   const contract = contracts.find((c) => c.accountId === property.id && c.status === 'active');
   const servicePoint = byId(territories, property.territoryId)!;
+  const unread = unreadMessages(property.id);
 
   const [topics, setTopics] = useState<Record<string, boolean>>(
     Object.fromEntries(TOPICS.map((topic) => [topic.key, topic.on])),
@@ -256,9 +255,9 @@ export const OwnerAccount = () => {
                   <p className="text-body text-ink">{t('account.help.messages')}</p>
                   <p className="text-caption text-ink2">{t('account.help.messagesDetail')}</p>
                 </div>
-                {UNREAD > 0 && (
+                {unread > 0 && (
                   <Status tone="info">
-                    {plural(UNREAD, {
+                    {plural(unread, {
                       one: 'account.help.messagesUnreadOne',
                       other: 'account.help.messagesUnreadOther',
                     })}

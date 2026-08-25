@@ -164,4 +164,57 @@ export const en = {
 
   'account.signOut': 'Sign out',
   'account.signedInAs': 'Signed in as {name}.',
+
+  /* ---------------------------------------------------------------- */
+  /* Home, screen 7                                                    */
+  /* ---------------------------------------------------------------- */
+  'home.header.property': 'Property',
+  'home.header.switchProperty': 'Switch property',
+  'home.header.messages': 'Messages',
+  'home.header.messagesUnreadOne': 'Messages, {count} unread',
+  'home.header.messagesUnreadOther': 'Messages, {count} unread',
+  'home.header.cart': 'Your order',
+  'home.header.cartCountOne': 'Your order, {count} item',
+  'home.header.cartCountOther': 'Your order, {count} items',
+
+  'home.visit.liveEyebrow': 'Happening now',
+  'home.visit.liveTitle': '{minutes} min away',
+  'home.visit.liveArriving': 'Arriving now',
+  'home.visit.liveWorking': 'Work in progress',
+  'home.visit.liveFrom': '{name} is on the way from {servicePoint}.',
+  'home.visit.liveWorkingDetail': '{name} is working on your system now.',
+  'home.visit.track': 'Track',
+  'home.visit.message': 'Message {name}',
+
+  'home.visit.nextEyebrow': 'Next visit',
+  'home.visit.today': 'Today',
+  'home.visit.window': 'Arriving between {window}',
+  'home.visit.who': '{name}, {servicePoint}',
+  'home.visit.reschedule': 'Change this visit',
+
+  'home.visit.doing': 'We are replacing your filter media.',
+  'home.visit.factWork': 'Filter media replacement',
+  'home.visit.factCovered': 'Covered by your plan',
+  'home.visit.factAccess': 'No access needed',
+  'home.visit.factBeHome': 'Please be home',
+
+  'home.visit.noneTitle': 'No visit booked',
+  'home.visit.noneLead': 'Your next check up is due {date}. Book it when it suits you.',
+
+  'home.metric.mediaLife': 'Media life',
+  'home.metric.mediaLifeNote': 'Until {date}',
+  'home.metric.mediaLifeDue': 'Replacement booked',
+  'home.metric.planValue': 'Plan value',
+  'home.metric.planValueNote': 'Covered this year',
+  'home.metric.visits': 'Visits',
+  'home.metric.visitsNote': 'Since install',
+
+  'home.system.eyebrow': 'Your system',
+  'home.system.healthy': 'System healthy',
+  'home.system.attention': 'Worth a look',
+  'home.system.due': 'Service is due',
+  'home.system.plan': '{plan}, renews {date}',
+
+  'home.cta.book': 'Book a visit',
+  'home.cta.shop': 'Order parts',
 } as const;

@@ -3,258 +3,385 @@
  *
  * Screen 7. Hero.
  *
- * Recomposed for Broadsheet. This screen was already the only one in the build
- * that read as a product, because it was the only one with a real figure and
- * ground moment. What was an exception is now the system.
+ * Home answers one question: what is happening, and what needs me. Everything
+ * that is a record rather than an event moved to the System tab.
  *
- * Four bands, per DESIGN.md section 2:
+ * The two screens used to be around sixty percent the same content. Home carried
+ * the system, the care plan and the invoices as quiet rows, and System carried
+ * all three again with more detail, so a customer reading down Home learned
+ * nothing they would not learn on System and had no way to tell which one they
+ * were supposed to be on. Splitting them by responsibility rather than by topic
+ * is the fix: Home is now, System is the record.
  *
- *   Masthead   dark, the hero: when the next visit is, and who is coming
- *   Reading    canvas, the three quiet rows directly on the ground, no container
- *   Data       surface, the Service Point team
- *   Closing    sunk, who is signed in and where
+ * The dominant block carries state, not a title. It has two genuinely different
+ * appearances, and the difference is the point. Before this, "Marc is on the way"
+ * sat as a line of body text under a date, in the same treatment the screen used
+ * for "Marc is confirmed for this visit", so the one moment that is actually
+ * urgent looked exactly like the eleven months that are not.
  *
- * No two adjacent bands share a ground, which is what does the work the hairline
- * borders were failing to do. Zero cards: nothing on this screen is an object a
- * reader would lift out of the page, so nothing gets a box.
- *
- * Hero type is a dark field, per the table in DESIGN.md section 7. The date sits
- * at the `hero` step, which is 48px inside the handset at every browser width.
- *
- * Customer vocabulary only. No work order, no asset, no entitlement.
+ * Nothing on this screen invents a number. The arrival countdown comes off the
+ * field app's route fields, media life off the last replacement, plan value off
+ * committed covered work. Where a figure rests on an assumption, the assumption
+ * is in ASSUMPTIONS in seedData with a TODO on it.
  */
 
+import { Link } from 'react-router-dom';
 import { Section } from '../../blueprint/Section';
 import {
-  GOLDEN,
-  accounts,
-  assets,
+  SESSION,
   byId,
-  contacts,
   contracts,
+  customerTimeline,
+  mediaLife,
+  planValue,
+  propertiesForContact,
   resources,
+  systemsForProperty,
   territories,
+  unreadMessages,
   workOrders,
 } from '../../data/seedData';
-import { isToday, longDate, money, relativeDay, window as timeWindow } from '../../lib/format';
+import { plural, t } from '../../i18n';
+import { arrival, isToday, longDate, money, relativeDay, shortDate, window as timeWindow } from '../../lib/format';
+import { useCountUp } from '../../ui/motion';
 import {
   Avatar,
   Band,
-  BandHead,
+  Button,
   ButtonLink,
+  Card,
+  Fact,
   Icon,
+  Metric,
   Micro,
-  Row,
-  RowList,
+  Status,
+  Track,
 } from '../../ui/primitives';
 
-/** Arrival state, in the words a homeowner would use. */
-const arrivalLine = (status: string, name: string): string => {
-  const first = name.split(' ')[0];
-  switch (status) {
-    case 'on-the-way':
-      return `${first} is on the way`;
-    case 'in-progress':
-      return `${first} is working on your system now`;
-    case 'confirmed':
-      return `${first} is confirmed for this visit`;
-    case 'complete':
-      return `${first} has finished this visit`;
-    default:
-      return `${first} is booked for this visit`;
-  }
-};
+/** Condition in words. The status enum never reaches the customer. */
+const CONDITION = {
+  healthy: { key: 'home.system.healthy', tone: 'good' },
+  attention: { key: 'home.system.attention', tone: 'warn' },
+  'service-due': { key: 'home.system.due', tone: 'alert' },
+} as const;
 
 export const OwnerHome = () => {
-  const account = byId(accounts, GOLDEN.accountId)!;
-  const asset = byId(assets, GOLDEN.assetId)!;
-  const contract = byId(contracts, GOLDEN.contractId)!;
-  const visit = byId(workOrders, GOLDEN.workOrderId)!;
-  const technician = byId(resources, visit.resourceId)!;
-  const servicePoint = byId(territories, GOLDEN.territoryId)!;
-  const primary = contacts.find((c) => c.accountId === account.id && c.isPrimary)!;
+  /* The property this session is looking at. One today; the model allows N. */
+  const property = propertiesForContact(SESSION.contactId)[0];
+  const asset = systemsForProperty(property.id)[0];
+  const contract = contracts.find((c) => c.accountId === property.id && c.status === 'active');
+  const servicePoint = byId(territories, property.territoryId)!;
 
-  const when = isToday(visit.scheduledFor)
-    ? 'Today'
-    : (relativeDay(visit.scheduledFor) ?? longDate(visit.scheduledFor));
+  const visit = workOrders
+    .filter((w) => w.accountId === property.id && w.status !== 'complete')
+    .sort((a, b) => a.scheduledFor.localeCompare(b.scheduledFor))[0];
+  const technician = visit ? byId(resources, visit.resourceId) : undefined;
 
-  /**
-   * The quiet rows. Structurally identical, which is exactly why they are one
-   * group of rules on a single ground rather than three boxes.
-   */
-  const rows = [
-    {
-      to: '/system',
-      label: 'Your system',
-      value: asset.product,
-      detail: `Working as it should. Installed ${longDate(asset.installedOn)}.`,
-    },
-    {
-      to: '/contract',
-      label: 'Your care plan',
-      value: contract.name,
-      detail: `${money(contract.annualPrice_jde, contract.currency)} a year, renews ${longDate(
-        contract.renewsOn,
-      )}.${contract.autopay ? ' On autopay.' : ''}`,
-    },
-    {
-      to: '/invoices',
-      label: 'Invoices',
-      value: 'Nothing outstanding',
-      detail: `Your care plan is paid to ${longDate(contract.renewsOn)}.`,
-    },
-  ];
+  const live = visit ? arrival(visit.enRouteSince, visit.etaAt) : null;
+  const working = visit?.status === 'in-progress';
+
+  const media = mediaLife(asset.id);
+  const value = planValue(property.id, Number(new Date().getFullYear()) || 2026);
+  const visitCount = customerTimeline(property.id).filter((e) => e.kind === 'visit').length;
+
+  const condition = CONDITION[asset.status];
+  const unread = unreadMessages(property.id);
+
+  /* Counters run once on mount, and not at all under reduced motion. */
+  const shownMedia = useCountUp(media?.remaining ?? 0);
+  const shownValue = useCountUp(value?.covered ?? 0);
+  const shownVisits = useCountUp(visitCount);
+
+  const firstName = technician?.name.split(' ')[0] ?? '';
 
   return (
     <>
       {/* ------------------------------------------------------------------ */}
-      {/* Masthead. The hero, and the only dark band on this screen.         */}
+      {/* Header. Which property, and the two things that can be waiting.    */}
       {/* ------------------------------------------------------------------ */}
-      <Section id="next-visit">
-        <Band kind="masthead">
-          <Micro className="text-on-band-muted">Your next visit</Micro>
-
+      <Band kind="lead" className="py-3">
+        <div className="flex items-center justify-between gap-3">
           {/*
-            The date is the hero. The window sits under it at body weight,
-            because the question a homeowner is asking is "when", not "how long",
-            and two figures at hero size would mean neither is the hero.
-          */}
-          <p className="mt-2 text-hero">{when}</p>
-          <p className="mt-1 text-body text-on-band opacity-80">
-            {timeWindow(visit.windowStart, visit.windowEnd)}
-          </p>
-
-          {/*
-            The face is the reassurance on this screen, so it is sized to be seen
-            rather than decorated with. A named person arriving at your property
-            is the whole promise the portal is making.
-          */}
-          <div className="border-on-band-soft mt-4 flex items-center gap-3 border-t pt-4">
-            <Avatar
-              name={technician.name}
-              initials={technician.initials}
-              photo={technician.photo}
-              size="hero"
-            />
-            <div className="min-w-0">
-              <p className="text-body font-medium">{arrivalLine(visit.status, technician.name)}</p>
-              <p className="mt-1 text-caption text-on-band opacity-80">
-                {technician.name}, {servicePoint.name}
-              </p>
-              <p className="text-caption text-on-band opacity-80">
-                {technician.rating.toFixed(1)} out of 5, from visits like yours
-              </p>
-            </div>
-          </div>
-
-          <p className="mt-4 max-w-reading text-body text-on-band opacity-90">
-            We are replacing the filter media, which your care plan covers. Nothing is needed from
-            you, and you do not have to be home.
-          </p>
-
-          {/*
-            The screen's primary action, so it takes the 48px size.
-
-            `onBand` swaps the accent fill for `--surface` with an `--ink` label.
-            An accent fill here vibrated against the deep band and read as a
-            default control, and it also spent this screen's one accent on the
-            Masthead, where the hero date is already carrying all the emphasis
-            that block needs. DESIGN.md section 6.
+            The property name is a control, not a label, even though there is one
+            property today. Building the affordance now means the second property
+            is a data change; adding it later means finding every screen that
+            assumed one. It goes to Account, which is where the list lives.
           */}
           <ButtonLink
-            to="/messages"
-            variant="primary"
-            size="primary"
-            onBand
-            icon="message-square"
-            className="mt-4"
+            to="/account"
+            variant="plain"
+            className="min-w-0"
+            aria-label={t('home.header.switchProperty')}
           >
-            Message {technician.name.split(' ')[0]}
+            <span className="min-w-0 truncate text-section text-ink">{property.address}</span>
+            <span className="shrink-0 text-ink3">
+              <Icon name="chevron-down" />
+            </span>
           </ButtonLink>
-        </Band>
-      </Section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Reading. Three rows directly on the canvas. No container.          */}
-      {/* ------------------------------------------------------------------ */}
-      <Band kind="reading" flush className="py-0">
-        <RowList>
-          {rows.map((row) => (
-            <Row key={row.to} to={row.to}>
-              <div className="flex items-center gap-3">
-                <div className="min-w-0 flex-1">
-                  <Micro>{row.label}</Micro>
-                  <p className="mt-1 text-body font-medium text-ink">{row.value}</p>
-                  <p className="mt-1 text-caption text-ink2">{row.detail}</p>
-                </div>
-                <span className="shrink-0 text-ink3">
-                  <Icon name="chevron-right" />
-                </span>
-              </div>
-            </Row>
-          ))}
-        </RowList>
+          <div className="flex shrink-0 items-center gap-1">
+            {/*
+              One inbox, not two.
+
+              The brief asked for a notifications icon beside the cart. A
+              homeowner with one system does not need two inboxes, and the icon
+              budget is fourteen with nothing spare, so notifications and messages
+              from the Service Point are one destination and one glyph. Splitting
+              them would add a fifteenth icon and a second place to check.
+            */}
+            <ButtonLink
+              to="/messages"
+              variant="plain"
+              aria-label={plural(unread, {
+                one: 'home.header.messagesUnreadOne',
+                other: 'home.header.messagesUnreadOther',
+              })}
+            >
+              <span className="relative text-ink2">
+                <Icon name="message-square" />
+                {unread > 0 && (
+                  <span
+                    aria-hidden
+                    className="absolute -right-0.5 -top-0.5 h-1 w-1 rounded-pill bg-accent"
+                  />
+                )}
+              </span>
+            </ButtonLink>
+            <ButtonLink to="/parts" variant="plain" aria-label={t('home.header.cart')}>
+              <span className="text-ink2">
+                <Icon name="package" />
+              </span>
+            </ButtonLink>
+          </div>
+        </div>
       </Band>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Data. Who looks after this property. A named team, not a number.   */}
-      {/* ------------------------------------------------------------------ */}
-      <Section id="sp-contact">
-        <Band kind="data" flush>
-          {/*
-            No `px-gutter` on this wrapper. BandHead carries its own now, so a
-            wrapper that also carried it put the eyebrow and the title at 40px on a
-            20px gutter, which is the double indent DESIGN.md section 6 calls out.
-          */}
+      {/*
+        Everything below the header is one band with one gap, rather than four
+        bands each bringing its own vertical padding. Stacked bands were adding
+        their pb to the next one's pt and opening 64px trenches between blocks
+        that belong to each other, which on a 393px screen pushed the metric row
+        below the fold.
+      */}
+      <Band kind="lead" className="flex flex-col gap-3 pt-0">
+        {/* -------------------------------------------------------------- */}
+        {/* The hero. State, in one of two appearances.                    */}
+        {/* -------------------------------------------------------------- */}
+        <Section id="next-visit">
           <div>
-            <BandHead eyebrow="Your Service Point team" title={servicePoint.name} />
-            <p className="max-w-reading px-gutter pb-4 text-body text-ink2">
-              The same team looks after every system in this area, including yours.
-            </p>
-          </div>
-          <RowList className="border-t border-line">
-            {resources
-              .filter((r) => r.territoryId === servicePoint.id && r.role !== 'installer')
-              .map((person) => (
-                <Row key={person.id}>
+          {visit && technician ? (
+            live || working ? (
+              /*
+                Live. The deep ground, a countdown at the top of the scale, a
+                track, and two actions that only make sense while somebody is
+                actually moving toward the house.
+              */
+              <Card tone="brand">
+                <div className="p-3">
+                  <Micro className="text-on-band-muted">{t('home.visit.liveEyebrow')}</Micro>
                   {/*
-                    `lg` is the 48px avatar, so this list's text edge is
-                    `gutter + 48 + 16`, the same edge the parts rows and the route
-                    stops use. At the default 32px it sat on an edge of its own.
+                    The figure leads.
+
+                    It was the whole sentence at the top of the scale, which on a
+                    375px screen wrapped and left "min" alone on the second line.
+                    What the reader wants biggest is the number of minutes; who is
+                    bringing them is the line underneath, next to his face. The
+                    sentence is still complete, it is just not all one size.
                   */}
-                  <div className="flex items-center gap-3">
+                  <p className="mt-2 text-hero text-on-band">
+                    {working
+                      ? t('home.visit.liveWorking')
+                      : live && live.minutesAway > 0
+                        ? t('home.visit.liveTitle', { minutes: live.minutesAway })
+                        : t('home.visit.liveArriving')}
+                  </p>
+
+                  <div className="mt-3">
+                    {live && !working && <Track progress={live.progress} onBand />}
+                    <p className="mt-2 max-w-reading text-caption text-on-band opacity-80">
+                      {working
+                        ? t('home.visit.liveWorkingDetail', { name: firstName })
+                        : t('home.visit.liveFrom', {
+                            name: firstName,
+                            servicePoint: servicePoint.name,
+                          })}
+                    </p>
+                  </div>
+
+                  <div className="border-on-band-soft mt-3 flex items-center gap-3 border-t pt-3">
                     <Avatar
-                      name={person.name}
-                      initials={person.initials}
-                      photo={person.photo}
+                      name={technician.name}
+                      initials={technician.initials}
+                      photo={technician.photo}
                       size="lg"
                     />
-                    <div className="min-w-0">
-                      <p className="text-body text-ink">{person.name}</p>
-                      <p className="text-caption text-ink2">
-                        {person.role === 'manager' ? 'Service Point manager' : 'Technician'}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-body font-medium text-on-band">{technician.name}</p>
+                      <p className="text-caption text-on-band opacity-80">
+                        {timeWindow(visit.windowStart, visit.windowEnd)}
                       </p>
                     </div>
                   </div>
-                </Row>
-              ))}
-          </RowList>
-          <div className="border-t border-line px-gutter py-4">
-            <ButtonLink to="/messages" variant="quiet" icon="message-square">
-              Send a message
-            </ButtonLink>
-          </div>
-        </Band>
-      </Section>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Closing. Provenance, on a sunk ground rather than orphaned.        */}
-      {/* ------------------------------------------------------------------ */}
-      <Band kind="closing">
-        <Micro>Signed in as</Micro>
-        <p className="mt-1 text-caption text-ink2">
-          {primary.firstName} {primary.lastName}. {account.address}, {account.city}.
-        </p>
+                  <div className="mt-3 flex gap-2">
+                    <Button variant="primary" size="secondary" onBand icon="map-pin">
+                      {t('home.visit.track')}
+                    </Button>
+                    <ButtonLink
+                      to="/messages"
+                      variant="quiet"
+                      size="secondary"
+                      onBand
+                      icon="message-square"
+                    >
+                      {t('home.visit.message', { name: firstName })}
+                    </ButtonLink>
+                  </div>
+                </div>
+              </Card>
+            ) : (
+              /*
+                Scheduled. A light card, a date at the top of the scale, no
+                countdown and no track, because there is nothing to count down to
+                for another eleven days and a progress bar at zero is a lie.
+              */
+              <Card>
+                <div className="p-3">
+                  <Micro className="text-ink3">{t('home.visit.nextEyebrow')}</Micro>
+                  <p className="mt-2 text-hero text-ink">
+                    {isToday(visit.scheduledFor)
+                      ? t('home.visit.today')
+                      : (relativeDay(visit.scheduledFor) ?? shortDate(visit.scheduledFor))}
+                  </p>
+                  <p className="mt-1 text-body text-ink2">
+                    {t('home.visit.window', {
+                      window: timeWindow(visit.windowStart, visit.windowEnd),
+                    })}
+                  </p>
+
+                  <div className="mt-4 flex items-center gap-3 border-t border-line pt-4">
+                    <Avatar
+                      name={technician.name}
+                      initials={technician.initials}
+                      photo={technician.photo}
+                      size="lg"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-body font-medium text-ink">{technician.name}</p>
+                      <p className="text-caption text-ink2">{servicePoint.name}</p>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            )
+          ) : (
+            <Card>
+              <div className="p-3">
+                <Micro className="text-ink3">{t('home.visit.nextEyebrow')}</Micro>
+                <p className="mt-2 text-hero text-ink">{t('home.visit.noneTitle')}</p>
+                <p className="mt-2 max-w-reading text-body text-ink2">
+                  {t('home.visit.noneLead', { date: longDate(asset.nextServiceDue) })}
+                </p>
+              </div>
+            </Card>
+          )}
+
+          {/*
+            What the visit is, as one line and three chips.
+
+            This was twenty-five words of prose carrying three facts. A chip can
+            be scanned; a sentence has to be read, and a reader checking whether
+            they need to be home does not want to parse a subordinate clause to
+            find out.
+          */}
+          {visit && (
+            <div className="mt-3">
+              <p className="max-w-reading text-body text-ink2">{t('home.visit.doing')}</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <Fact>{t('home.visit.factWork')}</Fact>
+                {visit.contractId && <Fact>{t('home.visit.factCovered')}</Fact>}
+                <Fact>{t('home.visit.factAccess')}</Fact>
+              </div>
+            </div>
+          )}
+          </div>
+        </Section>
+
+        {/* -------------------------------------------------------------- */}
+        {/* Three figures, read against each other.                        */}
+        {/* -------------------------------------------------------------- */}
+        <Section id="home-metrics">
+          <div className="flex gap-2">
+            {media && (
+              <Metric
+                label={t('home.metric.mediaLife')}
+                value={String(shownMedia)}
+                unit="%"
+                tone={media.remaining === 0 ? 'info' : 'ink'}
+                note={
+                  media.bookedVisit
+                    ? t('home.metric.mediaLifeDue')
+                    : t('home.metric.mediaLifeNote', { date: shortDate(media.dueOn) })
+                }
+                to="/system"
+              />
+            )}
+            {value && (
+              <Metric
+                label={t('home.metric.planValue')}
+                value={money(shownValue, value.currency)}
+                tone={value.ahead > 0 ? 'positive' : 'ink'}
+                note={t('home.metric.planValueNote')}
+                to="/contract"
+              />
+            )}
+            <Metric
+              label={t('home.metric.visits')}
+              value={String(shownVisits)}
+              note={t('home.metric.visitsNote')}
+              to="/system"
+            />
+          </div>
+        </Section>
+
+        {/* -------------------------------------------------------------- */}
+        {/* The system, summarised. The record itself is one tap away.     */}
+        {/* -------------------------------------------------------------- */}
+        <Card>
+          <Link
+            to="/system"
+            className="flex items-center gap-3 p-3 transition-colors duration-state ease-ease hover:bg-surface-sunk"
+          >
+            <div className="min-w-0 flex-1">
+              <Micro className="text-ink3">{t('home.system.eyebrow')}</Micro>
+              <p className="mt-1 text-section text-ink">{asset.model}</p>
+              {contract && (
+                <p className="mt-1 text-caption text-ink2">
+                  {t('home.system.plan', {
+                    plan: contract.name,
+                    date: longDate(contract.renewsOn),
+                  })}
+                </p>
+              )}
+            </div>
+            <Status tone={condition.tone}>{t(condition.key)}</Status>
+            <span className="shrink-0 text-ink3">
+              <Icon name="chevron-right" />
+            </span>
+          </Link>
+        </Card>
+
+        {/* -------------------------------------------------------------- */}
+        {/* The two things a person comes here to do.                      */}
+        {/* -------------------------------------------------------------- */}
+        <div className="flex flex-col gap-2">
+          <ButtonLink to="/book" variant="primary" size="primary" icon="calendar" block>
+            {t('home.cta.book')}
+          </ButtonLink>
+          <ButtonLink to="/parts" variant="quiet" size="primary" icon="package" block>
+            {t('home.cta.shop')}
+          </ButtonLink>
+        </div>
       </Band>
     </>
   );

@@ -15,6 +15,7 @@
 
 import { Section } from '../../blueprint/Section';
 import {
+  ASSUMPTIONS,
   GOLDEN,
   assets,
   byId,
@@ -36,20 +37,23 @@ import {
   Status,
 } from '../../ui/primitives';
 
-/** What a visit would have cost without the plan. Makes the value legible. */
-const LIST_PRICE = { inspection: 145, fmr: 420 };
-
 export const OwnerContract = () => {
   const contract = byId(contracts, GOLDEN.contractId)!;
   const asset = byId(assets, GOLDEN.assetId)!;
 
   const visits = workOrders.filter((w) => w.contractId === contract.id);
-  const used = visits.filter((w) => w.status === 'complete').length;
-  const upcoming = visits.filter((w) => w.status !== 'complete');
   const daysToRenewal = daysFromToday(contract.renewsOn);
 
-  // What the plan has saved so far, against what the same work would list at.
-  const wouldHaveCost = used * LIST_PRICE.inspection + upcoming.length * LIST_PRICE.fmr;
+  /*
+    What the plan has saved so far, against what the same work would list at.
+
+    The list prices used to be a literal in this file. They are an assumption
+    about what PTWE charges a customer with no plan, they are the input to the
+    renewal argument on two screens now, and a pricing assumption living inside
+    one component is how the same figure ends up different in two places. They
+    are in `ASSUMPTIONS` in seedData with the rest.
+  */
+  const wouldHaveCost = visits.reduce((sum, w) => sum + ASSUMPTIONS.listPrice[w.type], 0);
 
   return (
     <>

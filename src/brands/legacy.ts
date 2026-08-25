@@ -100,6 +100,23 @@ export interface Brand {
     warnSoft: string;
     alert: string;
     alertSoft: string;
+
+    /**
+     * The fourth status. Neutral information: what a plan covers, what happens
+     * next, what a figure is an estimate of.
+     *
+     * It exists because the build had three status colours and kept expressing
+     * "this is information" as a `neutral` pill on the sunk ground, which is the
+     * same ground as the Rail and Closing bands, so it disappeared. A status the
+     * reader cannot see is not a status.
+     *
+     * A desaturated slate rather than a saturated blue. Neither identity owns a
+     * blue, and a bright one would read as a fifth brand colour rather than as a
+     * function colour.
+     */
+    info: string;
+    onInfo: string;
+    infoSoft: string;
   };
 
   font: {
@@ -114,6 +131,16 @@ export interface Brand {
     hero: TypeStep;
     display: TypeStep;
     h1: TypeStep;
+    /**
+     * Card and band headers. The step the scale was missing.
+     *
+     * Without it the reading scale ran 24 to 16 with nothing between, so every
+     * heading below a band title collapsed onto `body` or `caption` and a screen
+     * read as one large word above an undifferentiated field. It is register
+     * independent by design: 19px is right in the handset and right on a console,
+     * and promoting it would reopen the gap it exists to close.
+     */
+    section: TypeStep;
     body: TypeStep;
     caption: TypeStep;
     micro: TypeStep;
@@ -241,6 +268,10 @@ export const legacy: Brand = {
     warnSoft: '#F4EAD2',
     alert: '#96301D',
     alertSoft: '#F6E3DE',
+
+    info: '#2C5A73',
+    onInfo: '#FFFFFF',
+    infoSoft: '#DEE9EE',
   },
 
   font: {
@@ -255,6 +286,7 @@ export const legacy: Brand = {
     hero: { size: '48px', line: '46px', tracking: '-0.035em', weight: 700 },
     display: { size: '32px', line: '34px', tracking: '-0.02em', weight: 700 },
     h1: { size: '24px', line: '30px', tracking: '-0.015em', weight: 700 },
+    section: { size: '19px', line: '26px', tracking: '-0.01em', weight: 500 },
     body: { size: '16px', line: '25px', tracking: '0', weight: 400 },
     caption: { size: '13px', line: '19px', tracking: '0', weight: 400 },
     micro: { size: '11px', line: '14px', tracking: '0.08em', weight: 500, transform: 'uppercase' },
@@ -266,8 +298,8 @@ export const legacy: Brand = {
   },
 
   radius: {
-    card: '18px',
-    control: '12px',
+    card: '12px',
+    control: '8px',
     pill: '999px',
     shell: '24px',
   },

@@ -377,18 +377,30 @@ export const Card = ({
   className = '',
 }: {
   children: ReactNode;
-  tone?: 'card' | 'raised' | 'flat';
+  /**
+   * `brand` is the deep ground as a card rather than as a full-bleed band.
+   *
+   * The deep colour was previously reachable only as a Masthead, so the only way
+   * to give a block the weight of the brand was to run it edge to edge and give
+   * it the top of a screen. That is why every tab opened with a dark title card:
+   * the composition had one loud register and one quiet one, and anything that
+   * mattered had to claim the loud one. As a card it can carry a single block
+   * partway down a screen, which is what the live-visit state needs.
+   *
+   * It carries no border: a hairline tuned for paper is invisible on it, and the
+   * ground change is already the boundary.
+   */
+  tone?: 'card' | 'raised' | 'flat' | 'brand';
   className?: string;
 }) => {
   const tones = {
-    card: 'bg-surface shadow-card',
-    raised: 'bg-surface-raised shadow-raised',
-    flat: 'bg-surface shadow-none',
+    card: 'bg-surface shadow-card border border-line',
+    raised: 'bg-surface-raised shadow-raised border border-line',
+    flat: 'bg-surface shadow-none border border-line',
+    brand: 'bg-band-deep text-on-band shadow-card border-0',
   } as const;
   return (
-    <div className={`overflow-hidden rounded-card border border-line ${tones[tone]} ${className}`}>
-      {children}
-    </div>
+    <div className={`overflow-hidden rounded-card ${tones[tone]} ${className}`}>{children}</div>
   );
 };
 
@@ -546,7 +558,7 @@ export const Field = ({
 /* Status                                                             */
 /* ------------------------------------------------------------------ */
 
-export type StatusTone = 'neutral' | 'warn' | 'alert' | 'good' | 'accent';
+export type StatusTone = 'neutral' | 'info' | 'warn' | 'alert' | 'good' | 'accent';
 
 /**
  * Solid signal colour on the matching tinted ground.
@@ -569,6 +581,15 @@ const statusTones: Record<StatusTone, { pill: string; dot: string; text: string 
     the fill separates it on Rail and Closing, the hairline on Data.
   */
   neutral: { pill: 'border border-line-strong bg-surface text-ink2', dot: 'bg-ink3', text: 'text-ink2' },
+  /*
+    Information, as distinct from neutral.
+
+    `neutral` says "no signal here"; `info` says "read this, it is not a problem".
+    The build had no way to say the second, so covered-by-your-plan and
+    this-is-an-estimate were both being drawn as `neutral` on a sunk ground and
+    vanishing into the Rail bands they sat on.
+  */
+  info: { pill: 'bg-info-soft text-info', dot: 'bg-info', text: 'text-info' },
   warn: { pill: 'bg-warn-soft text-warn', dot: 'bg-warn', text: 'text-warn' },
   alert: { pill: 'bg-alert-soft text-alert', dot: 'bg-alert', text: 'text-alert' },
   good: { pill: 'bg-positive-soft text-positive', dot: 'bg-positive', text: 'text-positive' },
@@ -622,13 +643,14 @@ export const Flag = ({
   icon,
 }: {
   children: string;
-  tone?: 'warn' | 'alert' | 'neutral' | 'good';
+  tone?: 'warn' | 'alert' | 'neutral' | 'good' | 'info';
   icon?: IconName;
 }) => {
   const tones = {
     warn: 'border-warn bg-warn-soft text-warn',
     alert: 'border-alert bg-alert-soft text-alert',
     good: 'border-positive bg-positive-soft text-positive',
+    info: 'border-info bg-info-soft text-info',
     neutral: 'border-line-strong bg-surface-sunk text-ink2',
   } as const;
   return (
@@ -717,14 +739,14 @@ export const Toggle = ({
       aria-checked={checked}
       aria-label={label}
       onClick={() => onChange(!checked)}
-      className={`relative h-[28px] w-[48px] shrink-0 rounded-pill border transition-colors duration-state ease-ease ${
+      className={`relative h-toggle-track w-toggle-track shrink-0 rounded-pill border transition-colors duration-state ease-ease ${
         checked ? 'border-accent bg-accent' : 'border-line-strong bg-surface-sunk'
       }`}
     >
       <span
         aria-hidden
-        className={`absolute top-[2px] block h-[22px] w-[22px] rounded-pill bg-surface shadow-card transition-transform duration-state ease-ease ${
-          checked ? 'translate-x-[22px]' : 'translate-x-[2px]'
+        className={`absolute top-toggle-inset block h-toggle-knob w-toggle-knob rounded-pill bg-surface shadow-card transition-transform duration-state ease-ease ${
+          checked ? 'translate-x-toggle-throw' : 'translate-x-toggle-inset'
         }`}
       />
     </button>
@@ -1141,7 +1163,8 @@ export const Avatar = ({
   /** `hero` is for the client home only, where the face is the reassurance. */
   size?: 'md' | 'lg' | 'hero';
 }) => {
-  const dimensions = size === 'hero' ? 'h-[72px] w-[72px]' : size === 'lg' ? 'h-6 w-6' : 'h-5 w-5';
+  const dimensions =
+    size === 'hero' ? 'h-avatar-hero w-avatar-hero' : size === 'lg' ? 'h-6 w-6' : 'h-5 w-5';
 
   if (photo) {
     return (

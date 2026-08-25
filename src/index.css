@@ -19,6 +19,13 @@
      value, which is why it lives here and not in the token object. */
   --gutter: 20px;
 
+  /* The 4px base step, reachable as `spacing[0.5]`.
+
+     Here rather than in the brand object for the same reason as the gutter:
+     both identities agree on it, so it is not a brand value. Prepending it to
+     `brand.space` would have renumbered every --space-N in the build. */
+  --space-half: 4px;
+
   /* The status bar inset. Zero below the frame breakpoint, because there is no
      frame and therefore no camera to clear. See the .device-* block below. */
   --safe-top: 0px;
@@ -44,6 +51,26 @@
   --control-label-size: 15px;
   --control-icon: 16px;
   --control-gap: 8px;
+
+  /* The switch. Its track, its knob and the distance the knob travels are one
+     geometry, so they are declared together: changing the track width without
+     the throw is how a knob ends up stopping short of the end of its track. */
+  --control-toggle-w: 48px;
+  --control-toggle-h: 28px;
+  --control-toggle-knob: 22px;
+  --control-toggle-inset: 2px;
+  --control-toggle-throw: 22px;
+
+  /**
+   * Two image geometries the layout owns rather than the brand.
+   *
+   * `--avatar-hero` is the client home portrait, sized to be looked at rather
+   * than decorated with. `--media-*` are the two fixed photograph heights: a
+   * property shot and the wider quote header.
+   */
+  --avatar-hero: 72px;
+  --media-sm: 160px;
+  --media-md: 180px;
 
   /**
    * Aliases for the three steps that change between registers.

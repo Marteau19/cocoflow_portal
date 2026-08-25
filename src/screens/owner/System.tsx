@@ -80,7 +80,7 @@ export const OwnerSystem = () => {
             <img
               src="/img/property.jpg"
               alt={`The property at ${account.address}`}
-              className="h-[160px] w-full border-b border-line object-cover"
+              className="h-media-sm w-full border-b border-line object-cover"
             />
 
             <div className="px-gutter py-3">

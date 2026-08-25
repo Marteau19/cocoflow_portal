@@ -274,7 +274,7 @@ Five roles. A token belongs to exactly one.
 | **Band** | `--band-deep`, `--band-deep-alt`, `--on-band`, `--on-band-muted` | Grounds for Masthead and hero fields. Never a text colour on light. |
 | **Accent** | `--accent`, `--accent-hover`, `--on-accent`, `--accent-ink`, `--accent-soft`, `--accent-on-band` | **The primary action, and only that.** |
 | **Data** | `--data-1`, `--data-2`, `--data-3` | Chart series, map marks, sparklines. Deliberately *not* the accent: the accent is an invitation to click, and a chart line is not clickable. |
-| **Status** | `--positive`, `--negative`, `--warn`, `--alert` and their `-soft` grounds | Outcome and state. Shared across brands: an approval reads as an approval in either skin. |
+| **Status** | `--positive`, `--negative`, `--warn`, `--alert`, `--info` and their `-soft` grounds | Outcome and state. Shared across brands: an approval reads as an approval in either skin. |
 | **Structural** | `--ink`, `--ink-2`, `--ink-3`, `--line`, `--line-strong`, `--field-line` | Text and division. |
 
 ### Rules
@@ -300,6 +300,41 @@ Five roles. A token belongs to exactly one.
 6. **No purple, no indigo** unless a brand ships them. Neither does.
 7. `--ink-3` is metadata only, held to 3:1. Never used for anything a person must
    read in order to act.
+8. **`--info` is the fourth status, added in the client-owner pass.** `neutral`
+   says "no signal here"; `info` says "read this, it is not a problem". The build
+   had no way to say the second, so covered-by-your-plan and this-is-an-estimate
+   were both drawn as neutral pills on `--surface-sunk`, which is also the ground
+   of every Rail and Closing band, and vanished into the band they sat on. It is a
+   desaturated slate in both brands rather than a saturated blue: neither identity
+   owns a blue, and a bright one would read as a fifth brand colour instead of as
+   a function colour.
+
+### The semantic names, mapped
+
+The token names in this system are older than the semantic vocabulary a reviewer
+is likely to arrive with. They are not renamed, because renaming them would touch
+all thirty-four screens for zero pixels of change. This table is the dictionary.
+
+| Semantic role | Token here |
+|---|---|
+| `surface.page` | `--canvas` |
+| `surface.card` | `--surface` |
+| `surface.raised` | `--surface-raised` |
+| `surface.sunk` | `--surface-sunk` |
+| `surface.brand` | `--band-deep`, reachable as a card through `<Card tone="brand">` as well as as a band |
+| `text.primary` | `--ink` |
+| `text.secondary` | `--ink-2` |
+| `text.muted` | `--ink-3` |
+| `text.onBrand` | `--on-band` |
+| `border.hairline` | `--line` |
+| `border.strong` | `--line-strong` |
+| `action.primary` | `--accent` |
+| `action.primaryText` | `--on-accent` |
+| `action.secondary` | The `secondary` Button variant: `--surface` fill, `--line-strong` outline, `--ink` label. Not a colour token, because a secondary action is defined by carrying no fill colour |
+| `status.healthy` | `--positive` / `--positive-soft` |
+| `status.attention` | `--warn` / `--warn-soft` |
+| `status.critical` | `--alert` / `--alert-soft`, or `--negative` / `--negative-soft` where the pair is an outcome rather than a state |
+| `status.info` | `--info` / `--info-soft` |
 
 ### How status is shown
 
@@ -484,20 +519,37 @@ a whole screen. Six steps, two doing work.
 
 ### The scale
 
-Six steps. Every gap widened, `h2` deleted. Two registers, and **which register
-applies is decided by the frame, not by the browser window.** See below.
+Seven steps. Two registers, and **which register applies is decided by the frame,
+not by the browser window.** See below.
 
 | Role | Framed | Full bleed | Tracking | Weight | Job |
 |---|---|---|---|---|---|
-| **hero** | 48 / 46 | 72 / 68 | -0.035em | 700 | One per screen. Section 7. |
-| display | 32 / 34 | 42 / 44 | -0.02em | 700 | Secondary figures, band subjects |
+| **hero** | 48 / 46 | 72 / 68 | -0.035em | 700 | One per screen. Section 7. Not available to the client-owner screens: see below |
+| display | 32 / 34 | 42 / 44 | -0.02em | 700 | Secondary figures, band subjects. The client-owner ceiling |
 | h1 | 24 / 30 | 28 / 34 | -0.015em | 700 | Band headings |
+| **section** | 19 / 26 | 19 / 26 | -0.01em | 500 | Card headers, and the heading level inside a band |
 | body | 16 / 25 | 16 / 25 | 0 | 400 | All prose. 500 for emphasis |
 | caption | 13 / 19 | 13 / 19 | 0 | 400 | Metadata, secondary row detail |
 | micro | 11 / 14 | 11 / 14 | +0.08em | 500, upper | Eyebrows and labels above values. Four words maximum |
 
-Framed steps: 48, 32, 24, 16, 13, 11. Ratios 1.50, 1.33, 1.50, 1.23, 1.18. Three
-wide gaps at the top where drama lives, two narrow at the bottom where labels sit.
+Framed steps: 48, 32, 24, 19, 16, 13, 11.
+
+**Why `section` was added.** The measured usage across the whole build was
+`caption` 286 times against `body` 160, `display` 10 and `h1` 6. The scale had
+seven notional steps and the screens used two. The gap that caused it is the one
+between 24 and 16: any heading subordinate to a band title had nowhere to go and
+collapsed onto `body` or `caption`, so a screen read as one large word above an
+undifferentiated field. 19 is the step that was missing, and it is register
+independent on purpose: it is right in the handset and right on a console, and
+promoting it at desktop width would reopen the gap it exists to close.
+
+**Why the client-owner screens stop at `display`.** Their `hero` was never a
+figure. It was the screen's own name set at 48px, three of the four tabs opened
+with one, and on an iPhone SE `/system` spent an entire viewport on the words
+"Ecoflo compact biofilter". Above the fold has to carry state, not a title card.
+So on `client-prospect` and `client-owner` the ceiling is `display`; `hero` stays
+available to the Global screens, where it sets a real number against a target,
+which is the job section 7 describes.
 
 ### How many sizes may appear on one screen
 
@@ -731,10 +783,15 @@ content column edges. Radius belongs to objects inside bands.
 
 | Token | Value | Use |
 |---|---|---|
-| `--radius-card` | 18px | The rare card |
-| `--radius-control` | 12px | Buttons, inputs, icon chips |
+| `--radius-card` | 12px | The rare card |
+| `--radius-control` | 8px | Buttons, inputs, icon chips |
 | `--radius-pill` | 999px | Chips, toggles, avatars |
-| `--radius-shell` | 24px | The app shell |
+| `--radius-shell` | 24px legacy, 22px next | The app shell and the sidebar |
+
+Card and control came down from 18/12 legacy and 16/10 next, and both brands now
+share them. At 18px a card corner competes with the pill radius and the whole
+surface starts to read as a phone widget rather than as paper. `--radius-shell`
+stays per brand, because that is the device and the sidebar rather than content.
 
 **Elevation.** `--shadow-card` for a card at rest, `--shadow-raised` for hover and
 card-on-band, `--shadow-sheet` for sheets, modals and the handset. Bands carry no

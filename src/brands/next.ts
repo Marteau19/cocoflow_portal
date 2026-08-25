@@ -80,6 +80,12 @@ export const next: Brand = {
     warnSoft: '#F4EAD2',
     alert: '#96301D',
     alertSoft: '#F6E3DE',
+
+    // Pulled a step toward the teal so it sits inside this identity rather than
+    // beside it. Same role and same contrast behaviour as the legacy value.
+    info: '#2A5668',
+    onInfo: '#FFFFFF',
+    infoSoft: '#DCE8ED',
   },
 
   font: {
@@ -95,6 +101,7 @@ export const next: Brand = {
     hero: { size: '48px', line: '46px', tracking: '-0.035em', weight: 700 },
     display: { size: '32px', line: '34px', tracking: '-0.02em', weight: 700 },
     h1: { size: '24px', line: '30px', tracking: '-0.015em', weight: 700 },
+    section: { size: '19px', line: '26px', tracking: '-0.01em', weight: 500 },
     body: { size: '16px', line: '25px', tracking: '0', weight: 400 },
     caption: { size: '13px', line: '19px', tracking: '0', weight: 400 },
     micro: { size: '11px', line: '14px', tracking: '0.08em', weight: 500, transform: 'uppercase' },
@@ -103,11 +110,14 @@ export const next: Brand = {
     h1Lg: { size: '28px', line: '34px', tracking: '-0.015em', weight: 700 },
   },
 
-  // The new mark is built on a squared, softly rounded counter, so this brand
-  // runs slightly tighter corners than legacy.
+  // Both brands now share the card and control radii. The new mark is built on a
+  // squared, softly rounded counter, so the tighter corner was always closer to
+  // this identity than to legacy; legacy came down to meet it rather than the
+  // other way round. Shell stays per brand, because that is the device and the
+  // sidebar rather than content.
   radius: {
-    card: '16px',
-    control: '10px',
+    card: '12px',
+    control: '8px',
     pill: '999px',
     shell: '22px',
   },

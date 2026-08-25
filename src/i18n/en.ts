@@ -217,4 +217,58 @@ export const en = {
 
   'home.cta.book': 'Book a visit',
   'home.cta.shop': 'Order parts',
+
+  /* ---------------------------------------------------------------- */
+  /* System, screen 8                                                  */
+  /* ---------------------------------------------------------------- */
+  'system.eyebrow': 'Your system',
+  'system.at': 'At {address}, {city}.',
+  'system.healthy': 'System healthy',
+  'system.healthyDetail': 'We check it at every visit.',
+  'system.attention': 'Worth a look',
+  'system.attentionDetail': 'We noticed something last visit and we are keeping an eye on it.',
+  'system.due': 'Service is due',
+  'system.dueDetail': 'We will be in touch to arrange a visit.',
+
+  'system.media.title': 'Filter media',
+  'system.media.remaining': '{percent}% of its life left',
+  'system.media.due': 'Due for replacement',
+  'system.media.dueOn': 'Due {date}',
+  'system.media.booked': '{name} is replacing it on {date}.',
+  'system.media.since': 'Last replaced {date}.',
+  'system.media.original': 'Fitted with the system in {date}.',
+  'system.media.estimate': 'Estimated from the last replacement, not measured.',
+
+  'system.facts.title': 'The details',
+  'system.facts.model': 'Model',
+  'system.facts.serial': 'Serial number',
+  'system.facts.installed': 'Installed',
+  'system.facts.lastVisit': 'Last visit',
+  'system.facts.warranty': 'Warranty until',
+
+  'system.history.title': 'Service history',
+  'system.history.countOne': '{count} entry',
+  'system.history.countOther': '{count} entries',
+  'system.history.visit': 'Maintenance visit',
+  'system.history.install': 'Installation',
+  'system.history.mediaReplacement': 'Filter media replacement',
+  'system.history.repair': 'Repair',
+  'system.history.order': 'Parts order',
+  'system.history.by': 'By {name}',
+  'system.history.photo': 'Photo taken on the visit',
+  'system.history.empty': 'Your visits will appear here after the first one.',
+
+  'system.documents.title': 'Documents',
+  'system.documents.certificate': 'Installation certificate',
+  'system.documents.warranty': 'Warranty terms',
+  'system.documents.plan': 'Care plan',
+  'system.documents.guide': 'Owner guide',
+  'system.documents.validTo': 'Valid to {date}',
+  'system.documents.forModel': 'For the {model}',
+
+  'system.transfer.title': 'Moving out',
+  'system.transfer.detail': 'Selling the property? The system, its history and its care plan can move to the new owner.',
+  'system.transfer.action': 'Transfer to a new owner',
+
+  'system.cta.book': 'Book a visit',
 } as const;

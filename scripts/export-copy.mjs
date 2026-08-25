@@ -45,7 +45,7 @@ const ROLES = [
   },
   {
     key: 'client-owner',
-    nav: ['Home', 'My system', 'Book', 'Parts'],
+    nav: ['Home', 'System', 'Shop', 'Account'],
     label: 'Client, system owner',
     viewport: 'mobile',
     screens: [
@@ -54,7 +54,8 @@ const ROLES = [
       ['/invoices', 'Invoices and payment'],
       ['/contract', 'Maintenance contract'],
       ['/book', 'Book an appointment'],
-      ['/parts', 'Parts store'],
+      ['/parts', 'Shop'],
+      ['/account', 'Account'],
       ['/messages', 'Messages'],
       ['/system/transfer', 'Transfer ownership'],
       ['/recommended', 'Recommended for your property'],

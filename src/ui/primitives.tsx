@@ -288,6 +288,15 @@ export const ButtonLink = ({
   onBand = false,
   children,
   className = '',
+  /**
+   * Required when the link's visible content is a glyph.
+   *
+   * It was not forwarded at all, which meant every icon-only link in the build
+   * announced itself by whatever the icon's own markup happened to contain,
+   * which is nothing. The prop existing and being dropped is worse than it not
+   * existing: the call sites passed it and looked correct.
+   */
+  'aria-label': ariaLabel,
 }: {
   to: string;
   variant?: ButtonVariant;
@@ -297,10 +306,11 @@ export const ButtonLink = ({
   onBand?: boolean;
   children: ReactNode;
   className?: string;
+  'aria-label'?: string;
 }) => {
   const { className: cls, style } = buttonStyle(variant, size, onBand, block, className);
   return (
-    <Link to={to} className={cls} style={style}>
+    <Link to={to} className={cls} style={style} aria-label={ariaLabel}>
       {icon && (
         <span className="-mt-px flex h-icon w-icon shrink-0 items-center justify-center">
           <Icon name={icon} />
@@ -707,6 +717,104 @@ export const Tabs = <T extends string>({
             active
               ? 'border-b-ink font-medium text-ink'
               : 'border-b-transparent font-normal text-ink3 hover:text-ink2'
+          }`}
+        >
+          {option.label}
+        </button>
+      );
+    })}
+  </div>
+);
+
+/**
+ * A search field.
+ *
+ * Fine at six SKUs, necessary at forty, and the catalogue is going to be forty.
+ * A person who knows they want a lid seal should not have to read past a pump to
+ * find one.
+ *
+ * `type="search"` rather than `type="text"`, so a handset offers a Search key on
+ * the keyboard instead of a return key, and so the browser's own clear control
+ * appears. Wrapped in a form with `role="search"` and its own submit handler
+ * that does nothing, because filtering is live: without the form, pressing the
+ * Search key on iOS navigates the page.
+ *
+ * `--field-line` rather than `--line`, because an input outline is a meaningful
+ * non-text control and owes 3:1, where a structural hairline only has to be
+ * perceptible. That distinction is why inputs used to read as unbordered.
+ */
+export const SearchField = ({
+  label,
+  placeholder,
+  value,
+  onChange,
+}: {
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+}) => (
+  <form role="search" className="w-full" onSubmit={(event) => event.preventDefault()}>
+    <label className="flex min-h-tap w-full items-center gap-2 rounded-control border border-field-line bg-surface px-3">
+      <span className="shrink-0 text-ink3">
+        <Icon name="search" />
+      </span>
+      <span className="sr-only">{label}</span>
+      <input
+        type="search"
+        value={value}
+        placeholder={placeholder}
+        onChange={(event) => onChange(event.target.value)}
+        aria-label={label}
+        // `size={1}` removes the input's intrinsic 20-character width, which is
+        // what a flex row has to fight against to let it shrink at all.
+        size={1}
+        className="min-w-0 flex-1 bg-transparent text-body text-ink outline-none placeholder:text-ink3"
+      />
+    </label>
+  </form>
+);
+
+/**
+ * A row of filter chips.
+ *
+ * Distinct from `Tabs`, which is a tablist changing what the screen is showing
+ * you at the top level. This is a second axis inside that: fit is the tab,
+ * category is the chip. Drawing both as tabs would have claimed they were the
+ * same kind of choice, and drawing the fit switch as chips would have buried the
+ * one filter that carries the whole value of the screen.
+ *
+ * It scrolls horizontally rather than wrapping, so adding categories lengthens
+ * the strip instead of pushing the catalogue down the page.
+ */
+export const Chips = <T extends string>({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: readonly { value: T; label: string }[];
+  value: T;
+  onChange: (value: T) => void;
+}) => (
+  <div
+    role="group"
+    aria-label={label}
+    className="-mx-gutter flex gap-2 overflow-x-auto px-gutter pb-1"
+  >
+    {options.map((option) => {
+      const active = option.value === value;
+      return (
+        <button
+          key={option.value}
+          type="button"
+          aria-pressed={active}
+          onClick={() => onChange(option.value)}
+          className={`min-h-tap shrink-0 whitespace-nowrap rounded-pill border px-3 text-caption transition-colors duration-state ease-ease ${
+            active
+              ? 'border-ink bg-ink text-surface font-medium'
+              : 'border-line-strong bg-surface text-ink2 hover:text-ink'
           }`}
         >
           {option.label}

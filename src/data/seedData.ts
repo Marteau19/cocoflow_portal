@@ -1029,7 +1029,3 @@ export const propertiesForContact = (contactId: string): Account[] => {
 /** The system installed at a property. One today; the model allows more. */
 export const systemsForProperty = (accountId: string): Asset[] =>
   assets.filter((a) => a.accountId === accountId);
-
-/** Messages waiting for the customer, across every conversation on a property. */
-export const unreadMessages = (accountId: string): number =>
-  cases.filter((c) => c.accountId === accountId).reduce((n, c) => n + c.unreadForCustomer, 0);

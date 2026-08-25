@@ -30,8 +30,8 @@ import {
   propertiesForContact,
   systemsForProperty,
   territories,
-  unreadMessages,
 } from '../../data/seedData';
+import { unreadFor } from '../../data/readState';
 import { getLocale, plural, setLocale, t, type Locale } from '../../i18n';
 import { longDate } from '../../lib/format';
 import {
@@ -74,7 +74,7 @@ export const OwnerAccount = () => {
   const property = properties[0];
   const contract = contracts.find((c) => c.accountId === property.id && c.status === 'active');
   const servicePoint = byId(territories, property.territoryId)!;
-  const unread = unreadMessages(property.id);
+  const unread = unreadFor(property.id);
 
   const [topics, setTopics] = useState<Record<string, boolean>>(
     Object.fromEntries(TOPICS.map((topic) => [topic.key, topic.on])),

@@ -133,36 +133,151 @@ for (const brand of ['legacy', 'next']) {
         where the technician's face is deliberately 72px because it is the
         reassurance the whole screen is built on.
       */
-      const allowed = new Set([gutter, gutter + 28]);
+      /*
+        Two passes.
+
+        First the origins: every x a block of content is legitimately allowed to
+        start at. That is the band gutter, plus the content edge of every card,
+        because DESIGN.md section 6 says bands are full bleed with no corners and
+        radius belongs to objects inside them, so a card is an object and its
+        contents sit on the card's own edge. Cards are found by looking for a real
+        corner radius rather than by class name, so the check does not go stale
+        when a component is renamed.
+
+        Then the derived edges: for each origin, any leading box that starts there
+        gives the text beside it an edge of `origin + box + gap`. Doing this per
+        origin rather than only at the gutter is what fixes an avatar row inside a
+        card, where both offsets compound and neither alone is the answer.
+      */
+      const origins = new Set([gutter]);
+      for (const card of host.querySelectorAll('*')) {
+        const cs = getComputedStyle(card);
+        if (Number.parseFloat(cs.borderTopLeftRadius) < 4) continue;
+        const r = card.getBoundingClientRect();
+        // Wide enough to hold a column of content. Three metric cards side by
+        // side on a 375px screen are about 105px each, so the floor is below that.
+        if (r.width < 80) continue;
+        origins.add(Math.round(r.left + (Number.parseFloat(cs.paddingLeft) || 0) - col.left));
+      }
+
+      const allowed = new Set([...origins, gutter + 28]);
       for (const box of host.querySelectorAll('img, span, div')) {
         if (!shown(box)) continue;
         const r = box.getBoundingClientRect();
-        if (Math.round(r.left - col.left) !== gutter) continue;
-        if (r.width < 24 || r.width > 96) continue;
+        const start = Math.round(r.left - col.left);
+        if (!origins.has(start)) continue;
+        /*
+          Lower bound 16, not 24.
+
+          A row that leads with a bare icon puts it in a 16px box, and DESIGN.md
+          section 6 states that the text beside it sits on its own edge. At a 24px
+          floor those rows were invisible to this loop, so every document row and
+          every timeline entry in the build was reported as a gutter violation.
+        */
+        if (r.width < 16 || r.width > 96) continue;
         /*
           A leading box is an image, or a short label in a fixed-width box: a stop
-          number, a set of initials, an "N/A" placeholder. Requiring it to be square
-          rejected the route's stop number, which is 48px wide by one line tall, and
-          that box is exactly what makes an indexed list share a text edge with a
-          thumbnail list.
+          number, a set of initials, a part number placeholder. Requiring it to be
+          square rejected the route's stop number, which is 48px wide by one line
+          tall, and that box is exactly what makes an indexed list share a text
+          edge with a thumbnail list. An icon is an <svg> with no text, which the
+          length test passes.
         */
         const text = (box.textContent || '').trim();
         if (box.tagName !== 'IMG' && text.length > 4) continue;
-        allowed.add(gutter + Math.round(r.width) + 16);
+        /*
+          The gap is read off the row rather than assumed. Rows are laid out with
+          `gap-3`, which is a token and has been 12px and 16px at different points
+          in this build's history; hardcoding either is how this check goes stale
+          the next time the token moves.
+        */
+        const parentGap = Number.parseFloat(getComputedStyle(box.parentElement).columnGap);
+        const gap = Number.isFinite(parentGap) ? parentGap : 16;
+        allowed.add(start + Math.round(r.width) + Math.round(gap));
       }
+
       const leftEdges = new Map();
       for (const el of host.querySelectorAll('p, h1, h2, h3, dt, dd, img')) {
         if (!shown(el)) continue;
         const cs = getComputedStyle(el);
-        // Skip anything positioned out of flow (the Blueprint callout) and
-        // anything centred inside a box (a placeholder label).
-        if (cs.position === 'absolute' || cs.textAlign === 'center') continue;
+        /*
+          Skip anything positioned out of flow (the Blueprint callout), anything
+          centred inside a box (a placeholder label), and anything right aligned.
+
+          A right aligned value's left edge is a consequence of how long the value
+          is, not of a layout decision: "8 October 2024" and "5 July" in the same
+          column start at different x by design, and reporting both as distinct
+          gutter violations says nothing. What matters for a right aligned cell is
+          its right edge, which the column already guarantees.
+        */
+        if (cs.position === 'absolute') continue;
+        if (cs.textAlign === 'center' || cs.textAlign === 'right') continue;
         const hasKids = [...el.children].some((c) => c.textContent?.trim());
         if (el.tagName !== 'IMG' && hasKids) continue;
         if (el.tagName !== 'IMG' && !el.textContent.trim()) continue;
         const box = el.getBoundingClientRect();
+
+        /*
+          Skip the right hand cell of a two column row.
+
+          `text-align: right` is only one of the two ways a value ends up on the
+          right. The commoner one in this build is a flex row with
+          `justify-between`, where the value is left aligned text that has been
+          pushed across, so its computed text-align is `start` and the test above
+          does not catch it. What both have in common is that the element's right
+          edge is the row's right edge, and that its left edge is a consequence of
+          the value's own length: "8 October 2024" and "5 July" in one column
+          start at different x by design.
+        */
+        const parent = el.parentElement;
+        if (parent) {
+          const parentStyle = getComputedStyle(parent);
+          const parentBox = parent.getBoundingClientRect();
+          const contentRight = parentBox.right - (Number.parseFloat(parentStyle.paddingRight) || 0);
+          const contentLeft = parentBox.left + (Number.parseFloat(parentStyle.paddingLeft) || 0);
+          const laidOut = parentStyle.display.includes('flex') || parentStyle.display.includes('grid');
+          const siblings = [...parent.children].filter((c) => c.textContent?.trim());
+          /*
+            All four conditions, and the last two are what a first attempt got
+            wrong. Requiring only "its right edge is the row's right edge" also
+            skipped every full width paragraph, because a paragraph fills its
+            container and therefore ends where the container ends. A negative
+            test caught it: a deliberately misaligned line of body copy went
+            unreported. A right hand cell is a laid out row, with something to
+            its left, that does not itself start at the row's leading edge.
+          */
+          if (
+            laidOut &&
+            siblings.length > 1 &&
+            Math.abs(contentRight - box.right) <= 1 &&
+            box.left - contentLeft > 1
+          ) {
+            continue;
+          }
+        }
+
+        /*
+          Skip a full bleed element. A photograph or a chart that runs edge to
+          edge is at left 0 because a `flush` Band dropped the gutter for it,
+          which is the documented way to do exactly that.
+        */
+        if (Math.round(box.width) >= Math.round(col.width) - 1) continue;
+
         const draws = opaque(cs.backgroundColor) || parseFloat(cs.borderLeftWidth) > 0;
-        const left = Math.round(box.left + (draws ? 0 : parseFloat(cs.paddingLeft) || 0) - col.left);
+        let left = Math.round(box.left + (draws ? 0 : parseFloat(cs.paddingLeft) || 0) - col.left);
+        /*
+          A selectable row carries a 3px rule on its leading edge, transparent
+          until it is chosen, so that the label never shifts sideways as the
+          selection moves. That rule pushes the text 3px in, which is the point of
+          it, so it is subtracted rather than reported.
+        */
+        for (let node = el.parentElement; node && node !== host; node = node.parentElement) {
+          const width = Number.parseFloat(getComputedStyle(node).borderLeftWidth);
+          if (width > 0) {
+            left -= Math.round(width);
+            break;
+          }
+        }
         if (!leftEdges.has(left)) leftEdges.set(left, el.textContent.trim().slice(0, 22));
       }
       for (const [px, sample] of leftEdges) {
@@ -179,8 +294,26 @@ for (const brand of ['legacy', 'next']) {
         problems.push({ rule: 'heading-step', detail: `sizes ${[...headSizes].join(', ')}` });
       }
 
-      /* --- Reading sizes: at most 4 outside the 11px and 15px registers --- */
+      /*
+        Reading sizes: at most 5 outside the 11px and 15px registers, and at
+        most one of them above 19px.
+
+        Was 4, written when the scale ran 48 / 32 / 24 / 16 / 13 with nothing
+        between 24 and 16. The client-owner pass added `section` at 19 because
+        that gap was forcing every sub-heading onto body or caption, which is
+        what made the screens read as one large word above an undifferentiated
+        field. A screen that uses a band heading and a heading inside it now
+        legitimately needs five.
+
+        The count is raised and the discipline it was carrying moves to the check
+        below, which is the one that was actually meant: exactly one element on a
+        screen may sit at the hero step. That is DESIGN.md section 5 rule 2, and
+        until now nothing enforced it, so the total was standing in for it badly.
+        Counting steps above `section` instead was tried and was wrong: a 32px
+        subject over 24px band headings is hierarchy, not competition.
+      */
       const reading = new Set();
+      reading.elements = [];
       for (const el of host.querySelectorAll('p, h1, h2, h3, span, dt, dd, li')) {
         if (!shown(el)) continue;
         if (!el.textContent.trim()) continue;
@@ -188,9 +321,31 @@ for (const brand of ['legacy', 'next']) {
         const size = getComputedStyle(el).fontSize;
         if (size === '11px' || size === '15px') continue;
         reading.add(size);
+        reading.elements.push(el);
       }
-      if (reading.size > 4) {
+      if (reading.size > 5) {
         problems.push({ rule: 'reading-sizes', detail: `${reading.size}: ${[...reading].join(', ')}` });
+      }
+      /*
+        One hero per screen. DESIGN.md section 5 rule 2 and section 7.
+
+        Resolved from the live custom property rather than hardcoded, so it is
+        correct in the framed register, in the full-bleed register, and under the
+        customer persona cap, all three of which give the step a different value.
+      */
+      const heroSize = getComputedStyle(document.documentElement)
+        .getPropertyValue('--step-hero-size')
+        .trim();
+      const heroes = [...reading.elements].filter(
+        (el) => getComputedStyle(el).fontSize === heroSize,
+      );
+      if (heroSize && heroes.length > 1) {
+        problems.push({
+          rule: 'one-hero',
+          detail: `${heroes.length} at the hero step (${heroSize}): ${heroes
+            .map((el) => `"${el.textContent.trim().slice(0, 20)}"`)
+            .join(', ')}`,
+        });
       }
 
       /* --- Pill contrast against its own band ---------------------------- */

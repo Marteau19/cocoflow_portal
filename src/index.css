@@ -368,6 +368,23 @@
   .device-shell {
     position: relative;
     display: flex;
+    /*
+      Width is stated, not inherited.
+
+      `.device-stage` is a grid with `justify-items: center`, which makes its
+      item shrink-to-fit: the shell sized to the max-content width of whatever
+      was inside it. One `<input type="search">`, whose intrinsic width is its
+      `size` attribute regardless of `min-width: 0` on the input itself, and the
+      whole handset rendered 699px wide inside a 393px viewport with the
+      navigation running off the edge.
+
+      Fixing it here rather than at the input means the next element with an
+      intrinsic minimum, a table, a long identifier, a wide chart, cannot do it
+      again. Above the frame breakpoint this is overridden with the handset's
+      real width.
+    */
+    width: 100%;
+    min-width: 0;
     height: calc(100vh - var(--space-6));
     height: calc(100dvh - var(--space-6));
     min-height: 0;
@@ -587,5 +604,27 @@ body[data-blueprint='on'] {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@layer components {
+  /**
+   * Visually hidden, still announced.
+   *
+   * For a label that a sighted reader gets from an adjacent glyph and a screen
+   * reader cannot. Clipped rather than `display: none` or zero opacity, both of
+   * which take the element out of the accessibility tree, which is the one thing
+   * it exists to stay in.
+   */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 }

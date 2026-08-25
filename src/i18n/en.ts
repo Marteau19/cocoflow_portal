@@ -37,14 +37,29 @@ export const en = {
   /* ---------------------------------------------------------------- */
   /* Shop, screen 12                                                   */
   /* ---------------------------------------------------------------- */
-  'shop.masthead.eyebrow': 'Parts',
-  'shop.masthead.title': 'Parts and filters',
-  'shop.masthead.lead': 'Filtered to the {model}, so nothing here will arrive and not fit.',
+  'shop.header.title': 'Shop',
+  'shop.header.guarantee': 'Guaranteed to fit your {model}',
+
+  'shop.search.label': 'Search parts',
+  'shop.search.placeholder': 'Search parts and filters',
 
   'shop.filter.label': 'Filter the catalogue',
   'shop.filter.fitsMyModel': 'Fits my {model}',
   'shop.filter.everything': 'Everything',
+
+  'shop.category.label': 'Category',
+  'shop.category.all': 'Everything',
+  'shop.category.filter-media': 'Filter media',
+  'shop.category.lid': 'Lids and seals',
+  'shop.category.pump': 'Pumps',
+  'shop.category.control': 'Controls',
+  'shop.category.accessory': 'Accessories',
+
   'shop.empty': 'No parts match this filter.',
+  'shop.emptySearch': 'Nothing matches {query}. Try a part number, or clear the filters.',
+  'shop.clearFilters': 'Clear filters',
+  'shop.countOne': '{count} part',
+  'shop.countOther': '{count} parts',
 
   'shop.item.add': 'Add',
   'shop.item.addOne': 'Add one {name}',
@@ -271,4 +286,31 @@ export const en = {
   'system.transfer.action': 'Transfer to a new owner',
 
   'system.cta.book': 'Book a visit',
+
+  /* ---------------------------------------------------------------- */
+  /* Messages, screen 13                                               */
+  /* ---------------------------------------------------------------- */
+  'messages.eyebrow': 'Messages',
+  'messages.lead': 'One conversation with the team who looks after your system.',
+  'messages.replyTime': 'We reply within one working day. For anything urgent, call the Service Point.',
+  'messages.threadTitle': 'Messages',
+  'messages.threadFallback': 'Your conversation',
+  'messages.resolved': 'Resolved',
+  'messages.new': 'New',
+  'messages.you': 'You',
+  'messages.about': 'About: {subject}',
+
+  'messages.compose.label': 'Write a message',
+  'messages.compose.placeholder': 'Anything about your system or a visit',
+  'messages.compose.send': 'Send',
+  'messages.compose.photo': 'Add a photo',
+  'messages.compose.photoHint': 'A photo of what you are seeing usually saves a visit.',
+
+  'messages.context.eyebrow': 'What we already know',
+  'messages.context.title': 'Attached to this conversation',
+  'messages.context.system': 'Your system',
+  'messages.context.nextVisit': 'Next visit',
+  'messages.context.access': 'Winter access',
+  'messages.context.accessValue': 'Thaw weeks preferred, noted 2026',
+  'messages.context.note': 'Whoever replies can see all of this. You should never have to explain your property twice.',
 } as const;

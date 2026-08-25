@@ -28,19 +28,26 @@ import {
   type CatalogueItem,
   type CartTotals,
 } from '../../commerce/adapter';
-import { GOLDEN, assets, byId, contracts } from '../../data/seedData';
+import {
+  SESSION,
+  contracts,
+  propertiesForContact,
+  systemsForProperty,
+} from '../../data/seedData';
 import { plural, t } from '../../i18n';
 import { money } from '../../lib/format';
 import {
   Band,
   BandHead,
   Button,
+  Chips,
   Empty,
   Icon,
   Identifier,
-  Masthead,
+  Micro,
   Row,
   RowList,
+  SearchField,
   Tabs,
   Thumb,
   Toast,
@@ -49,14 +56,26 @@ import {
 /** How long an undo stays offered after a removal. */
 const UNDO_MS = 6000;
 
+/**
+ * Categories, in the order a customer would look for them.
+ *
+ * Read off the catalogue rather than hardcoded, so a new category appears in the
+ * strip the day a product carrying it does. `all` is always first and is the
+ * only entry that is not a category.
+ */
+const CATEGORY_ORDER = ['filter-media', 'lid', 'pump', 'control', 'accessory'] as const;
+
 export const OwnerParts = () => {
-  const asset = byId(assets, GOLDEN.assetId)!;
-  const contract = byId(contracts, GOLDEN.contractId)!;
+  const property = propertiesForContact(SESSION.contactId)[0];
+  const asset = systemsForProperty(property.id)[0];
+  const contract = contracts.find((c) => c.accountId === property.id && c.status === 'active')!;
 
   const [catalogue, setCatalogue] = useState<CatalogueItem[] | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
   const [totals, setTotals] = useState<CartTotals | null>(null);
   const [onlyMine, setOnlyMine] = useState(true);
+  const [query, setQuery] = useState('');
+  const [category, setCategory] = useState<string>('all');
 
   /** The last removal, held only for as long as it can be reversed. */
   const [undo, setUndo] = useState<CartLine | null>(null);
@@ -66,7 +85,7 @@ export const OwnerParts = () => {
 
   useEffect(() => {
     let live = true;
-    void commerce.listCatalogue(GOLDEN.accountId).then((items) => {
+    void commerce.listCatalogue(property.id).then((items) => {
       if (live) setCatalogue(items);
     });
     return () => {
@@ -76,7 +95,7 @@ export const OwnerParts = () => {
 
   useEffect(() => {
     let live = true;
-    void commerce.totals(cart, GOLDEN.accountId).then((next) => {
+    void commerce.totals(cart, property.id).then((next) => {
       if (live) setTotals(next);
     });
     return () => {
@@ -116,7 +135,44 @@ export const OwnerParts = () => {
     setUndo(null);
   };
 
-  const shown = (catalogue ?? []).filter((item) => (onlyMine ? item.fitsMySystem : true));
+  /*
+    Three filters, applied in the order a person would think about them: does it
+    fit, what kind of thing is it, and what am I looking for. Search matches the
+    part number as well as the name, because somebody holding a broken component
+    is reading a number off it.
+  */
+  const needle = query.trim().toLowerCase();
+  const shown = (catalogue ?? []).filter((item) => {
+    if (onlyMine && !item.fitsMySystem) return false;
+    if (category !== 'all' && item.category !== category) return false;
+    if (needle.length === 0) return true;
+    return (
+      item.name.toLowerCase().includes(needle) || item.sku.toLowerCase().includes(needle)
+    );
+  });
+
+  const categories = [
+    { value: 'all', label: t('shop.category.all') },
+    ...CATEGORY_ORDER.filter((key) => (catalogue ?? []).some((item) => item.category === key)).map(
+      (key) => ({
+        value: key as string,
+        label: t(`shop.category.${key}` as Parameters<typeof t>[0]),
+      }),
+    ),
+  ];
+
+  /*
+    "Clear filters" appears when the reader has changed something, not when the
+    screen is in its default state. Fit-to-my-model is on by default, so counting
+    it as a filter meant the control was offered on arrival, inviting a person to
+    clear a setting they had not set and did not want cleared.
+  */
+  const filtered = !onlyMine || category !== 'all' || needle.length > 0;
+  const clearFilters = () => {
+    setOnlyMine(true);
+    setCategory('all');
+    setQuery('');
+  };
   const inCart = (sku: string) => cart.find((line) => line.sku === sku)?.quantity ?? 0;
   const count = cart.reduce((n, line) => n + line.quantity, 0);
 
@@ -127,54 +183,71 @@ export const OwnerParts = () => {
     <>
       <div className="contents">
         {/*
-          "Parts for your system" set to two lines with "system" alone on the
-          second, which DESIGN.md section 5 now forbids. "Parts and filters" rags
-          clean at the framed column width and says the same thing: these are the
-          consumables for an installed system.
-        */}
-        <Masthead
-          eyebrow={t('shop.masthead.eyebrow')}
-          subject={t('shop.masthead.title')}
-          lead={t('shop.masthead.lead', { model: asset.model })}
-        >
-          {/*
-            The count, in the header, where a shopper looks for it.
+          No masthead.
 
-            It is a button rather than a badge because a count you cannot tap is a
-            count that makes you go and find the thing it is counting. It renders
-            only when there is something to count: an empty cart affordance is a
-            control that exists to tell you it does nothing.
-          */}
-          {count > 0 && (
-            <div className="mt-4" data-commerce>
-              <button
-                type="button"
-                onClick={showOrder}
-                aria-label={plural(count, {
-                  one: 'shop.cart.badgeOne',
-                  other: 'shop.cart.badgeOther',
-                })}
-                className="inline-flex min-h-tap items-center gap-control rounded-control bg-accent px-control-secondary text-control text-on-accent transition-colors duration-state ease-ease"
-              >
-                <Icon name="package" />
-                {t('shop.cart.open')}
-                <span className="font-mono">{count}</span>
-              </button>
+          This screen used to open with a dark band reading "Parts" above "Parts
+          and filters", directly over a tab labelled Parts: the same word three
+          times in one viewport, occupying the third of the screen where the
+          products should be. A shop's most valuable pixels are its shelves.
+
+          What replaces it is the one thing a customer needs to know before they
+          buy anything, which is that what they see fits what they own, and the
+          controls to narrow it down.
+        */}
+        <Band kind="lead" className="flex flex-col gap-2 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-section text-ink">{t('shop.header.title')}</p>
+              <p className="mt-0.5 text-caption text-ink2">
+                {t('shop.header.guarantee', { model: asset.model })}
+              </p>
             </div>
-          )}
-        </Masthead>
+            {/*
+              The count, in the header, where a shopper looks for it. A button
+              rather than a badge: a count you cannot tap is a count that makes
+              you go and find the thing it is counting. It renders only when
+              there is something to count.
+            */}
+            {count > 0 && (
+              <div data-commerce>
+                <button
+                  type="button"
+                  onClick={showOrder}
+                  aria-label={plural(count, {
+                    one: 'shop.cart.badgeOne',
+                    other: 'shop.cart.badgeOther',
+                  })}
+                  className="inline-flex min-h-tap shrink-0 items-center gap-control rounded-control bg-accent px-control-secondary text-control text-on-accent transition-colors duration-state ease-ease"
+                >
+                  <Icon name="package" />
+                  <span className="font-mono">{count}</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          <SearchField
+            label={t('shop.search.label')}
+            placeholder={t('shop.search.placeholder')}
+            value={query}
+            onChange={setQuery}
+          />
+        </Band>
 
         <Section id="parts-store">
           <div className="contents">
             {/*
-              The filter is on by default. Fit is the whole value here.
+              Two filter axes, drawn as two different controls on purpose.
 
-              It sits inside a Rail band rather than as a bare sibling between
-              bands. As a sibling it had no gutter at all, so the chips started at
-              left 0 while the masthead text above them started at the gutter.
+              Fit is a tablist: it changes what the screen is showing you at the
+              top level, and it is the one filter carrying the whole value of the
+              screen, so it is on by default and cannot be buried in a chip
+              strip. Category is a second axis inside that, so it is chips.
+              Drawing both the same way would claim they are the same kind of
+              choice.
             */}
-            <Band kind="rail" flush>
-              <div className="px-gutter pt-1">
+            <Band kind="rail" flush className="py-3">
+              <div className="px-gutter">
                 <Tabs
                   label={t('shop.filter.label')}
                   value={onlyMine ? 'mine' : 'all'}
@@ -185,6 +258,28 @@ export const OwnerParts = () => {
                   ]}
                 />
               </div>
+              <div className="px-gutter pt-2">
+                <Chips
+                  label={t('shop.category.label')}
+                  options={categories}
+                  value={category}
+                  onChange={setCategory}
+                />
+              </div>
+              <div className="flex items-baseline justify-between gap-3 px-gutter pb-1 pt-1">
+                <Micro>
+                  {plural(shown.length, { one: 'shop.countOne', other: 'shop.countOther' })}
+                </Micro>
+                {filtered && (
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="-my-2 inline-flex min-h-tap items-center text-control font-medium text-accent-ink transition-colors duration-state ease-ease hover:text-ink"
+                  >
+                    {t('shop.clearFilters')}
+                  </button>
+                )}
+              </div>
             </Band>
 
             {catalogue === null ? (
@@ -193,7 +288,19 @@ export const OwnerParts = () => {
               </Band>
             ) : shown.length === 0 ? (
               <Band kind="data" flush>
-                <Empty line={t('shop.empty')} />
+                {/*
+                  An empty state is an invitation, not an apology. It names what
+                  was searched for and offers the way out, rather than saying
+                  sorry and leaving the reader to work out which of three filters
+                  is the one hiding everything.
+                */}
+                <Empty
+                  line={
+                    needle.length > 0
+                      ? t('shop.emptySearch', { query: `"${query.trim()}"` })
+                      : t('shop.empty')
+                  }
+                />
               </Band>
             ) : (
               <Band kind="data" flush>

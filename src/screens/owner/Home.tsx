@@ -38,9 +38,9 @@ import {
   resources,
   systemsForProperty,
   territories,
-  unreadMessages,
   workOrders,
 } from '../../data/seedData';
+import { unreadFor } from '../../data/readState';
 import { plural, t } from '../../i18n';
 import { arrival, isToday, longDate, money, relativeDay, shortDate, window as timeWindow } from '../../lib/format';
 import { useCountUp } from '../../ui/motion';
@@ -85,7 +85,7 @@ export const OwnerHome = () => {
   const visitCount = customerTimeline(property.id).filter((e) => e.kind === 'visit').length;
 
   const condition = CONDITION[asset.status];
-  const unread = unreadMessages(property.id);
+  const unread = unreadFor(property.id);
 
   /* Counters run once on mount, and not at all under reduced motion. */
   const shownMedia = useCountUp(media?.remaining ?? 0);
@@ -132,18 +132,35 @@ export const OwnerHome = () => {
             <ButtonLink
               to="/messages"
               variant="plain"
-              aria-label={plural(unread, {
-                one: 'home.header.messagesUnreadOne',
-                other: 'home.header.messagesUnreadOther',
-              })}
+              // "Messages, 0 unread" is a worse label than "Messages": it makes
+              // the reader parse a count in order to learn there is nothing to
+              // count. The unread form is only used when there is unread.
+              aria-label={
+                unread > 0
+                  ? plural(unread, {
+                      one: 'home.header.messagesUnreadOne',
+                      other: 'home.header.messagesUnreadOther',
+                    })
+                  : t('home.header.messages')
+              }
             >
+              {/*
+                A count, not a dot.
+
+                Two things were wrong with the dot. It was painted in the brand
+                accent, which is reserved for the primary action and for buying,
+                so the home screen had two accent fills and the quieter of the
+                two was not an action at all. And it was colour carrying a signal
+                with nothing to read, which DESIGN.md section 4 bans outright: a
+                number in the badge says how many, which is the question a person
+                looking at an unread marker is actually asking.
+              */}
               <span className="relative text-ink2">
                 <Icon name="message-square" />
                 {unread > 0 && (
-                  <span
-                    aria-hidden
-                    className="absolute -right-0.5 -top-0.5 h-1 w-1 rounded-pill bg-accent"
-                  />
+                  <span className="absolute -right-2 -top-1 grid h-2 min-w-2 place-items-center rounded-pill bg-info px-px font-mono text-micro leading-none text-on-info">
+                    {unread}
+                  </span>
                 )}
               </span>
             </ButtonLink>

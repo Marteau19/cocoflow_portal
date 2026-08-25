@@ -569,9 +569,19 @@ Having a scale is not the same as using it sparingly. The rules:
    is repeated here because it is a type rule as much as a composition one.
 3. **`display` is permitted at most once per screen**, for the single secondary
    figure, and not at all on a screen whose hero is a number.
-4. **Four sizes carry the reading hierarchy on any one screen.** In practice that
-   is hero, `h1`, `body`, `caption`, and a screen that needs a fifth reading size
-   is a screen doing two jobs.
+4. **Five sizes carry the reading hierarchy on any one screen, and only one of
+   them may be larger than `section`.** Raised from four in the client-owner
+   pass, when `section` was added. Four was written against a scale that ran
+   48 / 32 / 24 / 16 / 13 with nothing between 24 and 16, and the missing step is
+   what forced every sub-heading onto `body` or `caption`. A screen that carries a
+   band heading and a heading inside it legitimately needs five.
+
+   Raising a count without replacing the discipline it carried is how a rule
+   becomes a formality, so rule 2 above, one element per screen at the `hero`
+   step, is now enforced by `audit-rules.mjs` rather than merely written down. It
+   is the check the total was standing in for. Counting steps above `section`
+   instead was tried first and was wrong: a 32px subject over 24px band headings
+   is hierarchy, not competition.
 
 Two registers sit outside that count, and this is a deliberate reading of the rule
 rather than a loophole:

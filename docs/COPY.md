@@ -28,7 +28,7 @@ change per role, and they are what a customer taps, so they carry more weight pe
 character than anything else in the product.
 
 - **Client, before install**: Start, Request, Quote, Project
-- **Client, system owner**: Home, My system, Book, Parts
+- **Client, system owner**: Home, System, Shop, Account
 - **Service Point, technician**: My day, Route, Flo
 - **Service Point, manager**: Dashboard, Dispatch, Customers, Leads, MARCOM, Inventory, Team, Flo
 - **PTWE Global**: Network, Mix tracker, Adoption, Benchmarking, Readiness
@@ -382,65 +382,56 @@ Role key `client-owner`, mobile viewport.
 
 Route `/home`
 
-**Band: masthead**
+**Band: lead**
 
-- Your next visit
-- Today
-- 09:00 to 11:00
-- Marc is on the way
-- Marc Bouchard, Service Point Estrie
-- 4.9 out of 5, from visits like yours
-- We are replacing the filter media, which your care plan covers. Nothing is needed from you, and you do not have to be home.
-- Message Marc
-- Image alt text: Marc Bouchard
+- 148 chemin du Lac
+- 1
 
-**Band: reading**
+**Band: lead**
 
-- Your system
-- Ecoflo compact biofilter
-- Working as it should. Installed 14 May 2019.
-- Your care plan
-- Proactive Care
-- $320 a year, renews 14 May 2027. On autopay.
-- Invoices
-- Nothing outstanding
-- Your care plan is paid to 14 May 2027.
-
-**Band: data**
-
-- Your Service Point team
-- Service Point Estrie
-- The same team looks after every system in this area, including yours.
+- Happening now
+- 12 min away
+- Marc is on the way from Service Point Estrie.
 - Marc Bouchard
-- Technician
-- Priya Nadeau
-- Louis Tremblay
-- Service Point manager
-- Send a message
-- Image alt text: Priya Nadeau
-- Image alt text: Louis Tremblay
-
-**Band: closing**
-
-- Signed in as
-- Sarah Lavoie. 148 chemin du Lac, Lac-Brome.
+- 09:00 to 11:00
+- Track
+- Message Marc
+- We are replacing your filter media.
+- Filter media replacement
+- Covered by your plan
+- No access needed
+- Media life
+- 0%
+- Replacement booked
+- Plan value
+- $572
+- Covered this year
+- Visits
+- 8
+- Since install
+- Your system
+- EC-5
+- Proactive Care, renews 14 May 2027
+- System healthy
+- Book a visit
+- Order parts
+- Image alt text: Marc Bouchard
 
 ### My system
 
 Route `/system`
 
-**Band: masthead**
-
-- Your system
-- Ecoflo compact biofilter
-- At 148 chemin du Lac, Lac-Brome.
-
 **Band: rail**
 
-- Working as it should
-- Nothing needs your attention. We check it at every visit.
-- Model
+- Your system
 - EC-5
+- System healthy
+- At 148 chemin du Lac, Lac-Brome. We check it at every visit.
+- Filter media
+- Due for replacement
+- Marc is replacing it on 12 August.
+- Estimated from the last replacement, not measured.
+- Model
 - Serial number
 - EC5-19-QC-88214
 - Installed
@@ -449,22 +440,54 @@ Route `/system`
 - 8 October 2024
 - Warranty until
 - 14 May 2029
-- Image alt text: The property at 148 chemin du Lac
+- Image alt text: 148 chemin du Lac, Lac-Brome
 
 **Band: data**
 
-- Everything that has happened
+- 10 entries
 - Service history
-- 2 entries
+- 2026
+- Maintenance visit
+- 22 April
+- By Priya Nadeau
+- Yearly check. The media is at the end of its life as expected, so we have booked the replacement for August. Nothing to do before then.
 - Parts order
 - 2 March
 - 2 x LID-SEAL-05. $68.
+- 2025
+- 16 July
+- By Marc Bouchard
+- Yearly check. No change since last year. We noted that the media will be due for replacement next summer and will book it in for you.
 - 18 June
 - 1 x ACC-RISER-6. $78.
+- 2024
+- 8 October
+- Yearly check. The lid seal had perished at one edge so we fitted a new one. Everything else was normal.
+- 2023
+- 28 June
+- Yearly check, first one on the new media. Effluent was clear and the bed had bedded in well.
+- 2022
+- Filter media replacement
+- 5 July
+- We replaced the coconut husk filter media and took the old media away. This is the routine replacement your plan covers, and the next one is due in about four years.
+- 2021
+- 24 June
+- Yearly check. We cleared some leaf litter off the lid and reseated it. The system itself was working normally.
+- 2020
+- 11 June
+- First yearly check. The filter media had settled as expected and the effluent was clear. Nothing needed doing.
+- 2019
+- AR
+- Installation
+- 14 May
+- By Amélie Roy
+- We installed your Ecoflo compact biofilter, filled the filter media and tested the system through a full cycle. Everything ran as it should.
+- Image alt text: Priya Nadeau
+- Image alt text: Marc Bouchard
+- Image alt text: Photo taken on the visit
 
 **Band: rail**
 
-- Yours to keep
 - Documents
 - Installation certificate
 - Warranty terms
@@ -475,6 +498,10 @@ Route `/system`
 - For the EC-5
 
 **Band: data**
+
+- Book a visit
+
+**Band: closing**
 
 - Moving out
 - Selling the property? The system, its history and its care plan can move to the new owner.
@@ -574,9 +601,17 @@ Route `/contract`
 - 12 August 2026
 - SCHEDULED
 - Included
+- DONE
+- 11 June 2020
+- 24 June 2021
+- 5 July 2022
+- 28 June 2023
+- 8 October 2024
+- 16 July 2025
+- 22 April 2026
 - Without the plan
 - The same work priced individually
-- $420
+- $1,710
 
 **Band: rail**
 
@@ -639,20 +674,26 @@ Route `/book`
 
 _No text._
 
-### Parts store
+### Shop
 
 Route `/parts`
 
-**Band: masthead**
+**Band: lead**
 
-- Parts
-- Parts and filters
-- Filtered to the EC-5, so nothing here will arrive and not fit.
+- Shop
+- Guaranteed to fit your EC-5
+- Search parts
 
 **Band: rail**
 
 - Fits my EC-5
 - Everything
+- Filter media
+- Lids and seals
+- Pumps
+- Controls
+- Accessories
+- 4 parts
 
 **Band: data**
 
@@ -678,6 +719,72 @@ Route `/parts`
 
 - Delivered to EC-5 owners in the Eastern Townships within a week.
 
+### Account
+
+Route `/account`
+
+**Band: masthead**
+
+- Account
+- Sarah Lavoie
+
+**Band: data**
+
+- You
+- Email
+- sarah.lavoie@example.com
+- Phone
+- +1 450 555 0148
+
+**Band: rail**
+
+- Your property
+- 148 chemin du Lac
+- Lac-Brome, QC
+- EC-5, installed 14 May 2019
+- Own more than one Ecoflo? Add it here and it joins this account.
+
+**Band: data**
+
+- Care plan
+- Proactive Care
+- Renews 14 May 2027
+- Autopay is on
+- Invoices and payment
+- All clear
+
+**Band: rail**
+
+- Preferences
+- Language
+- English
+- Français
+- Applies to the portal, your invoices and what your technician brings to the door.
+- Tell me about
+- Visit reminders
+- Two days before, and on the morning.
+- Visit summaries
+- What we did, after each visit.
+- Plan and billing
+- Renewals, receipts and anything that needs a decision.
+- Offers and advice
+- Seasonal advice and occasional offers. Off by default.
+
+**Band: data**
+
+- Help
+- Message your Service Point
+- We reply within one working day.
+- 1 unread
+- Your documents
+- Certificate, warranty, plan and owner guide.
+- Call Service Point Estrie
+
+**Band: closing**
+
+- Sign out
+- Signed in as Sarah Lavoie.
+
 ### Messages
 
 Route `/messages`
@@ -695,7 +802,7 @@ Route `/messages`
 **Band: rail**
 
 - Question about winter access
-- RESOLVED
+- Resolved
 - SL
 - You
 - 2 June
@@ -705,6 +812,7 @@ Route `/messages`
 - Good question, and thanks for flagging it early. We need a clear path to the lid on the day. If the drive is not ploughed we can either shift the visit to a thaw week or you can clear a path the day before. We will call you two days ahead either way so it is never a surprise.
 - 3 June
 - A thaw week works better for us. Thank you.
+- New
 - Noted on your property record, so whoever is scheduling next winter will see it without you having to explain again.
 - Write a message
 - Send
@@ -750,7 +858,7 @@ Route `/system/transfer`
 - Warranty runs to
 - 14 May 2029
 - Service visits on record
-- 0
+- 8
 
 **Band: data**
 

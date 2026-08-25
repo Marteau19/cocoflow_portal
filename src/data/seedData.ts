@@ -878,6 +878,23 @@ export interface TimelineEntry {
  */
 export const ASSUMPTIONS = {
   mediaLifeYears: 4,
+  /**
+   * Household water and energy, for the environmental estimate.
+   *
+   * These are the shakiest numbers in this file and the card that uses them says
+   * "estimate" on its face for that reason. `litresPerPersonPerDay` is a
+   * household average, `householdSize` is a guess about one family we have never
+   * asked, and `aeratedKwhPerYear` is the running cost of a competing system
+   * class rather than a measurement of any particular one.
+   *
+   * TODO, needs PTWE engineering: all three, plus confirmation that comparing a
+   * passive biofilter against an aerated system is a claim PTWE is willing to
+   * put in front of a customer in a regulated market. If the answer is no, the
+   * impact card comes out rather than being softened.
+   */
+  litresPerPersonPerDay: 250,
+  householdSize: 2,
+  aeratedKwhPerYear: 1400,
   listPrice: {
     inspection: 145,
     FMR: 420,
@@ -1093,4 +1110,33 @@ export const messagesForAccount = (accountId: string): CaseMessage[] => {
   return caseMessages
     .filter((m) => ids.includes(m.caseId))
     .sort((a, b) => a.at.localeCompare(b.at));
+};
+
+/**
+ * What a passive biofilter has done, and not done, since it went in.
+ *
+ * Ecoflo treats by trickling through coconut husk: no blower, no aerator, no
+ * electricity in the treatment itself. That is a real difference from the system
+ * class it competes with and nobody is telling the customer about it.
+ *
+ * Every figure is an estimate off a calendar and a household size, and both of
+ * the inputs are in ASSUMPTIONS with a TODO. The card that renders this says so.
+ * There is no meter on an Ecoflo any more than there is a sensor in one.
+ */
+export const environmentalImpact = (assetId: string) => {
+  const asset = byId(assets, assetId);
+  if (!asset) return null;
+
+  const [y, m, d] = asset.installedOn.split('-').map(Number);
+  const [ty, tm, td] = TODAY_ISO.split('-').map(Number);
+  const days = Math.max(
+    0,
+    Math.round((new Date(ty, tm - 1, td).getTime() - new Date(y, m - 1, d).getTime()) / 86_400_000),
+  );
+
+  const litres =
+    days * ASSUMPTIONS.litresPerPersonPerDay * ASSUMPTIONS.householdSize;
+  const kwhAvoided = Math.round((days / 365) * ASSUMPTIONS.aeratedKwhPerYear);
+
+  return { days, years: Math.round(days / 365), litres, kwhAvoided };
 };

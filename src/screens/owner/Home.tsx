@@ -41,8 +41,19 @@ import {
   workOrders,
 } from '../../data/seedData';
 import { unreadFor } from '../../data/readState';
+import { seasonalCardFor } from '../../data/seasons';
 import { plural, t } from '../../i18n';
-import { arrival, isToday, longDate, money, relativeDay, shortDate, window as timeWindow } from '../../lib/format';
+import {
+  PLAN_YEAR,
+  TODAY,
+  arrival,
+  isToday,
+  longDate,
+  money,
+  relativeDay,
+  shortDate,
+  window as timeWindow,
+} from '../../lib/format';
 import { useCountUp } from '../../ui/motion';
 import {
   Avatar,
@@ -52,6 +63,7 @@ import {
   Card,
   Fact,
   Icon,
+  IconChip,
   Metric,
   Micro,
   Status,
@@ -81,11 +93,18 @@ export const OwnerHome = () => {
   const working = visit?.status === 'in-progress';
 
   const media = mediaLife(asset.id);
-  const value = planValue(property.id, Number(new Date().getFullYear()) || 2026);
+  const value = planValue(property.id, PLAN_YEAR);
   const visitCount = customerTimeline(property.id).filter((e) => e.kind === 'visit').length;
 
   const condition = CONDITION[asset.status];
   const unread = unreadFor(property.id);
+
+  /*
+    The seasonal slot, from the pinned month rather than the clock, so the demo
+    shows the same card every time it is opened. It renders nothing at all in a
+    month with nothing worth saying, rather than filler.
+  */
+  const season = seasonalCardFor(Number(TODAY.slice(5, 7)));
 
   /* Counters run once on mount, and not at all under reduced motion. */
   const shownMedia = useCountUp(media?.remaining ?? 0);
@@ -387,6 +406,31 @@ export const OwnerHome = () => {
             </span>
           </Link>
         </Card>
+
+        {/* -------------------------------------------------------------- */}
+        {/* The season, where the calendar has something to say.           */}
+        {/* -------------------------------------------------------------- */}
+        {season && (
+          <Card>
+            <div className="flex items-start gap-3 p-3">
+              <IconChip name={season.icon} tone="neutral" />
+              <div className="min-w-0 flex-1">
+                <p className="text-section text-ink">{t(season.title)}</p>
+                <p className="mt-1 max-w-reading text-body text-ink2">{t(season.body)}</p>
+                {season.action && (
+                  <ButtonLink
+                    to={season.action.to}
+                    variant="quiet"
+                    size="secondary"
+                    className="mt-3"
+                  >
+                    {t(season.action.label)}
+                  </ButtonLink>
+                )}
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* -------------------------------------------------------------- */}
         {/* The two things a person comes here to do.                      */}

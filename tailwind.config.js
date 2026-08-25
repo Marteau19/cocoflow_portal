@@ -200,6 +200,20 @@ export default {
     // while leaving real background images (the forest block) reachable.
     backgroundImage: {},
 
+    // Tailwind's animation utilities were dropped with the rest of the default
+    // theme when `theme` was replaced rather than extended. `pulse` is the only
+    // one this build wants: it is the skeleton loader, and DESIGN.md section 9
+    // permits no other looping animation.
+    keyframes: {
+      pulse: {
+        '0%, 100%': { opacity: '1' },
+        '50%': { opacity: '0.45' },
+      },
+    },
+    animation: {
+      pulse: 'pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+    },
+
     extend: {
       // Mobile-first roles render inside a device frame above this width.
       // Without it, a projected demo looks like a stretched phone app.
@@ -260,6 +274,7 @@ export default {
       },
       minHeight: {
         tap: '48px',
+        'cutaway-note': 'var(--cutaway-note)',
       },
       minWidth: {
         tap: '48px',

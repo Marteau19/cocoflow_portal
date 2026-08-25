@@ -26,12 +26,14 @@
  * screen says on its face that it is an estimate.
  */
 
+import { useState } from 'react';
 import { Section } from '../../blueprint/Section';
 import {
   SESSION,
   byId,
   contracts,
   customerTimeline,
+  environmentalImpact,
   mediaLife,
   orders,
   propertiesForContact,
@@ -41,7 +43,8 @@ import {
   type TimelineEntry,
 } from '../../data/seedData';
 import { plural, t } from '../../i18n';
-import { longDate, money, shortDate } from '../../lib/format';
+import { approxCount, longDate, money, shortDate } from '../../lib/format';
+import { SystemCutaway, MediaLifeRing, type CutawayLayer } from '../../ui/SystemCutaway';
 import { useCountUp } from '../../ui/motion';
 import {
   Avatar,
@@ -50,11 +53,12 @@ import {
   ButtonLink,
   Field,
   Icon,
+  Metric,
   Micro,
   Row,
+  Share,
   RowList,
   Status,
-  Track,
 } from '../../ui/primitives';
 
 const CONDITION = {
@@ -179,6 +183,11 @@ export const OwnerSystem = () => {
   const media = mediaLife(asset.id);
 
   const shownMedia = useCountUp(media?.remaining ?? 0);
+  const [layer, setLayer] = useState<CutawayLayer | null>(null);
+
+  const impact = environmentalImpact(asset.id);
+  const shownLitres = useCountUp(impact ? Math.round(impact.litres / 1000) : 0);
+  const shownKwh = useCountUp(impact?.kwhAvoided ?? 0);
   const replacing = media?.bookedVisit;
   const replacingBy = replacing ? byId(resources, replacing.resourceId) : undefined;
 
@@ -222,35 +231,71 @@ export const OwnerSystem = () => {
             drawn as a ring; the derivation does not change.
           */}
           {media && (
-            <div className="border-t border-line px-gutter py-3">
+            <div className="border-t border-line px-gutter py-4">
               {/*
-                Label, then figure, then track, all on the left edge.
+                The figure and its ring, then the drawing.
 
-                Set as a label-left figure-right row it read as a table cell, and
-                at zero remaining the figure is a five word phrase rather than a
-                number, so the right hand column became the widest thing on the
-                screen and pulled the eye off the model name above it.
+                A percentage is allowed here where a health score is not, because
+                it is arithmetic on two dates rather than a judgement, and the
+                card says on its face that it is an estimate. There is no sensor
+                in an Ecoflo, and a homeowner who believes a number is measured
+                will trust it in a way they should not trust a calendar.
               */}
-              <Micro>{t('system.media.title')}</Micro>
-              <p className="mt-1 text-section text-ink">
-                {media.remaining === 0
-                  ? t('system.media.due')
-                  : t('system.media.remaining', { percent: shownMedia })}
-              </p>
-              <div className="mt-2">
-                <Track progress={media.remaining / 100} />
+              <div className="flex items-center gap-3">
+                <MediaLifeRing
+                  percent={media.remaining}
+                  label={t('system.cutaway.ring', { percent: media.remaining })}
+                />
+                <div className="min-w-0">
+                  <Micro>{t('system.media.title')}</Micro>
+                  <p className="mt-1 text-h1 text-ink">
+                    {media.remaining === 0
+                      ? t('system.media.due')
+                      : t('system.media.remaining', { percent: shownMedia })}
+                  </p>
+                  <p className="mt-1 max-w-reading text-caption text-ink2">
+                    {replacing && replacingBy
+                      ? t('system.media.booked', {
+                          name: replacingBy.name.split(' ')[0],
+                          date: shortDate(replacing.scheduledFor),
+                        })
+                      : media.original
+                        ? t('system.media.original', { date: longDate(media.lastReplacedOn) })
+                        : t('system.media.since', { date: longDate(media.lastReplacedOn) })}
+                  </p>
+                </div>
               </div>
-              <p className="mt-2 max-w-reading text-body text-ink2">
-                {replacing && replacingBy
-                  ? t('system.media.booked', {
-                      name: replacingBy.name.split(' ')[0],
-                      date: shortDate(replacing.scheduledFor),
-                    })
-                  : media.original
-                    ? t('system.media.original', { date: longDate(media.lastReplacedOn) })
-                    : t('system.media.since', { date: longDate(media.lastReplacedOn) })}
-              </p>
-              <p className="mt-1 text-caption text-ink3">{t('system.media.estimate')}</p>
+
+              {/*
+                The drawing. Below the figure rather than behind it: a ring
+                overlaid on a cross section at 353px puts two things a reader has
+                to decode in the same 100 square pixels.
+              */}
+              <div className="mt-4">
+                <SystemCutaway selected={layer} onSelect={setLayer} />
+              </div>
+
+              {/*
+                The explanation replaces the hint in place, so the block does not
+                change height when a part is tapped and push the facts below it
+                down the screen.
+              */}
+              <div className="mt-3 min-h-cutaway-note">
+                {layer ? (
+                  <>
+                    <p className="text-section text-ink">
+                      {t(`system.cutaway.${layer}` as Parameters<typeof t>[0])}
+                    </p>
+                    <p className="mt-1 max-w-reading text-body text-ink2">
+                      {t(`system.cutaway.${layer}Detail` as Parameters<typeof t>[0])}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-body text-ink3">{t('system.cutaway.hint')}</p>
+                )}
+              </div>
+
+              <p className="mt-2 text-caption text-ink3">{t('system.media.estimate')}</p>
             </div>
           )}
 
@@ -315,6 +360,51 @@ export const OwnerSystem = () => {
           )}
         </Band>
       </Section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* What a passive biofilter has quietly not done.                     */}
+      {/* ------------------------------------------------------------------ */}
+      {impact && (
+        <Section id="system-impact">
+          <Band kind="data" flush>
+            <BandHead title={t('impact.title')} />
+            <div className="flex gap-2 px-gutter pb-3">
+              <Metric
+                label={t('impact.litres')}
+                value={approxCount(shownLitres * 1000)}
+                note={t('impact.litresNote', { date: longDate(asset.installedOn) })}
+              />
+              <Metric
+                label={t('impact.energy')}
+                value={approxCount(shownKwh)}
+                unit={t('impact.kwh')}
+                tone="positive"
+                note={t('impact.energyNote')}
+              />
+            </div>
+            <div className="px-gutter pb-4">
+              <p className="max-w-reading text-body text-ink2">{t('impact.body')}</p>
+              {/*
+                Labelled an estimate, in the same place a reader looks for the
+                figure rather than in a footnote. Both inputs are assumptions in
+                ASSUMPTIONS with a TODO on them, and the comparison against an
+                aerated system is a claim PTWE has to be willing to make in a
+                regulated market before this card ships.
+              */}
+              <p className="mt-2 text-caption text-ink3">{t('impact.estimate')}</p>
+              <Share
+                className="mt-3"
+                title={t('impact.shareTitle')}
+                text={t('impact.shareText', {
+                  litres: approxCount(impact.litres),
+                  year: asset.installedOn.slice(0, 4),
+                })}
+                label={t('impact.share')}
+              />
+            </div>
+          </Band>
+        </Section>
+      )}
 
       {/* ------------------------------------------------------------------ */}
       <Section id="system-documents">

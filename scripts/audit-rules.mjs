@@ -149,19 +149,59 @@ for (const brand of ['legacy', 'next']) {
         origin rather than only at the gutter is what fixes an avatar row inside a
         card, where both offsets compound and neither alone is the answer.
       */
+      /*
+        Origins are computed to a fixpoint rather than in one pass.
+
+        A block that starts on an allowed origin and carries left padding
+        establishes a new one, and those nest: a band opens at the gutter, a card
+        inside it opens at the gutter, and the padded div inside the card opens
+        16px further in. A single pass found the card and missed the div inside
+        it, which is where the content actually sits, so a seasonal card's text
+        was reported as a gutter violation. Three rounds is past the point this
+        stops changing on any screen in the build; the loop exits early anyway.
+      */
       const origins = new Set([gutter]);
-      for (const card of host.querySelectorAll('*')) {
-        const cs = getComputedStyle(card);
-        if (Number.parseFloat(cs.borderTopLeftRadius) < 4) continue;
-        const r = card.getBoundingClientRect();
-        // Wide enough to hold a column of content. Three metric cards side by
-        // side on a 375px screen are about 105px each, so the floor is below that.
-        if (r.width < 80) continue;
-        origins.add(Math.round(r.left + (Number.parseFloat(cs.paddingLeft) || 0) - col.left));
+      for (let round = 0; round < 3; round += 1) {
+        const before = origins.size;
+        for (const box of host.querySelectorAll('*')) {
+          const cs = getComputedStyle(box);
+          const r = box.getBoundingClientRect();
+          if (r.width < 80) continue;
+          const start = Math.round(r.left - col.left);
+          /*
+            Border first, then padding. A card carries a 1px hairline, so its
+            content box opens one pixel inside its own left edge, and everything
+            nested below inherits that offset. Counting only the padding put every
+            derived edge one pixel short and reported the whole chain as a
+            violation for the sake of a hairline.
+          */
+          const pad = Math.round(
+            (Number.parseFloat(cs.borderLeftWidth) || 0) + (Number.parseFloat(cs.paddingLeft) || 0),
+          );
+
+          /*
+            A card is an object inside a band, per DESIGN.md section 6, so it
+            establishes an edge wherever it sits. That matters for a row of
+            cards: the second and third metric card do not start on any edge
+            inherited from the band, and their contents are still correct.
+          */
+          const isCard = Number.parseFloat(cs.borderTopLeftRadius) >= 4;
+          if (isCard) {
+            origins.add(start);
+            if (pad > 0) origins.add(start + pad);
+            continue;
+          }
+
+          // Everything else only opens a new edge if it already sits on one.
+          if (origins.has(start) && pad > 0) origins.add(start + pad);
+        }
+        if (origins.size === before) break;
       }
 
       const allowed = new Set([...origins, gutter + 28]);
-      for (const box of host.querySelectorAll('img, span, div')) {
+      // `svg` is in the list because a leading mark is not always a box with a
+      // background: the media life ring is a bare 72px svg at the head of a row.
+      for (const box of host.querySelectorAll('img, span, div, svg')) {
         if (!shown(box)) continue;
         const r = box.getBoundingClientRect();
         const start = Math.round(r.left - col.left);
@@ -280,8 +320,21 @@ for (const brand of ['legacy', 'next']) {
         }
         if (!leftEdges.has(left)) leftEdges.set(left, el.textContent.trim().slice(0, 22));
       }
+      /*
+        One pixel of tolerance, because layout is fractional and this check is
+        not about fractions.
+
+        Three metric cards sharing a row with `flex-1` and a gap land on
+        fractional left edges, so a card's content box can compute to 32.5 and
+        round one way while the text inside it rounds the other. Reporting that
+        as a gutter violation is reporting a rounding mode. The tolerance is 1:
+        the deliberate 7px misalignment used to test this rule is still caught,
+        and so is anything a person could see.
+      */
+      const nearAllowed = (px) => [...allowed].some((edge) => Math.abs(edge - px) <= 1);
+
       for (const [px, sample] of leftEdges) {
-        if (!allowed.has(px)) {
+        if (!nearAllowed(px)) {
           problems.push({ rule: 'gutter', detail: `left ${px} ("${sample}"), gutter ${gutter}` });
         }
       }

@@ -413,6 +413,8 @@ Route `/home`
 - EC-5
 - Proactive Care, renews 14 May 2027
 - System healthy
+- Opening the cottage
+- After months unused, run water for a few minutes before heavy use. The bacteria in the media need feeding back up.
 - Book a visit
 - Order parts
 - Image alt text: Marc Bouchard
@@ -430,6 +432,7 @@ Route `/system`
 - Filter media
 - Due for replacement
 - Marc is replacing it on 12 August.
+- Tap a part to see what it does.
 - Estimated from the last replacement, not measured.
 - Model
 - Serial number
@@ -485,6 +488,18 @@ Route `/system`
 - Image alt text: Priya Nadeau
 - Image alt text: Marc Bouchard
 - Image alt text: Photo taken on the visit
+
+**Band: data**
+
+- What it has done
+- Litres treated
+- 1.3 million
+- Since 14 May 2019
+- Energy not used
+- 10,000 kWh
+- Against an aerated system
+- Your Ecoflo treats by trickling water through coconut husk. No blower, no aerator, nothing drawing power to do the treating.
+- An estimate from your install date and a two person household, not a meter reading.
 
 **Band: rail**
 
@@ -606,6 +621,9 @@ Route `/contract`
 - 8 October 2024
 - 16 July 2025
 - 22 April 2026
+- Covered this year
+- $572
+- $252 more than the plan cost
 - Without the plan
 - The same work priced individually
 - $1,710
@@ -697,17 +715,21 @@ Route `/parts`
 
 - Filter media, coconut husk, EC-5
 - FM-EC5-COCO
+- $260
 - $289
 - Add
 - Inspection lid seal
 - LID-SEAL-05
+- $31
 - $34
 - PMP
 - Effluent pump, 1/2 hp
 - PMP-EFF-12
+- $554
 - $615
 - Riser extension, 6 in
 - ACC-RISER-6
+- $70
 - $78
 - Image alt text: Filter media, coconut husk, EC-5
 - Image alt text: Inspection lid seal

@@ -134,7 +134,7 @@ export const next: Brand = {
     state: '150ms',
     sheet: '220ms',
     /** Route change. Content fades and rises 12px. */
-    route: '180ms',
+    route: '220ms',
     /**
      * The role switch, deliberately the longest transition in the app. It is the
      * one that carries an argument: the Masthead ground changing under an

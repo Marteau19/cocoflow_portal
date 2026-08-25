@@ -259,8 +259,26 @@ export const sections: Section[] = [
     phase: 'V1',
   },
   {
-    id: 'system-documents',
+    id: 'system-impact',
     callout: 3,
+    screen: '/system',
+    roles: ['client-owner'],
+    title: 'Environmental impact',
+    business:
+      'What a passive biofilter has quietly not done: no blower, no aerator, no power drawn to treat the water. A real difference from the systems Ecoflo competes with, and nobody is telling the customer about it.',
+    primaryUser: 'System owner',
+    systemOfRecord: ['Prototype only'],
+    dataDirection: 'read',
+    integration:
+      'Estimated from the install date and an assumed household size. There is no meter on an Ecoflo and there is no plan to add one, so this is arithmetic on a calendar and is labelled as an estimate on screen.',
+    bf: ['none'],
+    openDecision:
+      'Whether PTWE will stand behind a comparison against an aerated system in front of a customer in a regulated market, and what the per-household water and per-year energy figures actually are. All three inputs are placeholders in ASSUMPTIONS. If the answer to the comparison is no, this card comes out rather than being softened.',
+    phase: 'V2',
+  },
+  {
+    id: 'system-documents',
+    callout: 4,
     screen: '/system',
     roles: ['client-owner'],
     title: 'Documents',

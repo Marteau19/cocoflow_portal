@@ -25,6 +25,7 @@ import { useRef, useState } from 'react';
 import { Section } from '../../blueprint/Section';
 import { GOLDEN, accounts, assets, byId, contracts, territories } from '../../data/seedData';
 import { plural, t } from '../../i18n';
+import { tick } from '../../ui/motion';
 import { dayAndDate, daysFromToday, TODAY } from '../../lib/format';
 import {
   Band,
@@ -114,6 +115,7 @@ export const OwnerBook = () => {
       goTo(missingReason ? reasonRef.current : slotRef.current);
       return;
     }
+    tick();
     setBooked(true);
   };
 

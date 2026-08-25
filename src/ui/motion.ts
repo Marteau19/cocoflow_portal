@@ -76,3 +76,24 @@ export const useCountUp = (value: number, durationMs = 700): number => {
 
   return shown;
 };
+
+/**
+ * A short confirmation buzz.
+ *
+ * Only for the two moments the brief names, adding to an order and confirming a
+ * booking, because haptics stop meaning anything the moment they fire on every
+ * tap. 12ms is a tick rather than a buzz: long enough to feel, short enough that
+ * it does not read as an error.
+ *
+ * Silent where the API is absent, which is every desktop browser and iOS Safari.
+ * It is a garnish on a confirmation that is already visible on screen, never the
+ * confirmation itself.
+ *
+ * Respects `prefers-reduced-motion`. The preference is about vestibular comfort
+ * rather than taste, and a device buzzing in the hand is motion.
+ */
+export const tick = (): void => {
+  if (typeof navigator === 'undefined' || typeof navigator.vibrate !== 'function') return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  navigator.vibrate(12);
+};

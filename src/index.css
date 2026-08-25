@@ -87,6 +87,9 @@
    * property shot and the wider quote header.
    */
   --avatar-hero: 72px;
+  /* The cross section's explanation slot. Fixed so tapping a part swaps the
+     text without the facts below it jumping down the screen. */
+  --cutaway-note: 76px;
   --media-sm: 160px;
   --media-md: 180px;
 
@@ -424,6 +427,40 @@
    */
   [data-content-column] {
     padding-bottom: var(--scroll-end);
+  }
+
+  /**
+   * Route change.
+   *
+   * Content fades in and rises 12px, once, on arrival. DESIGN.md section 9
+   * specified it and nothing implemented it: the `--motion-route` token has been
+   * in both brand files since the first pass and no rule ever read it.
+   *
+   * The easing is the settle curve rather than a linear ramp, so the content
+   * decelerates into place instead of stopping dead. That is what reads as a
+   * spring without any of the overshoot, and overshoot on a whole screen of text
+   * is nausea rather than delight.
+   *
+   * Rise, not slide sideways. A horizontal transition implies a position in a
+   * sequence, and a four tab bar is not a sequence: tapping Account from Home is
+   * not a movement to the right.
+   *
+   * The global `prefers-reduced-motion` block at the foot of this file already
+   * collapses every animation to 0.01ms, so this needs no separate guard.
+   */
+  @keyframes route-enter {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .route-enter {
+    animation: route-enter var(--motion-route) var(--motion-ease-out) both;
   }
 
   /**

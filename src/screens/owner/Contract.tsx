@@ -14,16 +14,18 @@
  */
 
 import { Section } from '../../blueprint/Section';
+import { useCountUp } from '../../ui/motion';
 import {
   ASSUMPTIONS,
   GOLDEN,
+  planValue,
   assets,
   byId,
   contracts,
   workOrders,
 } from '../../data/seedData';
 import { t } from '../../i18n';
-import { daysFromToday, longDate, money } from '../../lib/format';
+import { PLAN_YEAR, daysFromToday, longDate, money } from '../../lib/format';
 import {
   Band,
   BandHead,
@@ -55,6 +57,9 @@ export const OwnerContract = () => {
     are in `ASSUMPTIONS` in seedData with the rest.
   */
   const wouldHaveCost = visits.reduce((sum, w) => sum + ASSUMPTIONS.listPrice[w.type], 0);
+
+  const value = planValue(contract.accountId, PLAN_YEAR);
+  const shownCovered = useCountUp(value?.covered ?? 0);
 
   return (
     <>
@@ -178,15 +183,41 @@ export const OwnerContract = () => {
                 )}
               </RowList>
 
-              <div className="flex items-baseline justify-between gap-3 border-t border-line bg-surface-sunk px-gutter py-3">
-                <div className="min-w-0">
-                  <Micro>{t('contract.value.withoutPlan')}</Micro>
-                  <p className="mt-1 text-caption text-ink2">
-                    {t('contract.value.withoutPlanDetail')}
+              {/*
+                The renewal defence, stated as a figure rather than asserted.
+
+                Nowhere did this product say what the plan had returned. A
+                customer deciding whether to renew was being asked to remember
+                two years of visits and price them himself. Both inputs are
+                assumptions and both are in ASSUMPTIONS in seedData with a TODO
+                on them; the figure is computed from committed covered work, so
+                a replacement booked for next week counts, because it is value
+                the plan has already delivered.
+              */}
+              {value && (
+                <div className="border-t border-line bg-surface-sunk px-gutter py-4">
+                  <Micro>{t('contract.value.covered')}</Micro>
+                  <p className="mt-1 text-display text-positive">
+                    {money(shownCovered, value.currency)}
                   </p>
+                  {value.ahead > 0 && (
+                    <p className="mt-1 text-body text-ink2">
+                      {t('contract.value.ahead', {
+                        amount: money(value.ahead, value.currency),
+                      })}
+                    </p>
+                  )}
+                  <div className="mt-3 flex items-baseline justify-between gap-3 border-t border-line pt-3">
+                    <div className="min-w-0">
+                      <Micro>{t('contract.value.withoutPlan')}</Micro>
+                      <p className="mt-1 text-caption text-ink2">
+                        {t('contract.value.withoutPlanDetail')}
+                      </p>
+                    </div>
+                    <p className="text-body font-medium text-ink">{money(wouldHaveCost)}</p>
+                  </div>
                 </div>
-                <p className="text-body font-medium text-ink">{money(wouldHaveCost)}</p>
-              </div>
+              )}
             </Band>
 
             {/* Changing or ending it, offered plainly rather than buried. */}

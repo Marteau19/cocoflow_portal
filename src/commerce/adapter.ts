@@ -31,6 +31,16 @@ export interface CatalogueItem {
   currency: Currency;
   /** True when the part fits the system this customer actually owns. */
   fitsMySystem: boolean;
+  /**
+   * What this customer pays, where a care plan brings it below list.
+   *
+   * Null when there is no plan, rather than equal to `price_jde`, so a screen
+   * cannot accidentally render a struck-through price identical to the one
+   * beside it. The discount was previously applied only as a line on the order
+   * summary, which meant the saving was invisible at the moment a person decides
+   * whether to buy: they saw list price on the shelf and found out at checkout.
+   */
+  memberPrice_jde: number | null;
   /** Null where no photograph of this category exists. See IMAGE_BY_CATEGORY. */
   image: string | null;
 }
@@ -112,6 +122,7 @@ export const prototypeAdapter: CommerceAdapter = {
 
   async listCatalogue(accountId) {
     const mine = modelsOwnedBy(accountId);
+    const member = hasActiveContract(accountId);
     return products.map((p) => ({
       sku: p.sku,
       name: p.name,
@@ -119,6 +130,9 @@ export const prototypeAdapter: CommerceAdapter = {
       price_jde: p.price_jde,
       currency: p.currency,
       fitsMySystem: p.fitsModels.some((m) => mine.includes(m)),
+      memberPrice_jde: member
+        ? Math.round(p.price_jde * (1 - CONTRACT_PARTS_DISCOUNT))
+        : null,
       image: IMAGE_BY_CATEGORY[p.category] ?? null,
     }));
   },

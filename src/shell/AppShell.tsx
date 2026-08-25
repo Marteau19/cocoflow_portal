@@ -15,6 +15,7 @@
  */
 
 import type { ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { BlueprintPanel } from '../blueprint/BlueprintPanel';
 import { GutterOverlay } from '../dev/GutterOverlay';
 import { DeviceFrame } from './DeviceFrame';
@@ -31,11 +32,19 @@ import { useRole } from './useRole';
  */
 const FramedRole = ({ children }: { children: ReactNode }) => {
   const { role } = useRole();
+  const { pathname } = useLocation();
 
   return (
     <DeviceFrame>
       <div className="min-h-0 flex-1 overflow-y-auto" data-content-column>
-        {children}
+        {/*
+          `key` on the pathname is what replays the entry animation on every
+          route change: without it React reuses the element and the animation
+          runs once, on the first screen the reader ever sees, and never again.
+        */}
+        <div key={pathname} className="route-enter">
+          {children}
+        </div>
       </div>
       <BottomNav role={role} />
     </DeviceFrame>

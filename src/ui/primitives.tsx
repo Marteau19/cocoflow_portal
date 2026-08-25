@@ -12,6 +12,7 @@
  * a label, no weight 600, no hex value anywhere below this line.
  */
 
+import { useEffect, useState } from 'react';
 import type { ButtonHTMLAttributes, CSSProperties, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { icons, type IconName } from './icons';
@@ -1210,7 +1211,14 @@ export const Metric = ({
     </>
   );
 
-  const shell = 'flex-1 rounded-card border border-line bg-surface p-2 text-left';
+  /*
+    Shadowed, like every other card. DESIGN.md section 4 gives every card a
+    resting shadow, and these are cards: rounded, bordered, lifted off the band.
+    Without it a screen whose only cards are metric tiles has no elevation at
+    all, which the design audit reports and which reads as three outlined boxes
+    rather than three objects.
+  */
+  const shell = 'flex-1 rounded-card border border-line bg-surface shadow-card p-2 text-left';
 
   return to ? (
     <Link to={to} className={`${shell} transition-colors duration-state ease-ease hover:bg-surface-sunk`}>
@@ -1260,6 +1268,55 @@ export const Fact = ({ children }: { children: string }) => (
     {children}
   </span>
 );
+
+/**
+ * Share, where the platform offers it.
+ *
+ * `navigator.share` is the only honest way to do this: it hands the content to
+ * whatever the person already uses rather than making them choose from a row of
+ * network glyphs we would have to add to a fourteen icon budget, and it is the
+ * only route that works inside an app webview.
+ *
+ * It renders nothing at all where the API is absent, which is most desktop
+ * browsers. A share button that opens nothing is worse than no share button, and
+ * a fallback that copies a link is a different feature wearing the same label.
+ * Checked in an effect rather than during render, because the check touches
+ * `navigator` and the component should behave the same if it is ever rendered on
+ * a server.
+ */
+export const Share = ({
+  title,
+  text,
+  label,
+  className = '',
+}: {
+  title: string;
+  text: string;
+  label: string;
+  className?: string;
+}) => {
+  const [supported, setSupported] = useState(false);
+
+  useEffect(() => {
+    setSupported(typeof navigator !== 'undefined' && typeof navigator.share === 'function');
+  }, []);
+
+  if (!supported) return null;
+
+  return (
+    <Button
+      variant="quiet"
+      size="secondary"
+      className={className}
+      onClick={() => {
+        // A dismissed share sheet rejects, and a dismissal is not an error.
+        void navigator.share({ title, text }).catch(() => undefined);
+      }}
+    >
+      {label}
+    </Button>
+  );
+};
 
 /* ------------------------------------------------------------------ */
 /* Empty state                                                        */

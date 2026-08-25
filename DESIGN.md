@@ -958,6 +958,13 @@ arrival.**
 | Sheet, modal, Blueprint panel | Transform and opacity | 220ms | `cubic-bezier(0.2, 0, 0, 1)` |
 | Route change | Content fades and rises 12px | 180ms | `ease-out` |
 | **Role switch** | Masthead ground cross fades, content rises 16px, hero re-counts | 320ms | `cubic-bezier(0.2, 0, 0, 1)` |
+| **Route change** | Content fades in and rises 12px, once, on arrival | 220ms | `cubic-bezier(0.16, 1, 0.3, 1)` |
+
+Route change was specified here from the first pass and implemented in the
+client-owner pass. The `--motion-route` token sat in both brand files for four
+passes with no rule reading it. It rises rather than sliding sideways: a
+horizontal transition implies a position in a sequence, and a four tab bar is not
+a sequence. Tapping Account from Home is not a movement to the right.
 | Hero number, first mount only | Counts from 0 to value | 700ms | `ease-out` |
 | List arrival | Stagger, 40ms per row, first 6 rows only | 200ms each | `ease-out` |
 | Skeleton to content | Cross fade | 180ms | `ease-out` |

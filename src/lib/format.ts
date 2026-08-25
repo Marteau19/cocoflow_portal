@@ -35,6 +35,16 @@ export const TODAY: string =
  */
 export const NOW = '08:48';
 
+/**
+ * The plan year every "this year" figure is computed against.
+ *
+ * Derived from the pinned day rather than from the clock, for the same reason:
+ * on 1 January the plan value figure would otherwise drop to zero on every
+ * machine showing the demo, and the number it is meant to make is the opposite
+ * of zero.
+ */
+export const PLAN_YEAR = Number(TODAY.slice(0, 4));
+
 /** Minutes past midnight, for arithmetic on the pinned clock. */
 const minutesInto = (time: string): number => {
   const [h, m] = time.split(':').map(Number);
@@ -142,6 +152,20 @@ export const money = (amount: number, currency = 'CAD'): string => {
   const rounded = Math.round(amount);
   const grouped = rounded.toLocaleString('en-CA');
   return currency === 'CAD' ? `$${grouped}` : `${grouped} ${currency}`;
+};
+
+/**
+ * `1.4 million`, `812,000`, `9,400`.
+ *
+ * Large counts a person reads rather than audits. Litres treated since 2019 is
+ * roughly five million, and five million rendered as 5,110,000 invites somebody
+ * to check the last three digits of an estimate that is not accurate to the last
+ * three thousand.
+ */
+export const approxCount = (value: number): string => {
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)} million`;
+  if (value >= 10_000) return `${Math.round(value / 1000).toLocaleString('en-CA')},000`;
+  return Math.round(value).toLocaleString('en-CA');
 };
 
 /** `$2.1M`, for network figures where the exact dollar is noise. */

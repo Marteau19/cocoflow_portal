@@ -36,6 +36,7 @@ import {
 } from '../../data/seedData';
 import { plural, t } from '../../i18n';
 import { money } from '../../lib/format';
+import { tick } from '../../ui/motion';
 import {
   Band,
   BandHead,
@@ -107,6 +108,7 @@ export const OwnerParts = () => {
   useEffect(() => () => window.clearTimeout(undoTimer.current), []);
 
   const add = (sku: string) => {
+    tick();
     void commerce.addToCart(sku, 1).then(setCart);
   };
   const setQuantity = (sku: string, quantity: number) => {
@@ -283,8 +285,29 @@ export const OwnerParts = () => {
             </Band>
 
             {catalogue === null ? (
+              /*
+                A skeleton, not a spinner.
+
+                A spinner says "something is happening"; a skeleton says "a list
+                of parts is about to be here, and this is its shape". The second
+                is the one a reader can use, and it stops the screen jumping when
+                the rows land because the space is already the right size.
+              */
               <Band kind="data" flush>
-                <div className="px-gutter py-6" />
+                <RowList>
+                  {[0, 1, 2, 3].map((row) => (
+                    <Row key={row}>
+                      <div className="flex items-start gap-3" aria-hidden>
+                        <span className="h-6 w-6 shrink-0 animate-pulse rounded-control bg-surface-sunk" />
+                        <div className="min-w-0 flex-1">
+                          <span className="block h-2 w-3/5 animate-pulse rounded-control bg-surface-sunk" />
+                          <span className="mt-2 block h-2 w-2/5 animate-pulse rounded-control bg-surface-sunk" />
+                          <span className="mt-3 block h-3 w-1/4 animate-pulse rounded-control bg-surface-sunk" />
+                        </div>
+                      </div>
+                    </Row>
+                  ))}
+                </RowList>
               </Band>
             ) : shown.length === 0 ? (
               <Band kind="data" flush>
@@ -334,9 +357,29 @@ export const OwnerParts = () => {
                             </div>
 
                             <div className="mt-2 flex items-center justify-between gap-3">
-                              <p className="text-body font-medium text-ink">
-                                {money(item.price_jde, item.currency)}
-                              </p>
+                              {/*
+                                Member pricing on the shelf, not at the checkout.
+
+                                The care plan discount used to appear only as a
+                                line on the order summary, so the saving was
+                                invisible at the moment a person decides whether
+                                to buy. The list price is struck through and the
+                                plan price leads, because the plan price is what
+                                this reader actually pays.
+                              */}
+                              <div className="min-w-0">
+                                <p className="text-body font-medium text-ink">
+                                  {money(
+                                    item.memberPrice_jde ?? item.price_jde,
+                                    item.currency,
+                                  )}
+                                </p>
+                                {item.memberPrice_jde !== null && (
+                                  <p className="text-caption text-ink3">
+                                    <s>{money(item.price_jde, item.currency)}</s>
+                                  </p>
+                                )}
+                              </div>
 
                               {/*
                                 Add is the row's primary action, so it is a filled

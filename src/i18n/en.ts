@@ -62,6 +62,8 @@ export const en = {
   'shop.countOther': '{count} parts',
 
   'shop.item.add': 'Add',
+  'shop.item.listPrice': 'Normally {amount}',
+  'shop.item.memberPrice': 'Your price with {plan}',
   'shop.item.addOne': 'Add one {name}',
   'shop.item.removeOne': 'Remove one {name}',
   'shop.item.doesNotFit': 'Not for the {model}',
@@ -477,4 +479,52 @@ export const en = {
   'contract.options.end': 'End the plan',
   'contract.options.endDetail': 'Stop any time. Cover runs to {date}, with no further charge.',
   'contract.options.ask': 'Ask about my plan',
+
+  /* ---------------------------------------------------------------- */
+  /* The system cross section, screen 8                                */
+  /* ---------------------------------------------------------------- */
+  'system.cutaway.title': 'Your Ecoflo, in cross section',
+  'system.cutaway.hint': 'Tap a part to see what it does.',
+  'system.cutaway.ring': 'Filter media life, {percent} percent remaining',
+
+  'system.cutaway.lid': 'Inspection lid',
+  'system.cutaway.lidDetail': 'The green cover in your lawn. It is how a technician reaches everything below, which is why we ask for a clear path to it.',
+
+  'system.cutaway.media': 'Filter media',
+  'system.cutaway.mediaDetail': 'A bed of coconut husk. Water trickles through it and the bacteria living in the husk do the treating. No power, no chemicals, no moving parts.',
+
+  'system.cutaway.pump': 'Effluent pump',
+  'system.cutaway.pumpDetail': 'Moves treated water out to your field. The only part that uses electricity, and the only one that can wear out between visits.',
+
+  /* ---------------------------------------------------------------- */
+  /* Seasonal slot, Home                                               */
+  /* ---------------------------------------------------------------- */
+  'season.freeze.title': 'Freeze risk',
+  'season.freeze.body': 'Keep snow off the lid and do not let the driveway ice over. We need a clear path if anything needs looking at.',
+
+  'season.spring.title': 'Spring inspection',
+  'season.spring.body': 'Meltwater is the hardest week of the year for any septic system. Now is the time to have yours looked at.',
+  'season.spring.action': 'Book a visit',
+
+  'season.opening.title': 'Opening the cottage',
+  'season.opening.body': 'After months unused, run water for a few minutes before heavy use. The bacteria in the media need feeding back up.',
+
+  'season.closing.title': 'Closing for winter',
+  'season.closing.body': 'Do not pump the tank out before you leave. An empty tank can float, and the bacteria have to start again from nothing.',
+  'season.closing.action': 'Book a visit',
+
+  /* ---------------------------------------------------------------- */
+  /* Environmental impact, System                                      */
+  /* ---------------------------------------------------------------- */
+  'impact.title': 'What it has done',
+  'impact.litres': 'Litres treated',
+  'impact.litresNote': 'Since {date}',
+  'impact.energy': 'Energy not used',
+  'impact.energyNote': 'Against an aerated system',
+  'impact.kwh': ' kWh',
+  'impact.body': 'Your Ecoflo treats by trickling water through coconut husk. No blower, no aerator, nothing drawing power to do the treating.',
+  'impact.estimate': 'An estimate from your install date and a two person household, not a meter reading.',
+  'impact.share': 'Share',
+  'impact.shareTitle': 'My Ecoflo',
+  'impact.shareText': 'My Ecoflo has treated about {litres} litres since {year}, using no power to do it.',
 } as const;

@@ -526,6 +526,33 @@
     padding: var(--space-1) var(--gutter) var(--space-4);
   }
 
+  /**
+   * The page ground behind the handset is white.
+   *
+   * Only in the framed register, and only above the frame breakpoint, which are
+   * the two conditions under which a device frame actually exists. Below 900px
+   * there is no phone and the body's background is the app's own canvas, which
+   * has to stay the canvas; and in the full-bleed register the workspace ground
+   * is the canvas by design, so a white body there would put the sidebar and the
+   * tables on the wrong colour.
+   *
+   * `--color-surface` rather than a literal white: it is white in both brands
+   * today, it is a real token so the rule survives a brand switch, and index.css
+   * carries no colour literals by policy.
+   *
+   * The top bar comes with it. It is a full-width strip directly above the
+   * stage, painted in the same canvas, so leaving it behind would draw a beige
+   * band across the top of an otherwise white page. Its bottom hairline is what
+   * separates it, and that stays.
+   */
+  body[data-register='framed'] {
+    background-color: var(--color-surface);
+  }
+
+  body[data-register='framed'] [data-top-bar] {
+    background-color: var(--color-surface);
+  }
+
   .device-shell {
     /* 420px screen, plus 14px of bezel and 5px of rail on each side. */
     width: 458px;

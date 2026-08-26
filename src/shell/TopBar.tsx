@@ -104,7 +104,13 @@ export const TopBar = () => {
   const { brand, brandId, toggleBrand } = useBrand();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-bar h-6 border-b border-line bg-canvas">
+    /* `data-top-bar` is the hook index.css uses to turn this strip white behind
+       the device frame. An attribute rather than a class so the default ground
+       stays declared here with the rest of the bar's styling. */
+    <header
+      data-top-bar
+      className="fixed inset-x-0 top-0 z-bar h-6 border-b border-line bg-canvas"
+    >
       <div className="mx-auto flex h-full max-w-shell items-center justify-between gap-3 px-gutter">
         <div className="flex items-center gap-3">
           <img src={brand.logo.wordmark} alt="Ecoflo" className="h-2 w-auto" />

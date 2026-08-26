@@ -265,6 +265,20 @@ All colour lives in `src/brands/*.ts` as tokens and is consumed as CSS custom
 properties. **No hex value appears in any component file.** The one exemption,
 the drawn handset, is stated in section 6.
 
+**The page ground behind the handset is `--surface`, not `--canvas`.** Only in
+the framed register and only above the 900px frame breakpoint, which are the two
+conditions under which a frame exists at all. The device frame is there so a
+client screen does not read as a broken desktop page, and it does that job by
+being visibly a phone on a page rather than a phone-shaped area of the same
+colour as its own contents. On the canvas the two grounds were the same warm
+paper and the frame read as a border drawn around part of the page; on white the
+app's canvas belongs to the app. The top bar takes the same ground, because it is
+a full-width strip directly above the stage and leaving it behind would draw a
+beige band across the top of an otherwise white page; its bottom hairline is what
+separates it and that stays. Below the breakpoint there is no phone and the
+body's ground is the app's own canvas, and in the full-bleed register the
+workspace ground is the canvas by design, so neither changes.
+
 ### Semantic roles
 
 Five roles. A token belongs to exactly one.

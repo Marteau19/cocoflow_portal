@@ -5,3 +5,7 @@ dist-ssr
 .DS_Store
 .vite
 *.tsbuildinfo
+
+# Phase review screenshots. Regenerated on demand by scripts/shoot.mjs;
+# they are review material, not source, and binaries in git age badly.
+docs/shots

@@ -12,6 +12,7 @@
  * a label, no weight 600, no hex value anywhere below this line.
  */
 
+import { useEffect, useState } from 'react';
 import type { ButtonHTMLAttributes, CSSProperties, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { icons, type IconName } from './icons';
@@ -30,7 +31,18 @@ export type ChipTone = 'accent' | 'neutral' | 'positive' | 'warn' | 'alert' | 'o
 
 const chipTones: Record<ChipTone, string> = {
   accent: 'bg-accent-soft text-accent-ink',
-  neutral: 'bg-surface-sunk text-ink2',
+  /*
+    Surface plus a hairline, not a sunk fill.
+
+    `--surface-sunk` is also the ground of every Rail and Closing band, so a
+    neutral chip on one of those bands was exactly the colour of the band behind
+    it and only the glyph showed. `Status` learned this two passes ago and its
+    neutral pill already carries the fix; this is the same bug in the other
+    primitive that tints a ground, and it stayed hidden until a Rail band on the
+    care plan screen actually asked for a neutral chip. The hairline separates it
+    on Rail and Closing, the fill separates it on Data.
+  */
+  neutral: 'border border-line-strong bg-surface text-ink2',
   positive: 'bg-positive-soft text-positive',
   warn: 'bg-warn-soft text-warn',
   alert: 'bg-alert-soft text-alert',
@@ -288,6 +300,15 @@ export const ButtonLink = ({
   onBand = false,
   children,
   className = '',
+  /**
+   * Required when the link's visible content is a glyph.
+   *
+   * It was not forwarded at all, which meant every icon-only link in the build
+   * announced itself by whatever the icon's own markup happened to contain,
+   * which is nothing. The prop existing and being dropped is worse than it not
+   * existing: the call sites passed it and looked correct.
+   */
+  'aria-label': ariaLabel,
 }: {
   to: string;
   variant?: ButtonVariant;
@@ -297,10 +318,11 @@ export const ButtonLink = ({
   onBand?: boolean;
   children: ReactNode;
   className?: string;
+  'aria-label'?: string;
 }) => {
   const { className: cls, style } = buttonStyle(variant, size, onBand, block, className);
   return (
-    <Link to={to} className={cls} style={style}>
+    <Link to={to} className={cls} style={style} aria-label={ariaLabel}>
       {icon && (
         <span className="-mt-px flex h-icon w-icon shrink-0 items-center justify-center">
           <Icon name={icon} />
@@ -377,18 +399,30 @@ export const Card = ({
   className = '',
 }: {
   children: ReactNode;
-  tone?: 'card' | 'raised' | 'flat';
+  /**
+   * `brand` is the deep ground as a card rather than as a full-bleed band.
+   *
+   * The deep colour was previously reachable only as a Masthead, so the only way
+   * to give a block the weight of the brand was to run it edge to edge and give
+   * it the top of a screen. That is why every tab opened with a dark title card:
+   * the composition had one loud register and one quiet one, and anything that
+   * mattered had to claim the loud one. As a card it can carry a single block
+   * partway down a screen, which is what the live-visit state needs.
+   *
+   * It carries no border: a hairline tuned for paper is invisible on it, and the
+   * ground change is already the boundary.
+   */
+  tone?: 'card' | 'raised' | 'flat' | 'brand';
   className?: string;
 }) => {
   const tones = {
-    card: 'bg-surface shadow-card',
-    raised: 'bg-surface-raised shadow-raised',
-    flat: 'bg-surface shadow-none',
+    card: 'bg-surface shadow-card border border-line',
+    raised: 'bg-surface-raised shadow-raised border border-line',
+    flat: 'bg-surface shadow-none border border-line',
+    brand: 'bg-band-deep text-on-band shadow-card border-0',
   } as const;
   return (
-    <div className={`overflow-hidden rounded-card border border-line ${tones[tone]} ${className}`}>
-      {children}
-    </div>
+    <div className={`overflow-hidden rounded-card ${tones[tone]} ${className}`}>{children}</div>
   );
 };
 
@@ -546,7 +580,7 @@ export const Field = ({
 /* Status                                                             */
 /* ------------------------------------------------------------------ */
 
-export type StatusTone = 'neutral' | 'warn' | 'alert' | 'good' | 'accent';
+export type StatusTone = 'neutral' | 'info' | 'warn' | 'alert' | 'good' | 'accent';
 
 /**
  * Solid signal colour on the matching tinted ground.
@@ -569,6 +603,15 @@ const statusTones: Record<StatusTone, { pill: string; dot: string; text: string 
     the fill separates it on Rail and Closing, the hairline on Data.
   */
   neutral: { pill: 'border border-line-strong bg-surface text-ink2', dot: 'bg-ink3', text: 'text-ink2' },
+  /*
+    Information, as distinct from neutral.
+
+    `neutral` says "no signal here"; `info` says "read this, it is not a problem".
+    The build had no way to say the second, so covered-by-your-plan and
+    this-is-an-estimate were both being drawn as `neutral` on a sunk ground and
+    vanishing into the Rail bands they sat on.
+  */
+  info: { pill: 'bg-info-soft text-info', dot: 'bg-info', text: 'text-info' },
   warn: { pill: 'bg-warn-soft text-warn', dot: 'bg-warn', text: 'text-warn' },
   alert: { pill: 'bg-alert-soft text-alert', dot: 'bg-alert', text: 'text-alert' },
   good: { pill: 'bg-positive-soft text-positive', dot: 'bg-positive', text: 'text-positive' },
@@ -622,13 +665,14 @@ export const Flag = ({
   icon,
 }: {
   children: string;
-  tone?: 'warn' | 'alert' | 'neutral' | 'good';
+  tone?: 'warn' | 'alert' | 'neutral' | 'good' | 'info';
   icon?: IconName;
 }) => {
   const tones = {
     warn: 'border-warn bg-warn-soft text-warn',
     alert: 'border-alert bg-alert-soft text-alert',
     good: 'border-positive bg-positive-soft text-positive',
+    info: 'border-info bg-info-soft text-info',
     neutral: 'border-line-strong bg-surface-sunk text-ink2',
   } as const;
   return (
@@ -694,6 +738,104 @@ export const Tabs = <T extends string>({
   </div>
 );
 
+/**
+ * A search field.
+ *
+ * Fine at six SKUs, necessary at forty, and the catalogue is going to be forty.
+ * A person who knows they want a lid seal should not have to read past a pump to
+ * find one.
+ *
+ * `type="search"` rather than `type="text"`, so a handset offers a Search key on
+ * the keyboard instead of a return key, and so the browser's own clear control
+ * appears. Wrapped in a form with `role="search"` and its own submit handler
+ * that does nothing, because filtering is live: without the form, pressing the
+ * Search key on iOS navigates the page.
+ *
+ * `--field-line` rather than `--line`, because an input outline is a meaningful
+ * non-text control and owes 3:1, where a structural hairline only has to be
+ * perceptible. That distinction is why inputs used to read as unbordered.
+ */
+export const SearchField = ({
+  label,
+  placeholder,
+  value,
+  onChange,
+}: {
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+}) => (
+  <form role="search" className="w-full" onSubmit={(event) => event.preventDefault()}>
+    <label className="flex min-h-tap w-full items-center gap-2 rounded-control border border-field-line bg-surface px-3">
+      <span className="shrink-0 text-ink3">
+        <Icon name="search" />
+      </span>
+      <span className="sr-only">{label}</span>
+      <input
+        type="search"
+        value={value}
+        placeholder={placeholder}
+        onChange={(event) => onChange(event.target.value)}
+        aria-label={label}
+        // `size={1}` removes the input's intrinsic 20-character width, which is
+        // what a flex row has to fight against to let it shrink at all.
+        size={1}
+        className="min-w-0 flex-1 bg-transparent text-body text-ink outline-none placeholder:text-ink3"
+      />
+    </label>
+  </form>
+);
+
+/**
+ * A row of filter chips.
+ *
+ * Distinct from `Tabs`, which is a tablist changing what the screen is showing
+ * you at the top level. This is a second axis inside that: fit is the tab,
+ * category is the chip. Drawing both as tabs would have claimed they were the
+ * same kind of choice, and drawing the fit switch as chips would have buried the
+ * one filter that carries the whole value of the screen.
+ *
+ * It scrolls horizontally rather than wrapping, so adding categories lengthens
+ * the strip instead of pushing the catalogue down the page.
+ */
+export const Chips = <T extends string>({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: readonly { value: T; label: string }[];
+  value: T;
+  onChange: (value: T) => void;
+}) => (
+  <div
+    role="group"
+    aria-label={label}
+    className="-mx-gutter flex gap-2 overflow-x-auto px-gutter pb-1"
+  >
+    {options.map((option) => {
+      const active = option.value === value;
+      return (
+        <button
+          key={option.value}
+          type="button"
+          aria-pressed={active}
+          onClick={() => onChange(option.value)}
+          className={`min-h-tap shrink-0 whitespace-nowrap rounded-pill border px-3 text-caption transition-colors duration-state ease-ease ${
+            active
+              ? 'border-ink bg-ink text-surface font-medium'
+              : 'border-line-strong bg-surface text-ink2 hover:text-ink'
+          }`}
+        >
+          {option.label}
+        </button>
+      );
+    })}
+  </div>
+);
+
 /** A pill track that fills with accent when on, with a white knob. */
 export const Toggle = ({
   label,
@@ -717,14 +859,14 @@ export const Toggle = ({
       aria-checked={checked}
       aria-label={label}
       onClick={() => onChange(!checked)}
-      className={`relative h-[28px] w-[48px] shrink-0 rounded-pill border transition-colors duration-state ease-ease ${
+      className={`relative h-toggle-track w-toggle-track shrink-0 rounded-pill border transition-colors duration-state ease-ease ${
         checked ? 'border-accent bg-accent' : 'border-line-strong bg-surface-sunk'
       }`}
     >
       <span
         aria-hidden
-        className={`absolute top-[2px] block h-[22px] w-[22px] rounded-pill bg-surface shadow-card transition-transform duration-state ease-ease ${
-          checked ? 'translate-x-[22px]' : 'translate-x-[2px]'
+        className={`absolute top-toggle-inset block h-toggle-knob w-toggle-knob rounded-pill bg-surface shadow-card transition-transform duration-state ease-ease ${
+          checked ? 'translate-x-toggle-throw' : 'translate-x-toggle-inset'
         }`}
       />
     </button>
@@ -1024,6 +1166,158 @@ export const Kpi = ({
   );
 };
 
+/**
+ * One of three figures in a row.
+ *
+ * A card rather than a `Kpi` on a band, because these three are read against
+ * each other and a row of bare figures on one ground has nothing to say where
+ * one ends and the next begins. At 375px three cards is 105px each, which is why
+ * the label is `micro`, the figure is `section` rather than `display`, and the
+ * note is allowed to wrap to two lines and no more.
+ *
+ * `tone` colours the figure, not the card. A tinted card in a row of three reads
+ * as the important one, and these are peers.
+ */
+export const Metric = ({
+  label,
+  value,
+  unit,
+  note,
+  tone = 'ink',
+  to,
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+  note?: string;
+  tone?: 'ink' | 'positive' | 'warn' | 'info';
+  to?: string;
+}) => {
+  const tones = {
+    ink: 'text-ink',
+    positive: 'text-positive',
+    warn: 'text-warn',
+    info: 'text-info',
+  } as const;
+
+  const body = (
+    <>
+      <Micro className="text-ink3">{label}</Micro>
+      <p className={`mt-1 text-h1 ${tones[tone]}`}>
+        {value}
+        {unit && <span className="text-section">{unit}</span>}
+      </p>
+      {note && <p className="mt-1 text-caption text-ink2">{note}</p>}
+    </>
+  );
+
+  /*
+    Shadowed, like every other card. DESIGN.md section 4 gives every card a
+    resting shadow, and these are cards: rounded, bordered, lifted off the band.
+    Without it a screen whose only cards are metric tiles has no elevation at
+    all, which the design audit reports and which reads as three outlined boxes
+    rather than three objects.
+  */
+  const shell = 'flex-1 rounded-card border border-line bg-surface shadow-card p-2 text-left';
+
+  return to ? (
+    <Link to={to} className={`${shell} transition-colors duration-state ease-ease hover:bg-surface-sunk`}>
+      {body}
+    </Link>
+  ) : (
+    <div className={shell}>{body}</div>
+  );
+};
+
+/**
+ * A journey, drawn as a track.
+ *
+ * Only ever paired with the same figure in words beside it. A bar on its own is
+ * a shape a reader has to estimate, and "about two thirds of the way" is not
+ * what somebody waiting for a technician wants to know. `aria-hidden` for the
+ * same reason: the sentence next to it already carries the value, and announcing
+ * a percentage after "arrives in twelve minutes" is noise.
+ */
+export const Track = ({ progress, onBand = false }: { progress: number; onBand?: boolean }) => (
+  <div
+    aria-hidden
+    className={`h-1 w-full overflow-hidden rounded-pill ${
+      onBand ? 'bg-on-band-soft' : 'bg-surface-sunk'
+    }`}
+  >
+    <div
+      className={`h-full rounded-pill transition-[width] duration-sheet ease-out ${
+        onBand ? 'bg-accent-on-band' : 'bg-accent'
+      }`}
+      style={{ width: `${Math.round(Math.min(1, Math.max(0, progress)) * 100)}%` }}
+    />
+  </div>
+);
+
+/**
+ * A chip carrying one fact.
+ *
+ * The counterpart to the copy rule in the brief: three facts stated as three
+ * chips beat the same three facts buried in twenty-five words of prose, because
+ * a chip can be scanned and a sentence has to be read. Unlike `Status` this
+ * carries no tone, because these are facts rather than states, and colouring a
+ * fact invents a judgement about it.
+ */
+export const Fact = ({ children }: { children: string }) => (
+  <span className="inline-flex shrink-0 items-center rounded-pill border border-line bg-surface px-2 py-1 text-caption text-ink2">
+    {children}
+  </span>
+);
+
+/**
+ * Share, where the platform offers it.
+ *
+ * `navigator.share` is the only honest way to do this: it hands the content to
+ * whatever the person already uses rather than making them choose from a row of
+ * network glyphs we would have to add to a fourteen icon budget, and it is the
+ * only route that works inside an app webview.
+ *
+ * It renders nothing at all where the API is absent, which is most desktop
+ * browsers. A share button that opens nothing is worse than no share button, and
+ * a fallback that copies a link is a different feature wearing the same label.
+ * Checked in an effect rather than during render, because the check touches
+ * `navigator` and the component should behave the same if it is ever rendered on
+ * a server.
+ */
+export const Share = ({
+  title,
+  text,
+  label,
+  className = '',
+}: {
+  title: string;
+  text: string;
+  label: string;
+  className?: string;
+}) => {
+  const [supported, setSupported] = useState(false);
+
+  useEffect(() => {
+    setSupported(typeof navigator !== 'undefined' && typeof navigator.share === 'function');
+  }, []);
+
+  if (!supported) return null;
+
+  return (
+    <Button
+      variant="quiet"
+      size="secondary"
+      className={className}
+      onClick={() => {
+        // A dismissed share sheet rejects, and a dismissal is not an error.
+        void navigator.share({ title, text }).catch(() => undefined);
+      }}
+    >
+      {label}
+    </Button>
+  );
+};
+
 /* ------------------------------------------------------------------ */
 /* Empty state                                                        */
 /* ------------------------------------------------------------------ */
@@ -1102,7 +1396,19 @@ export const Note = ({
  * labelled placeholder rather than a stand-in from a neighbouring category,
  * because a confidently wrong picture is worse than an admitted gap.
  */
-export const Thumb = ({ src, alt }: { src: string | null; alt: string }) =>
+export const Thumb = ({
+  src,
+  alt,
+  label,
+  title,
+}: {
+  src: string | null;
+  alt: string;
+  /** The part number, shown in place of a photograph. */
+  label?: string;
+  /** What the absence means, for a pointer. */
+  title?: string;
+}) =>
   src ? (
     <img
       src={src}
@@ -1110,15 +1416,77 @@ export const Thumb = ({ src, alt }: { src: string | null; alt: string }) =>
       className="h-6 w-6 shrink-0 rounded-control border border-line bg-surface object-contain"
     />
   ) : (
+    /*
+      The fallback used to read "N/A" in grey on a sunk square.
+
+      Three things were wrong with it. It was the only place in the product that
+      spoke in form-field abbreviation. It sat beside real photography, so a row
+      with no picture read as a row with a broken picture. And it said nothing:
+      "N/A" beside a $615 pump answers no question a person looking at that row
+      is asking.
+
+      What it says now is what the row is: a part, and which part. The accent
+      tint reads as a deliberate placeholder rather than a failure, the outline
+      glyph carries the category, and the part number is the thing a customer
+      matching a component against the one in their hand actually needs. No new
+      icon: `package` is already in the budget and a part in a box is exactly
+      what it means.
+    */
     <span
-      className="grid h-6 w-6 shrink-0 place-items-center rounded-control border border-line bg-surface-sunk"
-      title="No photograph on file for this part"
+      className="flex h-6 w-6 shrink-0 flex-col items-center justify-center gap-px rounded-control border border-line bg-accent-soft px-px text-accent-ink"
+      title={title}
     >
-      {/* `micro` rather than an icon: the icon budget has no "no image" glyph, and
-          spending one on an absence would be the wrong trade. */}
-      <span className="text-micro text-ink3">N/A</span>
+      <Icon name="package" />
+      {label && (
+        <span className="w-full truncate text-center font-mono text-micro leading-none">
+          {label}
+        </span>
+      )}
     </span>
   );
+
+/**
+ * An undo strip.
+ *
+ * A destructive action a person can reverse does not need a confirmation dialog
+ * in front of it. A dialog taxes every correct removal to catch the rare wrong
+ * one; an undo taxes nothing and catches all of them. It is also the only one of
+ * the two that works when the mistake is noticed a second later rather than a
+ * second earlier.
+ *
+ * Presentational on purpose: no portal, no fixed positioning, no timer of its
+ * own. It renders where it is placed, and the screen that owns it decides when it
+ * appears and when it goes. A toast that positions itself is a toast that
+ * eventually lands on top of something it should not, and inside a scrolling
+ * column with a sticky bar beneath it, that something is always the sticky bar.
+ *
+ * The action is a real 48px control rather than a text link, for the same reason
+ * the thing that caused it is: an undo you have to aim at is an undo you lose.
+ */
+export const Toast = ({
+  message,
+  actionLabel,
+  onAction,
+}: {
+  message: string;
+  actionLabel: string;
+  onAction: () => void;
+}) => (
+  <div
+    role="status"
+    aria-live="polite"
+    className="flex items-center justify-between gap-3 border-t border-line bg-band-deep px-gutter py-2 text-on-band"
+  >
+    <p className="min-w-0 text-caption">{message}</p>
+    <button
+      type="button"
+      onClick={onAction}
+      className="-mr-control-compact inline-flex min-h-tap shrink-0 items-center px-control-compact text-control font-medium text-on-band underline underline-offset-2"
+    >
+      {actionLabel}
+    </button>
+  </div>
+);
 
 /* ------------------------------------------------------------------ */
 /* People                                                             */
@@ -1141,7 +1509,8 @@ export const Avatar = ({
   /** `hero` is for the client home only, where the face is the reassurance. */
   size?: 'md' | 'lg' | 'hero';
 }) => {
-  const dimensions = size === 'hero' ? 'h-[72px] w-[72px]' : size === 'lg' ? 'h-6 w-6' : 'h-5 w-5';
+  const dimensions =
+    size === 'hero' ? 'h-avatar-hero w-avatar-hero' : size === 'lg' ? 'h-6 w-6' : 'h-5 w-5';
 
   if (photo) {
     return (

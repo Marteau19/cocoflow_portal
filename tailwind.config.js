@@ -57,13 +57,20 @@ export default {
       'warn-soft': 'var(--color-warn-soft)',
       alert: 'var(--color-alert)',
       'alert-soft': 'var(--color-alert-soft)',
+      info: 'var(--color-info)',
+      'on-info': 'var(--color-on-info)',
+      'info-soft': 'var(--color-info-soft)',
     },
 
-    // The six-step scale from DESIGN.md section 4, plus the page gutter, which
-    // is a layout constant rather than a brand value.
+    // The spacing scale from DESIGN.md section 4, plus the 4px base step and the
+    // page gutter, which are layout constants rather than brand values.
     spacing: {
       0: '0px',
       px: '1px',
+      // The 4px base step. A layout constant rather than a brand value, for the
+      // same reason as the gutter: both identities agree on it, and prepending it
+      // to the brand array would renumber every --space-N in the build.
+      0.5: 'var(--space-half)',
       1: 'var(--space-1)',
       2: 'var(--space-2)',
       3: 'var(--space-3)',
@@ -127,6 +134,15 @@ export default {
           fontWeight: 'var(--step-h1-weight)',
         },
       ],
+      // Card and band headers. Register independent: see the note on the token.
+      section: [
+        'var(--type-section-size)',
+        {
+          lineHeight: 'var(--type-section-line)',
+          letterSpacing: 'var(--type-section-tracking)',
+          fontWeight: 'var(--type-section-weight)',
+        },
+      ],
       body: [
         'var(--type-body-size)',
         {
@@ -184,6 +200,20 @@ export default {
     // while leaving real background images (the forest block) reachable.
     backgroundImage: {},
 
+    // Tailwind's animation utilities were dropped with the rest of the default
+    // theme when `theme` was replaced rather than extended. `pulse` is the only
+    // one this build wants: it is the skeleton loader, and DESIGN.md section 9
+    // permits no other looping animation.
+    keyframes: {
+      pulse: {
+        '0%, 100%': { opacity: '1' },
+        '50%': { opacity: '0.45' },
+      },
+    },
+    animation: {
+      pulse: 'pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+    },
+
     extend: {
       // Mobile-first roles render inside a device frame above this width.
       // Without it, a projected demo looks like a stretched phone app.
@@ -201,10 +231,26 @@ export default {
         'control-primary': 'var(--control-h-primary)',
         'control-secondary': 'var(--control-h-secondary)',
         'control-compact': 'var(--control-h-compact)',
+        'toggle-track': 'var(--control-toggle-h)',
+        'toggle-knob': 'var(--control-toggle-knob)',
         icon: 'var(--control-icon)',
+        'avatar-hero': 'var(--avatar-hero)',
+        // The two fixed photograph heights. See index.css.
+        'media-sm': 'var(--media-sm)',
+        'media-md': 'var(--media-md)',
       },
       width: {
         icon: 'var(--control-icon)',
+        'toggle-track': 'var(--control-toggle-w)',
+        'toggle-knob': 'var(--control-toggle-knob)',
+        'avatar-hero': 'var(--avatar-hero)',
+      },
+      inset: {
+        'toggle-inset': 'var(--control-toggle-inset)',
+      },
+      translate: {
+        'toggle-inset': 'var(--control-toggle-inset)',
+        'toggle-throw': 'var(--control-toggle-throw)',
       },
       padding: {
         'control-primary': 'var(--control-px-primary)',
@@ -228,6 +274,7 @@ export default {
       },
       minHeight: {
         tap: '48px',
+        'cutaway-note': 'var(--cutaway-note)',
       },
       minWidth: {
         tap: '48px',

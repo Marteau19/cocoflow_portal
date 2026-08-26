@@ -116,11 +116,19 @@ const inspect = () => {
   if (emoji) findings.push(`emoji: ${emoji[0]}`);
 
   /**
-   * One accent fill per screen.
+   * One accent fill per screen, outside commerce.
    *
    * Counted by resolved background colour rather than by class, so an element
    * that reaches the accent by any route is caught. The active nav pill is an
    * expected second occurrence and is excluded by ancestry.
+   *
+   * Commerce is the stated exception, marked with `data-commerce` at the call
+   * site. The accent is reserved for the primary action and for buying, and a
+   * catalogue's whole job is to offer the same buying action once per row: a shop
+   * list with one Add button in accent and five in grey is not a screen obeying
+   * the rule, it is a screen with one product for sale. Ruling by ancestry rather
+   * than by count keeps the check honest, because an unmarked second accent fill
+   * on a shop screen still fails.
    */
   const accent = getComputedStyle(document.documentElement)
     .getPropertyValue('--color-accent')
@@ -129,7 +137,10 @@ const inspect = () => {
     `rgb(${parseInt(hex.slice(1, 3), 16)}, ${parseInt(hex.slice(3, 5), 16)}, ${parseInt(hex.slice(5, 7), 16)})`;
   const accentRgb = accent.startsWith('#') ? toRgb(accent) : accent;
   const accentFills = all.filter(
-    (el) => styles.get(el).backgroundColor === accentRgb && !el.closest('nav'),
+    (el) =>
+      styles.get(el).backgroundColor === accentRgb &&
+      !el.closest('nav') &&
+      !el.closest('[data-commerce]'),
   );
   if (accentFills.length > 1) {
     findings.push(

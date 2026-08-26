@@ -60,7 +60,7 @@ export const ManagerDashboard = () => {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead. The hero is the measure the Service Point is held to.    */}
       {/* ------------------------------------------------------------------ */}
-      <Section id="sp-dashboard" onDark>
+      <Section id="sp-dashboard">
         <Band kind="masthead">
           <Micro className="text-on-band-muted">{territory.name}</Micro>
           <p className="mt-1 text-h1 text-on-band">Service Point dashboard</p>

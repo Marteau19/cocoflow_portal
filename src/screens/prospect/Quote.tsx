@@ -115,7 +115,7 @@ export const ProspectQuote = () => {
               <img
                 src="/img/system.jpg"
                 alt="An Ecoflo compact biofilter installed at a property"
-                className="h-[180px] w-full border-b border-line object-cover"
+                className="h-media-md w-full border-b border-line object-cover"
               />
               <div className="px-gutter py-3">
                 <Micro>Recommended</Micro>

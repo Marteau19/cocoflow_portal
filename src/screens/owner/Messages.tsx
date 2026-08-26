@@ -12,17 +12,22 @@
  * is real, it is just not what gets shown.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Section } from '../../blueprint/Section';
 import {
   GOLDEN,
+  assets,
   byId,
   cases,
+  messagesForAccount,
+  type CaseMessage,
   contacts,
   resources,
   territories,
   workOrders,
 } from '../../data/seedData';
+import { isUnread, markRead } from '../../data/readState';
+import { t } from '../../i18n';
 import { longDate, shortDate } from '../../lib/format';
 import {
   Avatar,
@@ -37,61 +42,43 @@ import {
   Status,
 } from '../../ui/primitives';
 
-interface Message {
-  from: 'you' | 'team';
-  authorId?: string;
-  at: string;
-  body: string;
-  /** What this message is about, shown as context rather than a ticket id. */
-  about?: string;
-}
-
-/**
- * The thread, grounded in the cases that exist in seedData. The customer-facing
- * subject comes from the case; the queue and status never surface.
- */
-const THREAD: Message[] = [
-  {
-    from: 'you',
-    at: '2026-06-02',
-    body: 'Quick question. The driveway is not ploughed in winter and the lid is under snow. Is that a problem for the visit?',
-    about: 'Question about winter access',
-  },
-  {
-    from: 'team',
-    authorId: 'RES-003',
-    at: '2026-06-02',
-    body: 'Good question, and thanks for flagging it early. We need a clear path to the lid on the day. If the drive is not ploughed we can either shift the visit to a thaw week or you can clear a path the day before. We will call you two days ahead either way so it is never a surprise.',
-  },
-  {
-    from: 'you',
-    at: '2026-06-03',
-    body: 'A thaw week works better for us. Thank you.',
-  },
-  {
-    from: 'team',
-    authorId: 'RES-003',
-    at: '2026-06-03',
-    body: 'Noted on your property record, so whoever is scheduling next winter will see it without you having to explain again.',
-  },
-];
-
 export const OwnerMessages = () => {
   const servicePoint = byId(territories, GOLDEN.territoryId)!;
+  const asset = byId(assets, GOLDEN.assetId)!;
   const primary = contacts.find((c) => c.accountId === GOLDEN.accountId && c.isPrimary)!;
   const visit = byId(workOrders, GOLDEN.workOrderId)!;
   const openCase = cases.find((c) => c.accountId === GOLDEN.accountId);
 
   const [draft, setDraft] = useState('');
-  const [sent, setSent] = useState<Message[]>([]);
+  const [sent, setSent] = useState<CaseMessage[]>([]);
 
-  const messages = [...THREAD, ...sent];
+  /*
+    Unread is captured once, on mount, and then cleared.
+
+    Reading the live value would make the "New" divider vanish the instant the
+    screen painted, which is the one moment it exists to be seen. Capturing it in
+    state and marking the conversation read in the same effect means the divider
+    stays for this visit and the badge is gone the next time Home renders.
+  */
+  const [hadUnread] = useState(() => (openCase ? isUnread(openCase.id) : false));
+
+  useEffect(() => {
+    markRead(GOLDEN.accountId);
+  }, []);
+
+  const messages = [...messagesForAccount(GOLDEN.accountId), ...sent];
 
   const send = () => {
     if (draft.trim().length === 0) return;
     setSent((current) => [
       ...current,
-      { from: 'you', at: visit.scheduledFor, body: draft.trim() },
+      {
+        caseId: openCase?.id ?? '',
+        from: 'customer',
+        authorId: null,
+        at: visit.scheduledFor,
+        body: draft.trim(),
+      },
     ]);
     setDraft('');
   };
@@ -100,9 +87,9 @@ export const OwnerMessages = () => {
     <>
       <div className="contents">
         <Masthead
-          eyebrow="Messages"
+          eyebrow={t('messages.eyebrow')}
           subject={servicePoint.name}
-          lead="One conversation with the team who looks after your system."
+          lead={t('messages.lead')}
         />
 
         <Section id="messages">
@@ -114,9 +101,7 @@ export const OwnerMessages = () => {
                   <span className="shrink-0 text-ink3">
                     <Icon name="message-square" />
                   </span>
-                  <p className="text-caption text-ink2">
-                    We reply within one working day. For anything urgent, call the Service Point.
-                  </p>
+                  <p className="text-caption text-ink2">{t('messages.replyTime')}</p>
                 </div>
               </div>
             </Band>
@@ -124,10 +109,12 @@ export const OwnerMessages = () => {
             {/* The thread. */}
             <Band kind="rail" flush>
               <BandHead
-                eyebrow={openCase ? openCase.subject : 'Your conversation'}
-                title="Messages"
+                eyebrow={openCase ? openCase.subject : t('messages.threadFallback')}
+                title={t('messages.threadTitle')}
                 action={
-                  openCase?.status === 'resolved' ? <Status tone="neutral">RESOLVED</Status> : undefined
+                  openCase?.status === 'resolved' ? (
+                    <Status tone="neutral">{t('messages.resolved')}</Status>
+                  ) : undefined
                 }
               />
 
@@ -137,10 +124,31 @@ export const OwnerMessages = () => {
                     message.from === 'team' && message.authorId
                       ? byId(resources, message.authorId)
                       : undefined;
-                  const mine = message.from === 'you';
+                  const mine = message.from === 'customer';
+
+                  /*
+                    The divider marks where the reader left off, above the first
+                    message they have not seen. With one unread that is the last
+                    team message; the rule generalises to N without changing.
+                  */
+                  const firstUnread =
+                    hadUnread &&
+                    index ===
+                      messages.reduce(
+                        (found, candidate, i) => (candidate.from === 'team' ? i : found),
+                        -1,
+                      );
 
                   return (
                     <div key={`${message.at}-${index}`} className="px-gutter py-3">
+                      {firstUnread && (
+                        <div className="mb-3 flex items-center gap-3">
+                          <span className="text-micro font-medium uppercase text-info">
+                            {t('messages.new')}
+                          </span>
+                          <span aria-hidden className="h-px flex-1 bg-info" />
+                        </div>
+                      )}
                       <div className="flex items-start gap-3">
                         {mine ? (
                           <Avatar
@@ -159,14 +167,10 @@ export const OwnerMessages = () => {
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-baseline gap-2">
                             <p className="text-caption font-medium text-ink">
-                              {mine ? 'You' : (author?.name ?? servicePoint.name)}
+                              {mine ? t('messages.you') : (author?.name ?? servicePoint.name)}
                             </p>
                             <span className="text-caption text-ink3">{shortDate(message.at)}</span>
                           </div>
-
-                          {message.about && (
-                            <p className="mt-1 text-caption text-ink3">About: {message.about}</p>
-                          )}
 
                           <p className="mt-1 max-w-reading text-body text-ink">{message.body}</p>
                         </div>
@@ -179,12 +183,12 @@ export const OwnerMessages = () => {
               {/* Compose. */}
               <div className="border-t border-line px-gutter py-3">
                 <label className="block">
-                  <Micro>Write a message</Micro>
+                  <Micro>{t('messages.compose.label')}</Micro>
                   <textarea
                     rows={3}
                     value={draft}
                     onChange={(event) => setDraft(event.target.value)}
-                    placeholder="Anything about your system or a visit"
+                    placeholder={t('messages.compose.placeholder')}
                     className="mt-2 w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-body text-ink placeholder:text-ink3"
                   />
                 </label>
@@ -195,48 +199,53 @@ export const OwnerMessages = () => {
                     disabled={draft.trim().length === 0}
                     onClick={send}
                   >
-                    Send
+                    {t('messages.compose.send')}
                   </Button>
                   <Button variant="quiet" icon="camera">
-                    Add a photo
+                    {t('messages.compose.photo')}
                   </Button>
                 </div>
-                <p className="mt-2 text-caption text-ink3">
-                  A photo of what you are seeing usually saves a visit.
-                </p>
+                <p className="mt-2 text-caption text-ink3">{t('messages.compose.photoHint')}</p>
               </div>
             </Band>
 
             {/* Context the team already has, so the customer need not repeat it. */}
             <Band kind="data" flush>
-              <BandHead icon="file-text" iconTone="neutral" eyebrow="What we already know" title="Attached to this conversation" />
+              <BandHead
+                icon="file-text"
+                iconTone="neutral"
+                eyebrow={t('messages.context.eyebrow')}
+                title={t('messages.context.title')}
+              />
               <RowList>
                 <Row>
                   <div className="flex items-baseline justify-between gap-3">
-                    <p className="text-caption text-ink2">Your system</p>
-                    <p className="text-caption text-ink">Ecoflo compact biofilter, EC-5</p>
+                    <p className="text-caption text-ink2">{t('messages.context.system')}</p>
+                    <p className="text-caption text-ink">
+                      {t('messages.context.systemValue', {
+                        product: asset.product,
+                        model: asset.model,
+                      })}
+                    </p>
                   </div>
                 </Row>
                 <Row>
                   <div className="flex items-baseline justify-between gap-3">
-                    <p className="text-caption text-ink2">Next visit</p>
+                    <p className="text-caption text-ink2">{t('messages.context.nextVisit')}</p>
                     <p className="text-caption text-ink">{longDate(visit.scheduledFor)}</p>
                   </div>
                 </Row>
                 <Row>
                   <div className="flex items-baseline justify-between gap-3">
-                    <p className="text-caption text-ink2">Winter access</p>
+                    <p className="text-caption text-ink2">{t('messages.context.access')}</p>
                     <p className="text-right text-caption text-ink">
-                      Thaw weeks preferred, noted 2026
+                      {t('messages.context.accessValue')}
                     </p>
                   </div>
                 </Row>
               </RowList>
               <div className="border-t border-line px-gutter py-3">
-                <p className="text-caption text-ink2">
-                  Whoever replies can see all of this. You should never have to explain your property
-                  twice.
-                </p>
+                <p className="text-caption text-ink2">{t('messages.context.note')}</p>
               </div>
             </Band>
           </div>

@@ -28,7 +28,7 @@ change per role, and they are what a customer taps, so they carry more weight pe
 character than anything else in the product.
 
 - **Client, before install**: Start, Request, Quote, Project
-- **Client, system owner**: Home, My system, Book, Parts
+- **Client, system owner**: Home, System, Shop, Account
 - **Service Point, technician**: My day, Route, Flo
 - **Service Point, manager**: Dashboard, Dispatch, Customers, Leads, MARCOM, Inventory, Team, Flo
 - **PTWE Global**: Network, Mix tracker, Adoption, Benchmarking, Readiness
@@ -382,65 +382,59 @@ Role key `client-owner`, mobile viewport.
 
 Route `/home`
 
-**Band: masthead**
+**Band: lead**
 
-- Your next visit
-- Today
-- 09:00 to 11:00
-- Marc is on the way
-- Marc Bouchard, Service Point Estrie
-- 4.9 out of 5, from visits like yours
-- We are replacing the filter media, which your care plan covers. Nothing is needed from you, and you do not have to be home.
-- Message Marc
-- Image alt text: Marc Bouchard
+- 148 chemin du Lac
+- 1
 
-**Band: reading**
+**Band: lead**
 
-- Your system
-- Ecoflo compact biofilter
-- Working as it should. Installed 14 May 2019.
-- Your care plan
-- Proactive Care
-- $320 a year, renews 14 May 2027. On autopay.
-- Invoices
-- Nothing outstanding
-- Your care plan is paid to 14 May 2027.
-
-**Band: data**
-
-- Your Service Point team
-- Service Point Estrie
-- The same team looks after every system in this area, including yours.
+- Happening now
+- 12 min away
+- Marc is on the way from Service Point Estrie.
 - Marc Bouchard
-- Technician
-- Priya Nadeau
-- Louis Tremblay
-- Service Point manager
-- Send a message
-- Image alt text: Priya Nadeau
-- Image alt text: Louis Tremblay
-
-**Band: closing**
-
-- Signed in as
-- Sarah Lavoie. 148 chemin du Lac, Lac-Brome.
+- 09:00 to 11:00
+- Track
+- Message Marc
+- We are replacing your filter media.
+- Filter media replacement
+- Covered by your plan
+- No access needed
+- Media life
+- 0%
+- Replacement booked
+- Plan value
+- $572
+- Covered this year
+- Visits
+- 8
+- Since install
+- Your system
+- EC-5
+- Proactive Care, renews 14 May 2027
+- System healthy
+- Opening the cottage
+- After months unused, run water for a few minutes before heavy use. The bacteria in the media need feeding back up.
+- Book a visit
+- Order parts
+- Image alt text: Marc Bouchard
 
 ### My system
 
 Route `/system`
 
-**Band: masthead**
-
-- Your system
-- Ecoflo compact biofilter
-- At 148 chemin du Lac, Lac-Brome.
-
 **Band: rail**
 
-- Working as it should
-- Nothing needs your attention. We check it at every visit.
-- Model
+- Your system
 - EC-5
+- System healthy
+- At 148 chemin du Lac, Lac-Brome. We check it at every visit.
+- Filter media
+- Due for replacement
+- Marc is replacing it on 12 August.
+- Tap a part to see what it does.
+- Estimated from the last replacement, not measured.
+- Model
 - Serial number
 - EC5-19-QC-88214
 - Installed
@@ -449,22 +443,66 @@ Route `/system`
 - 8 October 2024
 - Warranty until
 - 14 May 2029
-- Image alt text: The property at 148 chemin du Lac
+- Image alt text: 148 chemin du Lac, Lac-Brome
 
 **Band: data**
 
-- Everything that has happened
+- 10 entries
 - Service history
-- 2 entries
+- 2026
+- Maintenance visit
+- 22 April
+- By Priya Nadeau
+- Yearly check. The media is at the end of its life as expected, so we have booked the replacement for August. Nothing to do before then.
 - Parts order
 - 2 March
 - 2 x LID-SEAL-05. $68.
+- 2025
+- 16 July
+- By Marc Bouchard
+- Yearly check. No change since last year. We noted that the media will be due for replacement next summer and will book it in for you.
 - 18 June
 - 1 x ACC-RISER-6. $78.
+- 2024
+- 8 October
+- Yearly check. The lid seal had perished at one edge so we fitted a new one. Everything else was normal.
+- 2023
+- 28 June
+- Yearly check, first one on the new media. Effluent was clear and the bed had bedded in well.
+- 2022
+- Filter media replacement
+- 5 July
+- We replaced the coconut husk filter media and took the old media away. This is the routine replacement your plan covers, and the next one is due in about four years.
+- 2021
+- 24 June
+- Yearly check. We cleared some leaf litter off the lid and reseated it. The system itself was working normally.
+- 2020
+- 11 June
+- First yearly check. The filter media had settled as expected and the effluent was clear. Nothing needed doing.
+- 2019
+- AR
+- Installation
+- 14 May
+- By Amélie Roy
+- We installed your Ecoflo compact biofilter, filled the filter media and tested the system through a full cycle. Everything ran as it should.
+- Image alt text: Priya Nadeau
+- Image alt text: Marc Bouchard
+- Image alt text: Photo taken on the visit
+
+**Band: data**
+
+- What it has done
+- Litres treated
+- 1.3 million
+- Since 14 May 2019
+- Energy not used
+- 10,000 kWh
+- Against an aerated system
+- Your Ecoflo treats by trickling water through coconut husk. No blower, no aerator, nothing drawing power to do the treating.
+- An estimate from your install date and a two person household, not a meter reading.
 
 **Band: rail**
 
-- Yours to keep
 - Documents
 - Installation certificate
 - Warranty terms
@@ -476,8 +514,12 @@ Route `/system`
 
 **Band: data**
 
+- Book a visit
+
+**Band: closing**
+
 - Moving out
-- Selling the property? The system, its history and its care plan can move to the new owner.
+- The system, its history and its plan can move to the new owner.
 - Transfer to a new owner
 
 ### Invoices and payment
@@ -488,13 +530,12 @@ Route `/invoices`
 
 - Billing
 - Invoices and payment
-- Everything you have been charged, and what it was for.
 
 **Band: data**
 
 - Outstanding
-- Nothing
-- You are up to date. Your care plan is paid to 14 May 2027.
+- All clear
+- Paid to 14 May 2027.
 - Paid this year
 - $68
 - Next charge
@@ -502,21 +543,19 @@ Route `/invoices`
 
 **Band: rail**
 
-- How you pay
 - Payment method
 - Card ending 4417
 - Expires 09 / 2028
 - Change
 - Autopay is on
-- Your care plan renews and pays itself. We email you a week before.
+- Your plan renews and pays itself. We email you a week before.
 
 **Band: data**
 
-- Everything so far
 - Invoice history
 - 3 invoices
 - Parts order
-- PAID
+- Paid
 - 2 x LID-SEAL-05
 - INV-2026-1188
 - 2 March
@@ -532,7 +571,7 @@ Route `/invoices`
 - 14 May
 - SC-2026-00871
 - $320
-- Every invoice points at the visit or the order that caused it. Tap one to see what happened.
+- Each invoice points at what caused it.
 
 ### Maintenance contract
 
@@ -549,7 +588,7 @@ Route `/contract`
 - Per year
 - $320
 - Renews 14 May 2027, in 275 days. Paid automatically.
-- ACTIVE
+- Active
 - Covering since
 - 14 May 2019
 - Plan reference
@@ -564,7 +603,7 @@ Route `/contract`
 - Priority response within 48h
 - Parts discount
 - Not covered
-- Damage from something outside the system, and parts you order for yourself. We tell you before any work that falls outside the plan, never after.
+- Outside damage, and parts you order yourself. We tell you before such work, never after.
 
 **Band: data**
 
@@ -572,29 +611,36 @@ Route `/contract`
 - What the plan has done
 - Filter media replacement
 - 12 August 2026
-- SCHEDULED
+- Scheduled
 - Included
+- Done
+- 11 June 2020
+- 24 June 2021
+- 5 July 2022
+- 28 June 2023
+- 8 October 2024
+- 16 July 2025
+- 22 April 2026
+- Covered this year
+- $572
+- $252 more than the plan cost
 - Without the plan
 - The same work priced individually
-- $420
+- $1,710
 
 **Band: rail**
 
 - If you want to change it
 - Your options
 - Move the renewal date
-- Useful if you would rather be billed at a different time of year.
+- For billing at a different time of year.
 - End the plan
-- You can stop at any time. Cover runs to 14 May 2027 and we do not charge again after that.
+- Stop any time. Cover runs to 14 May 2027, with no further charge.
 - Ask about my plan
 
 ### Book an appointment
 
 Route `/book`
-
-**Outside any band**
-
-- Choose what it is about and pick a window to continue.
 
 **Band: masthead**
 
@@ -632,43 +678,58 @@ Route `/book`
 - 15:00 to 17:00
 - Tuesday 25 August
 - in 13 days
-- A window, not a time. We would rather arrive inside two hours than miss a promise by ten minutes.
+- Why a window and not a time?
+- We would rather arrive inside two hours than miss a promise by ten minutes.
 
 **Band: rail**
 
 - Covered by Proactive Care
-- Your care plan covers a check up on the EC-5 each year, so there is nothing to pay for this visit.
+- Your plan covers a yearly check up, so this visit is free.
 
-### Parts store
+**Band: data**
+
+_No text._
+
+### Shop
 
 Route `/parts`
 
-**Band: masthead**
+**Band: lead**
 
-- Parts
-- Parts and filters
-- Filtered to the EC-5, so nothing here will arrive and not fit.
+- Shop
+- Guaranteed to fit your EC-5
+- Search parts
 
 **Band: rail**
 
 - Fits my EC-5
 - Everything
+- Filter media
+- Lids and seals
+- Pumps
+- Controls
+- Accessories
+- 4 parts
 
 **Band: data**
 
 - Filter media, coconut husk, EC-5
 - FM-EC5-COCO
+- $260
 - $289
 - Add
 - Inspection lid seal
 - LID-SEAL-05
+- $31
 - $34
-- N/A
+- PMP
 - Effluent pump, 1/2 hp
 - PMP-EFF-12
+- $554
 - $615
 - Riser extension, 6 in
 - ACC-RISER-6
+- $70
 - $78
 - Image alt text: Filter media, coconut husk, EC-5
 - Image alt text: Inspection lid seal
@@ -677,6 +738,72 @@ Route `/parts`
 **Band: closing**
 
 - Delivered to EC-5 owners in the Eastern Townships within a week.
+
+### Account
+
+Route `/account`
+
+**Band: masthead**
+
+- Account
+- Sarah Lavoie
+
+**Band: data**
+
+- You
+- Email
+- sarah.lavoie@example.com
+- Phone
+- +1 450 555 0148
+
+**Band: rail**
+
+- Your property
+- 148 chemin du Lac
+- Lac-Brome, QC
+- EC-5, installed 14 May 2019
+- A second Ecoflo joins this same account.
+
+**Band: data**
+
+- Care plan
+- Proactive Care
+- Renews 14 May 2027
+- Autopay is on
+- Invoices and payment
+- All clear
+
+**Band: rail**
+
+- Preferences
+- Language
+- English
+- Français
+- Applies to the portal, your invoices and your visit summaries.
+- Tell me about
+- Visit reminders
+- Two days before, and on the morning.
+- Visit summaries
+- What we did, after each visit.
+- Plan and billing
+- Renewals, receipts and anything that needs a decision.
+- Offers and advice
+- Seasonal advice and occasional offers. Off by default.
+
+**Band: data**
+
+- Help
+- Message your Service Point
+- We reply within one working day.
+- 1 unread
+- Your documents
+- Certificate, warranty, plan and owner guide.
+- Call Service Point Estrie
+
+**Band: closing**
+
+- Sign out
+- Signed in as Sarah Lavoie.
 
 ### Messages
 
@@ -690,21 +817,21 @@ Route `/messages`
 
 **Band: data**
 
-- We reply within one working day. For anything urgent, call the Service Point.
+- We reply within one working day. Call for anything urgent.
 
 **Band: rail**
 
 - Question about winter access
-- RESOLVED
+- Resolved
 - SL
 - You
 - 2 June
-- About: Question about winter access
 - Quick question. The driveway is not ploughed in winter and the lid is under snow. Is that a problem for the visit?
 - Louis Tremblay
 - Good question, and thanks for flagging it early. We need a clear path to the lid on the day. If the drive is not ploughed we can either shift the visit to a thaw week or you can clear a path the day before. We will call you two days ahead either way so it is never a surprise.
 - 3 June
 - A thaw week works better for us. Thank you.
+- New
 - Noted on your property record, so whoever is scheduling next winter will see it without you having to explain again.
 - Write a message
 - Send
@@ -722,16 +849,11 @@ Route `/messages`
 - 12 August 2026
 - Winter access
 - Thaw weeks preferred, noted 2026
-- Whoever replies can see all of this. You should never have to explain your property twice.
+- Whoever replies sees all of this. Never explain your property twice.
 
 ### Transfer ownership
 
 Route `/system/transfer`
-
-**Outside any band**
-
-- Start the transfer
-- Signed in as Sarah Lavoie. Nothing moves until the new owner accepts, and you can cancel before then.
 
 **Band: masthead**
 
@@ -750,12 +872,10 @@ Route `/system/transfer`
 - Warranty runs to
 - 14 May 2029
 - Service visits on record
-- 0
+- 8
 
 **Band: data**
 
-- Read this part
-- What transfers, and what does not
 - Goes with the property
 - The system and its serial number
 - It is bolted into the ground
@@ -779,7 +899,7 @@ Route `/system/transfer`
 
 - Your care plan
 - Proactive Care
-- Your plan is paid to 14 May 2027. The new owner can take it over from the transfer date, or let it lapse and decide for themselves. If they take it over, we refund you the unused part.
+- Paid to 14 May 2027. The new owner can take it over or let it lapse. We refund any unused part.
 
 **Band: data**
 
@@ -794,6 +914,11 @@ Route `/system/transfer`
 - This shares your system history
 - I agree to transfer the system, its warranty and its service history to the person named above, and I confirm they are buying this property. My contact details, invoices and messages are not shared.
 
+**Band: data**
+
+- Start the transfer
+- Cancel any time before they accept.
+
 ### Recommended for your property
 
 Route `/recommended`
@@ -802,16 +927,15 @@ Route `/recommended`
 
 - For your property
 - Worth knowing about
-- Based on your EC-5 at Lac-Brome, its age, and what we have seen on site.
+- From your own records and what technicians noted on site.
 
 **Band: rail**
 
 - Due now
-- 1 thing we would do next
-- NO CHARGE
-- An outlet filter check, added to your next visit
+- We would do this next
 - No charge
-- Systems of this age start to show partial blockages at the outlet. Yours is 7 years old and has not had one flagged, which is normal, but it is worth looking while we are there.
+- An outlet filter check, added to your next visit
+- Outlets start to partially block around this age. Yours never has, which is normal, but it is worth a look while we are there.
 - Based on: Installed 14 May 2019
 - Avoids: A backup during heavy spring flow
 - Add it to my visit
@@ -822,22 +946,22 @@ Route `/recommended`
 - No rush
 - A taller lid riser
 - $78
-- Your property is seasonal and the lid sits below the snow line. A taller riser means we can reach it in winter without you clearing the drive.
+- Your lid sits below the snow line. A taller riser lets us reach it in winter without you clearing the drive.
 - Based on: Your note about winter access, June 2026
 - ACC-RISER-6
 - Avoids: A visit moved because we could not reach the lid
 - See it in parts
 - A spare lid seal
 - $34
-- The seal on your EC-5 is replaced during the visit on 12 August 2026. Keeping a spare means a perished seal is never a reason to book a second visit.
+- Yours is replaced on 12 August 2026. A spare means a perished seal never costs a second visit.
 - Based on: WO-2026-0412, scheduled
 - LID-SEAL-05
 - Avoids: A callout for a ten dollar part
 
 **Band: rail**
 
-- How we decide what to put here
-- Only your own records: the age of your system, what technicians recorded on site, and what your Proactive Care already covers. We do not put something here because other customers bought it.
+- How we decide
+- Your records only. Never because other customers bought it.
 
 ## Service Point, technician
 

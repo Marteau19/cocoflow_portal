@@ -19,9 +19,34 @@
      value, which is why it lives here and not in the token object. */
   --gutter: 20px;
 
+  /* The 4px base step, reachable as `spacing[0.5]`.
+
+     Here rather than in the brand object for the same reason as the gutter:
+     both identities agree on it, so it is not a brand value. Prepending it to
+     `brand.space` would have renumbered every --space-N in the build. */
+  --space-half: 4px;
+
   /* The status bar inset. Zero below the frame breakpoint, because there is no
      frame and therefore no camera to clear. See the .device-* block below. */
   --safe-top: 0px;
+
+  /**
+   * The home indicator inset, and the breathing room at the end of a scroll.
+   *
+   * `--safe-bottom` is real hardware and resolves to 0 everywhere there is none,
+   * which includes the device frame: the drawn handset has no gesture bar, so
+   * the frame does not need clearing and the value correctly stays 0 there.
+   * It needs `viewport-fit=cover` in index.html to resolve to anything at all.
+   *
+   * `--scroll-end` is the pad at the foot of every scroll column. The bottom
+   * navigation is a flex sibling of that column rather than an overlay, so it
+   * does not occlude content and the pad does not have to clear its height. What
+   * it does fix is content ending exactly on the column's clip boundary, which
+   * is what cut the booking helper line in half: the last line of text had no
+   * room beneath it and the overflow clipped its descenders.
+   */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --scroll-end: calc(var(--space-4) + var(--safe-bottom));
 
   /**
    * Control geometry, DESIGN.md section 6.
@@ -44,6 +69,29 @@
   --control-label-size: 15px;
   --control-icon: 16px;
   --control-gap: 8px;
+
+  /* The switch. Its track, its knob and the distance the knob travels are one
+     geometry, so they are declared together: changing the track width without
+     the throw is how a knob ends up stopping short of the end of its track. */
+  --control-toggle-w: 48px;
+  --control-toggle-h: 28px;
+  --control-toggle-knob: 22px;
+  --control-toggle-inset: 2px;
+  --control-toggle-throw: 22px;
+
+  /**
+   * Two image geometries the layout owns rather than the brand.
+   *
+   * `--avatar-hero` is the client home portrait, sized to be looked at rather
+   * than decorated with. `--media-*` are the two fixed photograph heights: a
+   * property shot and the wider quote header.
+   */
+  --avatar-hero: 72px;
+  /* The cross section's explanation slot. Fixed so tapping a part swaps the
+     text without the facts below it jumping down the screen. */
+  --cutaway-note: 76px;
+  --media-sm: 160px;
+  --media-md: 180px;
 
   /**
    * Aliases for the three steps that change between registers.
@@ -99,6 +147,29 @@
     --step-h1-tracking: var(--type-h1-lg-tracking);
     --step-h1-weight: var(--type-h1-lg-weight);
   }
+}
+
+/**
+ * The customer register: prospect and system owner.
+ *
+ * `hero` resolves to the `display` values, so the ceiling on a customer screen
+ * is 32px. Set by AppShell as data-persona="customer" on the same element that
+ * carries data-register, which is what lets it win against the inline --type-*
+ * values applyBrand() writes on the root.
+ *
+ * Not a component change, and deliberately not one. Capping it here means one
+ * rule covers both brands, every customer screen present and future, and no
+ * screen can opt out of it by forgetting. It also leaves `hero` intact for the
+ * Global surfaces, where it sets a figure against a target rather than a title.
+ *
+ * It sits after the full-bleed block so that a customer role, which is always
+ * framed, is never promoted by it.
+ */
+[data-persona='customer'] {
+  --step-hero-size: var(--type-display-size);
+  --step-hero-line: var(--type-display-line);
+  --step-hero-tracking: var(--type-display-tracking);
+  --step-hero-weight: var(--type-display-weight);
 }
 
 /**
@@ -300,6 +371,23 @@
   .device-shell {
     position: relative;
     display: flex;
+    /*
+      Width is stated, not inherited.
+
+      `.device-stage` is a grid with `justify-items: center`, which makes its
+      item shrink-to-fit: the shell sized to the max-content width of whatever
+      was inside it. One `<input type="search">`, whose intrinsic width is its
+      `size` attribute regardless of `min-width: 0` on the input itself, and the
+      whole handset rendered 699px wide inside a 393px viewport with the
+      navigation running off the edge.
+
+      Fixing it here rather than at the input means the next element with an
+      intrinsic minimum, a table, a long identifier, a wide chart, cannot do it
+      again. Above the frame breakpoint this is overridden with the handset's
+      real width.
+    */
+    width: 100%;
+    min-width: 0;
     height: calc(100vh - var(--space-6));
     height: calc(100dvh - var(--space-6));
     min-height: 0;
@@ -330,6 +418,90 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  /**
+   * The pad at the foot of a scroll column, and the one on the bar below it.
+   *
+   * Applied to the scrolling column rather than to the last band, because "the
+   * last band" is a different component on every screen and three of them have
+   * already been the wrong one.
+   */
+  [data-content-column] {
+    padding-bottom: var(--scroll-end);
+  }
+
+  /**
+   * Route change.
+   *
+   * Content fades in and rises 12px, once, on arrival. DESIGN.md section 9
+   * specified it and nothing implemented it: the `--motion-route` token has been
+   * in both brand files since the first pass and no rule ever read it.
+   *
+   * The easing is the settle curve rather than a linear ramp, so the content
+   * decelerates into place instead of stopping dead. That is what reads as a
+   * spring without any of the overshoot, and overshoot on a whole screen of text
+   * is nausea rather than delight.
+   *
+   * Rise, not slide sideways. A horizontal transition implies a position in a
+   * sequence, and a four tab bar is not a sequence: tapping Account from Home is
+   * not a movement to the right.
+   *
+   * The global `prefers-reduced-motion` block at the foot of this file already
+   * collapses every animation to 0.01ms, so this needs no separate guard.
+   */
+  @keyframes route-enter {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .route-enter {
+    animation: route-enter var(--motion-route) var(--motion-ease-out) both;
+  }
+
+  /**
+   * A bar stuck to the foot of a scroll column.
+   *
+   * Two negatives, and they undo two different things. Measured before them, the
+   * bar rested 24px above the navigation with the page ground showing through the
+   * gap, in both the stuck state and the resting one.
+   *
+   * `bottom` handles the stuck state. A sticky element is constrained by the
+   * scrollport *reduced by the container's padding*, not by the container's
+   * border box, so `bottom: 0` pins it to the top edge of the column's end pad
+   * rather than to the bottom of the column. Offsetting by the pad puts it back
+   * on the border box.
+   *
+   * `margin-bottom` handles the resting state. A sticky element stops sticking
+   * once it reaches its own place in the flow, and its place is the end of the
+   * content, above that same pad. Pulling the following pad up by its own height
+   * closes the gap there too.
+   *
+   * Neither removes the pad itself, which every screen without a sticky bar still
+   * needs: it is what stops the last line of text being clipped by the column's
+   * own overflow boundary.
+   */
+  .sticky-foot {
+    position: sticky;
+    bottom: calc(-1 * var(--scroll-end));
+    margin-bottom: calc(-1 * var(--scroll-end));
+  }
+
+  /**
+   * The bottom navigation clears the home indicator by growing, not by moving.
+   *
+   * Padding rather than margin so the bar's own ground still runs to the bottom
+   * edge of the display. With a margin the sunk fill would stop above the
+   * indicator and the page canvas would show through in the gap.
+   */
+  .nav-safe {
+    padding-bottom: var(--safe-bottom);
+  }
+
   /* Inert until there is a frame to sit in. */
   .device-island,
   .device-button {
@@ -352,6 +524,33 @@
 
   .device-stage {
     padding: var(--space-1) var(--gutter) var(--space-4);
+  }
+
+  /**
+   * The page ground behind the handset is white.
+   *
+   * Only in the framed register, and only above the frame breakpoint, which are
+   * the two conditions under which a device frame actually exists. Below 900px
+   * there is no phone and the body's background is the app's own canvas, which
+   * has to stay the canvas; and in the full-bleed register the workspace ground
+   * is the canvas by design, so a white body there would put the sidebar and the
+   * tables on the wrong colour.
+   *
+   * `--color-surface` rather than a literal white: it is white in both brands
+   * today, it is a real token so the rule survives a brand switch, and index.css
+   * carries no colour literals by policy.
+   *
+   * The top bar comes with it. It is a full-width strip directly above the
+   * stage, painted in the same canvas, so leaving it behind would draw a beige
+   * band across the top of an otherwise white page. Its bottom hairline is what
+   * separates it, and that stays.
+   */
+  body[data-register='framed'] {
+    background-color: var(--color-surface);
+  }
+
+  body[data-register='framed'] [data-top-bar] {
+    background-color: var(--color-surface);
   }
 
   .device-shell {
@@ -469,5 +668,27 @@ body[data-blueprint='on'] {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@layer components {
+  /**
+   * Visually hidden, still announced.
+   *
+   * For a label that a sighted reader gets from an adjacent glyph and a screen
+   * reader cannot. Clipped rather than `display: none` or zero opacity, both of
+   * which take the element out of the accessibility tree, which is the one thing
+   * it exists to stay in.
+   */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 }

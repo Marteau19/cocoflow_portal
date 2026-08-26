@@ -48,7 +48,7 @@ export const BottomNav = ({ role }: { role: RoleDef }) => (
   */
   <nav
     aria-label={`${role.label} navigation`}
-    className="z-nav shrink-0 border-t border-line-strong bg-surface-sunk"
+    className="nav-safe z-nav shrink-0 border-t border-line-strong bg-surface-sunk"
   >
     {/*
       No padding on the list, so the 2px active rule can sit flush against the

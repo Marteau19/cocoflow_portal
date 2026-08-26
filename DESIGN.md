@@ -265,6 +265,20 @@ All colour lives in `src/brands/*.ts` as tokens and is consumed as CSS custom
 properties. **No hex value appears in any component file.** The one exemption,
 the drawn handset, is stated in section 6.
 
+**The page ground behind the handset is `--surface`, not `--canvas`.** Only in
+the framed register and only above the 900px frame breakpoint, which are the two
+conditions under which a frame exists at all. The device frame is there so a
+client screen does not read as a broken desktop page, and it does that job by
+being visibly a phone on a page rather than a phone-shaped area of the same
+colour as its own contents. On the canvas the two grounds were the same warm
+paper and the frame read as a border drawn around part of the page; on white the
+app's canvas belongs to the app. The top bar takes the same ground, because it is
+a full-width strip directly above the stage and leaving it behind would draw a
+beige band across the top of an otherwise white page; its bottom hairline is what
+separates it and that stays. Below the breakpoint there is no phone and the
+body's ground is the app's own canvas, and in the full-bleed register the
+workspace ground is the canvas by design, so neither changes.
+
 ### Semantic roles
 
 Five roles. A token belongs to exactly one.
@@ -274,15 +288,23 @@ Five roles. A token belongs to exactly one.
 | **Band** | `--band-deep`, `--band-deep-alt`, `--on-band`, `--on-band-muted` | Grounds for Masthead and hero fields. Never a text colour on light. |
 | **Accent** | `--accent`, `--accent-hover`, `--on-accent`, `--accent-ink`, `--accent-soft`, `--accent-on-band` | **The primary action, and only that.** |
 | **Data** | `--data-1`, `--data-2`, `--data-3` | Chart series, map marks, sparklines. Deliberately *not* the accent: the accent is an invitation to click, and a chart line is not clickable. |
-| **Status** | `--positive`, `--negative`, `--warn`, `--alert` and their `-soft` grounds | Outcome and state. Shared across brands: an approval reads as an approval in either skin. |
+| **Status** | `--positive`, `--negative`, `--warn`, `--alert`, `--info` and their `-soft` grounds | Outcome and state. Shared across brands: an approval reads as an approval in either skin. |
 | **Structural** | `--ink`, `--ink-2`, `--ink-3`, `--line`, `--line-strong`, `--field-line` | Text and division. |
 
 ### Rules
 
-1. **One primary action per screen.** Revised from "one accent per screen", which
-   was too blunt and is what starved the build of colour. Exactly one control
-   carries `--accent` as a fill. Colour is free to work structurally everywhere
-   else: in bands, in data, in status, in tinted grounds.
+1. **One primary action per screen, and buying.** Revised from "one accent per
+   screen", which was too blunt and is what starved the build of colour. Exactly
+   one control carries `--accent` as a fill, plus commerce. Colour is free to work
+   structurally everywhere else: in bands, in data, in status, in tinted grounds.
+
+   Commerce is an exception because a catalogue's whole job is to offer the same
+   buying action once per row. A shop list with one Add button in accent and five
+   in grey is not a screen obeying the rule, it is a screen with one product for
+   sale. The accent is reserved for the primary action **and for buying**: add,
+   the order bar, checkout. Mark those subtrees `data-commerce` so
+   `audit-design.mjs` can tell the exception from the drift, and so that an
+   unmarked second accent fill on a shop screen still fails the audit.
 2. **`--field-line` is a separate token** because an input outline must clear
    3:1 as a meaningful non-text control, while a structural hairline only has to
    be perceptible. Conflating them is why inputs read as unbordered.
@@ -300,6 +322,41 @@ Five roles. A token belongs to exactly one.
 6. **No purple, no indigo** unless a brand ships them. Neither does.
 7. `--ink-3` is metadata only, held to 3:1. Never used for anything a person must
    read in order to act.
+8. **`--info` is the fourth status, added in the client-owner pass.** `neutral`
+   says "no signal here"; `info` says "read this, it is not a problem". The build
+   had no way to say the second, so covered-by-your-plan and this-is-an-estimate
+   were both drawn as neutral pills on `--surface-sunk`, which is also the ground
+   of every Rail and Closing band, and vanished into the band they sat on. It is a
+   desaturated slate in both brands rather than a saturated blue: neither identity
+   owns a blue, and a bright one would read as a fifth brand colour instead of as
+   a function colour.
+
+### The semantic names, mapped
+
+The token names in this system are older than the semantic vocabulary a reviewer
+is likely to arrive with. They are not renamed, because renaming them would touch
+all thirty-four screens for zero pixels of change. This table is the dictionary.
+
+| Semantic role | Token here |
+|---|---|
+| `surface.page` | `--canvas` |
+| `surface.card` | `--surface` |
+| `surface.raised` | `--surface-raised` |
+| `surface.sunk` | `--surface-sunk` |
+| `surface.brand` | `--band-deep`, reachable as a card through `<Card tone="brand">` as well as as a band |
+| `text.primary` | `--ink` |
+| `text.secondary` | `--ink-2` |
+| `text.muted` | `--ink-3` |
+| `text.onBrand` | `--on-band` |
+| `border.hairline` | `--line` |
+| `border.strong` | `--line-strong` |
+| `action.primary` | `--accent` |
+| `action.primaryText` | `--on-accent` |
+| `action.secondary` | The `secondary` Button variant: `--surface` fill, `--line-strong` outline, `--ink` label. Not a colour token, because a secondary action is defined by carrying no fill colour |
+| `status.healthy` | `--positive` / `--positive-soft` |
+| `status.attention` | `--warn` / `--warn-soft` |
+| `status.critical` | `--alert` / `--alert-soft`, or `--negative` / `--negative-soft` where the pair is an outcome rather than a state |
+| `status.info` | `--info` / `--info-soft` |
 
 ### How status is shown
 
@@ -484,20 +541,37 @@ a whole screen. Six steps, two doing work.
 
 ### The scale
 
-Six steps. Every gap widened, `h2` deleted. Two registers, and **which register
-applies is decided by the frame, not by the browser window.** See below.
+Seven steps. Two registers, and **which register applies is decided by the frame,
+not by the browser window.** See below.
 
 | Role | Framed | Full bleed | Tracking | Weight | Job |
 |---|---|---|---|---|---|
-| **hero** | 48 / 46 | 72 / 68 | -0.035em | 700 | One per screen. Section 7. |
-| display | 32 / 34 | 42 / 44 | -0.02em | 700 | Secondary figures, band subjects |
+| **hero** | 48 / 46 | 72 / 68 | -0.035em | 700 | One per screen. Section 7. Not available to the client-owner screens: see below |
+| display | 32 / 34 | 42 / 44 | -0.02em | 700 | Secondary figures, band subjects. The client-owner ceiling |
 | h1 | 24 / 30 | 28 / 34 | -0.015em | 700 | Band headings |
+| **section** | 19 / 26 | 19 / 26 | -0.01em | 500 | Card headers, and the heading level inside a band |
 | body | 16 / 25 | 16 / 25 | 0 | 400 | All prose. 500 for emphasis |
 | caption | 13 / 19 | 13 / 19 | 0 | 400 | Metadata, secondary row detail |
-| micro | 11 / 14 | 11 / 14 | +0.08em | 500, upper | Eyebrows and labels above values. Four words maximum |
+| micro | 11 / 14 | 11 / 14 | +0.08em | 500 | Eyebrows and labels above values. Sentence case. Four words maximum |
 
-Framed steps: 48, 32, 24, 16, 13, 11. Ratios 1.50, 1.33, 1.50, 1.23, 1.18. Three
-wide gaps at the top where drama lives, two narrow at the bottom where labels sit.
+Framed steps: 48, 32, 24, 19, 16, 13, 11.
+
+**Why `section` was added.** The measured usage across the whole build was
+`caption` 286 times against `body` 160, `display` 10 and `h1` 6. The scale had
+seven notional steps and the screens used two. The gap that caused it is the one
+between 24 and 16: any heading subordinate to a band title had nowhere to go and
+collapsed onto `body` or `caption`, so a screen read as one large word above an
+undifferentiated field. 19 is the step that was missing, and it is register
+independent on purpose: it is right in the handset and right on a console, and
+promoting it at desktop width would reopen the gap it exists to close.
+
+**Why the client-owner screens stop at `display`.** Their `hero` was never a
+figure. It was the screen's own name set at 48px, three of the four tabs opened
+with one, and on an iPhone SE `/system` spent an entire viewport on the words
+"Ecoflo compact biofilter". Above the fold has to carry state, not a title card.
+So on `client-prospect` and `client-owner` the ceiling is `display`; `hero` stays
+available to the Global screens, where it sets a real number against a target,
+which is the job section 7 describes.
 
 ### How many sizes may appear on one screen
 
@@ -509,9 +583,19 @@ Having a scale is not the same as using it sparingly. The rules:
    is repeated here because it is a type rule as much as a composition one.
 3. **`display` is permitted at most once per screen**, for the single secondary
    figure, and not at all on a screen whose hero is a number.
-4. **Four sizes carry the reading hierarchy on any one screen.** In practice that
-   is hero, `h1`, `body`, `caption`, and a screen that needs a fifth reading size
-   is a screen doing two jobs.
+4. **Five sizes carry the reading hierarchy on any one screen, and only one of
+   them may be larger than `section`.** Raised from four in the client-owner
+   pass, when `section` was added. Four was written against a scale that ran
+   48 / 32 / 24 / 16 / 13 with nothing between 24 and 16, and the missing step is
+   what forced every sub-heading onto `body` or `caption`. A screen that carries a
+   band heading and a heading inside it legitimately needs five.
+
+   Raising a count without replacing the discipline it carried is how a rule
+   becomes a formality, so rule 2 above, one element per screen at the `hero`
+   step, is now enforced by `audit-rules.mjs` rather than merely written down. It
+   is the check the total was standing in for. Counting steps above `section`
+   instead was tried first and was wrong: a 32px subject over 24px band headings
+   is hierarchy, not competition.
 
 Two registers sit outside that count, and this is a deliberate reading of the rule
 rather than a loophole:
@@ -519,6 +603,15 @@ rather than a loophole:
 - **`micro` at 11px** is a label register. It names a value, it is never read as
   prose, and removing it would push eyebrows onto `caption` where they would stop
   being distinguishable from row metadata.
+
+  It is **sentence case**, not uppercase. The token carried an `uppercase`
+  transform that `applyBrand()` never wrote to a custom property, so nothing in
+  the build was ever uppercased by it and every eyebrow has always rendered
+  sentence case with the tracking doing the separating. The dead field is removed
+  rather than implemented, for two reasons: a token that silently does nothing is
+  worse than no token, because this document then says the opposite of what the
+  screen shows; and uppercasing strips accents in some renderers, which in a
+  French Quebec product turns a label into a spelling mistake.
 - **The control label at 15px** is a control register, specified in section 6.
 
 So a fully loaded screen shows six physical sizes: four reading, two functional.
@@ -731,10 +824,15 @@ content column edges. Radius belongs to objects inside bands.
 
 | Token | Value | Use |
 |---|---|---|
-| `--radius-card` | 18px | The rare card |
-| `--radius-control` | 12px | Buttons, inputs, icon chips |
+| `--radius-card` | 12px | The rare card |
+| `--radius-control` | 8px | Buttons, inputs, icon chips |
 | `--radius-pill` | 999px | Chips, toggles, avatars |
-| `--radius-shell` | 24px | The app shell |
+| `--radius-shell` | 24px legacy, 22px next | The app shell and the sidebar |
+
+Card and control came down from 18/12 legacy and 16/10 next, and both brands now
+share them. At 18px a card corner competes with the pill radius and the whole
+surface starts to read as a phone widget rather than as paper. `--radius-shell`
+stays per brand, because that is the device and the sidebar rather than content.
 
 **Elevation.** `--shadow-card` for a card at rest, `--shadow-raised` for hover and
 card-on-band, `--shadow-sheet` for sheets, modals and the handset. Bands carry no
@@ -874,6 +972,13 @@ arrival.**
 | Sheet, modal, Blueprint panel | Transform and opacity | 220ms | `cubic-bezier(0.2, 0, 0, 1)` |
 | Route change | Content fades and rises 12px | 180ms | `ease-out` |
 | **Role switch** | Masthead ground cross fades, content rises 16px, hero re-counts | 320ms | `cubic-bezier(0.2, 0, 0, 1)` |
+| **Route change** | Content fades in and rises 12px, once, on arrival | 220ms | `cubic-bezier(0.16, 1, 0.3, 1)` |
+
+Route change was specified here from the first pass and implemented in the
+client-owner pass. The `--motion-route` token sat in both brand files for four
+passes with no rule reading it. It rises rather than sliding sideways: a
+horizontal transition implies a position in a sequence, and a four tab bar is not
+a sequence. Tapping Account from Home is not a movement to the right.
 | Hero number, first mount only | Counts from 0 to value | 700ms | `ease-out` |
 | List arrival | Stagger, 40ms per row, first 6 rows only | 200ms each | `ease-out` |
 | Skeleton to content | Cross fade | 180ms | `ease-out` |
@@ -915,7 +1020,7 @@ is the largest single gap between intent and build in the whole project.
 | Element | Default | Blueprint |
 |---|---|---|
 | Canvas | `--canvas` | `--canvas-blueprint`, a real blue grey. ΔL\* **8.5** legacy, **9.7** next |
-| Callout | 12px pill, `--ink-3` on white | **28px square**, `--ink` fill, `--on-band` mono numeral, at the band's left edge |
+| Callout | **Nothing** | **28px square**, `--ink` fill, `--on-band` mono numeral, at the band's left edge |
 | Leader line | 3px stub | Full rule from the callout to the band's right edge, 1px `--field-line`, **drawn in over 240ms** |
 | Band boundary | Nothing | 1px dashed `--field-line` at top and bottom of every annotated band |
 | Index panel | List of callouts | Same, plus the count as a `display` figure and Export spec as the primary action |
@@ -925,6 +1030,27 @@ The numbers stay an index into the exported spec rather than decoration, which i
 what earns them the size. Spend the boldness here: this is the mechanism that lets
 one build serve leadership and DEV, and it is the thing no competing prototype
 will have.
+
+### The default state shows no callout at all
+
+Changed in the client-owner pass. The default state used to be a small
+hairline-outlined marker at the header baseline, on the argument that it was low
+contrast and therefore easy to ignore while demoing the product.
+
+It was not ignorable. A sequence reading 01, 02, 03 down the right edge of a page
+is read as step numbering by anyone who does not already know what Blueprint mode
+is, and that is every customer and most of the room in a leadership review. On
+`/system` it numbered three unrelated blocks as though they were stages of a task.
+A marker that has to be explained before it can be ignored is not low contrast; it
+is a question the screen keeps asking.
+
+Nothing is lost from the spec layer. Every annotation is still reachable in
+Blueprint mode and from the Blueprint panel, which lists all of them and is where
+Export spec already lives. The callouts are now revealed by the mode built to
+reveal them, instead of being half revealed all of the time. That also sharpens
+the mode change this section opens by demanding: going from no callouts to
+twenty-eight numbered ones is legible from across a room in a way that going from
+small grey to large black never was.
 
 ---
 

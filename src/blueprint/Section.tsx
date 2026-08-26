@@ -3,14 +3,23 @@
  *
  * Wraps an annotated region of a screen.
  *
- * Default state: a small hairline-outlined marker sits at the header baseline in
- * --ink-3, low contrast, easy to ignore while demoing the product. Clicking it
- * opens the annotation.
+ * Default state: nothing. The section renders its children and no marker.
  *
- * Blueprint mode: the marker becomes a numbered callout in IBM Plex Mono, the
- * section boundary is drawn, and a hairline leader line connects the two. The
- * numbers are an index into the exported spec, not decoration, which is what
- * earns them their place.
+ * It used to render a small numbered marker at the header baseline, on the
+ * argument that it was low contrast and easy to ignore. It was not. On a
+ * customer screen a sequence reading 01, 02, 03 down the page is read as step
+ * numbering by anyone who does not already know what Blueprint mode is, which
+ * is every customer and most of the room in a leadership review. A marker that
+ * has to be explained before it can be ignored is not low contrast, it is a
+ * question the screen keeps asking.
+ *
+ * Blueprint mode: the marker is a numbered callout in IBM Plex Mono, the section
+ * boundary is drawn, and a hairline leader line connects the two. The numbers are
+ * an index into the exported spec, not decoration, which is what earns them their
+ * place in that mode and only in that mode. Every annotation stays reachable
+ * there and from the Blueprint panel, so nothing is lost from the spec layer: the
+ * callouts are now revealed by the mode built to reveal them, rather than half
+ * revealed all the time.
  *
  * The `id` must exist in `data/sections.ts`. In development an unknown id logs
  * once rather than failing silently, because a section that quietly loses its
@@ -25,13 +34,10 @@ export const Section = ({
   id,
   children,
   className = '',
-  onDark = false,
 }: {
   id: string;
   children: ReactNode;
   className?: string;
-  /** Set on the forest blocks, where the default marker would be invisible. */
-  onDark?: boolean;
 }) => {
   const { on, register, unregister, open, openId } = useBlueprint();
   const annotation = sections.find((s) => s.id === id);
@@ -86,27 +92,7 @@ export const Section = ({
             {number}
           </button>
         </>
-      ) : (
-        <button
-          type="button"
-          onClick={() => open(id)}
-          aria-label={`About this section: ${annotation.title}`}
-          aria-expanded={isOpen}
-          // The marker clears the camera on the two sections that run to the top
-          // of the display. Those are exactly the `onDark` ones: a section is
-          // inverted here because it is the full-bleed panel a screen opens with,
-          // and a full-bleed panel is the only thing that passes under the island.
-          className={`absolute right-2 z-frame grid h-3 w-3 place-items-center rounded-control border text-micro transition-colors duration-state ease-ease ${
-            onDark
-              ? 'top-[calc(var(--safe-top)+var(--space-1))] border-on-band text-on-band opacity-50 hover:opacity-100'
-              : isOpen
-                ? 'top-2 border-ink2 text-ink'
-                : 'top-2 border-line text-ink3 hover:border-ink3 hover:text-ink2'
-          }`}
-        >
-          <span className="font-mono leading-none">{number}</span>
-        </button>
-      )}
+      ) : null}
 
       {children}
     </section>

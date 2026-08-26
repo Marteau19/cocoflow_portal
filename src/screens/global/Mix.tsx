@@ -49,7 +49,7 @@ export const GlobalMix = () => {
       {/* ------------------------------------------------------------------ */}
       {/* Masthead. The hero: one figure, and the distance still to travel.  */}
       {/* ------------------------------------------------------------------ */}
-      <Section id="mix-tracker" onDark>
+      <Section id="mix-tracker">
         <Band kind="masthead">
           <Micro className="text-on-band-muted">Strategy</Micro>
           <p className="mt-1 text-h1 text-on-band">Service revenue mix</p>

@@ -56,7 +56,7 @@ export const ProspectSoilTest = () => {
         the ground drains. A number on its own would be a measurement, so it
         carries what it means directly beneath.
       */}
-      <Section id="soil-test" onDark>
+      <Section id="soil-test">
         {/*
           The eyebrow was "Your soil test" above a heading reading "What we found on
           your land", which is the same thing twice. The note said the copy was in

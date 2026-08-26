@@ -115,11 +115,34 @@ export interface WorkOrder {
   durationMin: number;
   lineItems: WorkOrderLineItem[];
   checklist: ChecklistItem[];
+  /**
+   * Live progress, reported by the field app while a technician is travelling.
+   *
+   * Both null on every visit that is not happening right now, which is all of
+   * them but one. They are modelled rather than faked from a clock because an
+   * arrival state is the single thing the home screen exists to answer, and a
+   * screen that says "on the way" without saying when is the complaint this
+   * pair was added to fix.
+   *
+   * This is a field-app dependency. Nothing produces these values today.
+   */
+  enRouteSince: string | null;
+  etaAt: string | null;
   /** What the technician records */
   technicianNotes: string | null;
   /** What the customer reads. Generated from the checklist at closure. */
   customerSummary: string | null;
   signedBy: string | null;
+  /**
+   * Photographs the technician took on the visit.
+   *
+   * Empty where none were taken, which is most of the older visits: photo
+   * capture is a field-app capability that does not exist yet, so the history
+   * before it lands genuinely has no pictures. Rendering an empty array as
+   * nothing is correct; filling it with stock imagery would be inventing
+   * evidence of work.
+   */
+  photos: string[];
 }
 
 export interface Case {
@@ -131,6 +154,15 @@ export interface Case {
   status: 'new' | 'in-progress' | 'resolved';
   openedOn: string;
   lastMessageOn: string;
+  /**
+   * Messages on this case the customer has not opened yet.
+   *
+   * Read state is per participant in any real messaging system: the Service
+   * Point has its own, and neither side's is derivable from the case status. A
+   * resolved case can still hold a reply nobody has read, which is exactly the
+   * state below.
+   */
+  unreadForCustomer: number;
 }
 
 export interface Lead {
@@ -368,9 +400,12 @@ export const workOrders: WorkOrder[] = [
       { id: 'CL-7', label: 'Site left clean', type: 'check', required: true, value: null },
       { id: 'CL-8', label: 'Observations', type: 'note', required: false, value: null },
     ],
+    enRouteSince: '08:30',
+    etaAt: '09:00',
     technicianNotes: null,
     customerSummary: null,
     signedBy: null,
+    photos: [],
   },
   {
     id: 'WO-2026-0409',
@@ -387,10 +422,13 @@ export const workOrders: WorkOrder[] = [
     durationMin: 45,
     lineItems: [],
     checklist: [],
+    enRouteSince: null,
+    etaAt: null,
     technicianNotes: 'Media at 70 percent life. Outlet filter partially blocked, cleared on site. Recommend FMR within 6 months.',
     customerSummary:
       'Everything is working as it should. We cleared a partial blockage while we were there, and the filter has about six months of life left. We will be in touch to schedule the replacement before it is needed.',
     signedBy: 'D. Gagnon',
+    photos: [],
   },
   {
     id: 'WO-2026-0415',
@@ -407,9 +445,218 @@ export const workOrders: WorkOrder[] = [
     durationMin: 75,
     lineItems: [],
     checklist: [],
+    enRouteSince: null,
+    etaAt: null,
     technicianNotes: null,
     customerSummary: null,
     signedBy: null,
+    photos: [],
+  },
+
+  /* ---------------------------------------------------------------- */
+  /* The Lavoie service history                                        */
+  /*                                                                   */
+  /* Seven years of it, because the service history screen was showing */
+  /* parts orders and no visits and reading like an order log. That    */
+  /* was not a rendering fault: `customerTimeline` has always merged   */
+  /* both streams correctly, and this account had exactly one work     */
+  /* order, the upcoming one, so there was nothing to merge. For a     */
+  /* care plan business the visit record is the product being sold, so */
+  /* an empty one is the worst possible thing to show.                 */
+  /*                                                                   */
+  /* The shape of the history is what makes the golden thread hold     */
+  /* together: media went in with the system in 2019, was replaced     */
+  /* once in 2022, and is due again now, which is exactly what         */
+  /* WO-2026-0412 is on its way to do.                                 */
+  /* ---------------------------------------------------------------- */
+  {
+    id: 'WO-2019-0088',
+    accountId: GOLDEN.accountId,
+    assetId: GOLDEN.assetId,
+    contractId: GOLDEN.contractId,
+    territoryId: 'SP-QC-EST',
+    resourceId: 'RES-004',
+    type: 'install',
+    status: 'complete',
+    scheduledFor: '2019-05-14',
+    windowStart: '08:00',
+    windowEnd: '16:00',
+    durationMin: 420,
+    lineItems: [],
+    checklist: [],
+    enRouteSince: null,
+    etaAt: null,
+    technicianNotes: null,
+    customerSummary:
+      'We installed your Ecoflo compact biofilter, filled the filter media and tested the system through a full cycle. Everything ran as it should.',
+    signedBy: 'S. Lavoie',
+    photos: [],
+  },
+  {
+    id: 'WO-2020-0231',
+    accountId: GOLDEN.accountId,
+    assetId: GOLDEN.assetId,
+    contractId: GOLDEN.contractId,
+    territoryId: 'SP-QC-EST',
+    resourceId: 'RES-001',
+    type: 'inspection',
+    status: 'complete',
+    scheduledFor: '2020-06-11',
+    windowStart: '09:00',
+    windowEnd: '11:00',
+    durationMin: 60,
+    lineItems: [],
+    checklist: [],
+    enRouteSince: null,
+    etaAt: null,
+    technicianNotes: null,
+    customerSummary:
+      'First yearly check. The filter media had settled as expected and the effluent was clear. Nothing needed doing.',
+    signedBy: 'S. Lavoie',
+    photos: [],
+  },
+  {
+    id: 'WO-2021-0298',
+    accountId: GOLDEN.accountId,
+    assetId: GOLDEN.assetId,
+    contractId: GOLDEN.contractId,
+    territoryId: 'SP-QC-EST',
+    resourceId: 'RES-001',
+    type: 'inspection',
+    status: 'complete',
+    scheduledFor: '2021-06-24',
+    windowStart: '13:00',
+    windowEnd: '15:00',
+    durationMin: 60,
+    lineItems: [],
+    checklist: [],
+    enRouteSince: null,
+    etaAt: null,
+    technicianNotes: null,
+    customerSummary:
+      'Yearly check. We cleared some leaf litter off the lid and reseated it. The system itself was working normally.',
+    signedBy: 'J. Lavoie',
+    photos: [],
+  },
+  {
+    id: 'WO-2022-0344',
+    accountId: GOLDEN.accountId,
+    assetId: GOLDEN.assetId,
+    contractId: GOLDEN.contractId,
+    territoryId: 'SP-QC-EST',
+    resourceId: 'RES-001',
+    type: 'FMR',
+    status: 'complete',
+    scheduledFor: '2022-07-05',
+    windowStart: '09:00',
+    windowEnd: '12:00',
+    durationMin: 150,
+    lineItems: [
+      { id: 'WOL-H1', description: 'Filter media, coconut husk', sku: 'FM-EC5-COCO', quantity: 1, consumesInventory: true },
+    ],
+    checklist: [],
+    enRouteSince: null,
+    etaAt: null,
+    technicianNotes: null,
+    customerSummary:
+      'We replaced the coconut husk filter media and took the old media away. This is the routine replacement your plan covers, and the next one is due in about four years.',
+    signedBy: 'S. Lavoie',
+    /* The one visit with a photograph on file. The rest predate field capture. */
+    photos: ['/img/system.jpg'],
+  },
+  {
+    id: 'WO-2023-0387',
+    accountId: GOLDEN.accountId,
+    assetId: GOLDEN.assetId,
+    contractId: GOLDEN.contractId,
+    territoryId: 'SP-QC-EST',
+    resourceId: 'RES-002',
+    type: 'inspection',
+    status: 'complete',
+    scheduledFor: '2023-06-28',
+    windowStart: '10:00',
+    windowEnd: '12:00',
+    durationMin: 60,
+    lineItems: [],
+    checklist: [],
+    enRouteSince: null,
+    etaAt: null,
+    technicianNotes: null,
+    customerSummary:
+      'Yearly check, first one on the new media. Effluent was clear and the bed had bedded in well.',
+    signedBy: 'S. Lavoie',
+    photos: [],
+  },
+  {
+    id: 'WO-2024-0455',
+    accountId: GOLDEN.accountId,
+    assetId: GOLDEN.assetId,
+    contractId: GOLDEN.contractId,
+    territoryId: 'SP-QC-EST',
+    resourceId: 'RES-001',
+    type: 'inspection',
+    status: 'complete',
+    scheduledFor: '2024-10-08',
+    windowStart: '09:00',
+    windowEnd: '11:00',
+    durationMin: 60,
+    lineItems: [
+      { id: 'WOL-H2', description: 'Inspection lid seal', sku: 'LID-SEAL-05', quantity: 1, consumesInventory: true },
+    ],
+    checklist: [],
+    enRouteSince: null,
+    etaAt: null,
+    technicianNotes: null,
+    customerSummary:
+      'Yearly check. The lid seal had perished at one edge so we fitted a new one. Everything else was normal.',
+    signedBy: 'J. Lavoie',
+    photos: [],
+  },
+  {
+    id: 'WO-2025-0502',
+    accountId: GOLDEN.accountId,
+    assetId: GOLDEN.assetId,
+    contractId: GOLDEN.contractId,
+    territoryId: 'SP-QC-EST',
+    resourceId: 'RES-001',
+    type: 'inspection',
+    status: 'complete',
+    scheduledFor: '2025-07-16',
+    windowStart: '13:00',
+    windowEnd: '15:00',
+    durationMin: 60,
+    lineItems: [],
+    checklist: [],
+    enRouteSince: null,
+    etaAt: null,
+    technicianNotes: null,
+    customerSummary:
+      'Yearly check. No change since last year. We noted that the media will be due for replacement next summer and will book it in for you.',
+    signedBy: 'S. Lavoie',
+    photos: [],
+  },
+  {
+    id: 'WO-2026-0203',
+    accountId: GOLDEN.accountId,
+    assetId: GOLDEN.assetId,
+    contractId: GOLDEN.contractId,
+    territoryId: 'SP-QC-EST',
+    resourceId: 'RES-002',
+    type: 'inspection',
+    status: 'complete',
+    scheduledFor: '2026-04-22',
+    windowStart: '08:00',
+    windowEnd: '10:00',
+    durationMin: 60,
+    lineItems: [],
+    checklist: [],
+    enRouteSince: null,
+    etaAt: null,
+    technicianNotes: null,
+    customerSummary:
+      'Yearly check. The media is at the end of its life as expected, so we have booked the replacement for August. Nothing to do before then.',
+    signedBy: 'S. Lavoie',
+    photos: [],
   },
 ];
 
@@ -500,8 +747,8 @@ export const knowledgeBase: KnowledgeArticle[] = [
 ];
 
 export const cases: Case[] = [
-  { id: 'CAS-2026-2201', accountId: 'ACC-QC-004233', assetId: 'AST-QC-004233-1', subject: 'Odour after heavy rain', queue: 'post-sale', status: 'in-progress', openedOn: '2026-07-19', lastMessageOn: '2026-07-24' },
-  { id: 'CAS-2026-2214', accountId: GOLDEN.accountId, assetId: GOLDEN.assetId, subject: 'Question about winter access', queue: 'post-sale', status: 'resolved', openedOn: '2026-06-02', lastMessageOn: '2026-06-03' },
+  { id: 'CAS-2026-2201', accountId: 'ACC-QC-004233', assetId: 'AST-QC-004233-1', subject: 'Odour after heavy rain', queue: 'post-sale', status: 'in-progress', openedOn: '2026-07-19', lastMessageOn: '2026-07-24', unreadForCustomer: 0 },
+  { id: 'CAS-2026-2214', accountId: GOLDEN.accountId, assetId: GOLDEN.assetId, subject: 'Question about winter access', queue: 'post-sale', status: 'resolved', openedOn: '2026-06-02', lastMessageOn: '2026-06-03', unreadForCustomer: 1 },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -561,12 +808,335 @@ export const nextWorkOrderForAsset = (assetId: string): WorkOrder | undefined =>
  * one chronological view, because the customer does not care which system a
  * record came from. This merge is the single-login argument made visible.
  */
-export const customerTimeline = (accountId: string) => {
-  const visits = workOrders
+export const customerTimeline = (accountId: string): TimelineEntry[] => {
+  const visits: TimelineEntry[] = workOrders
     .filter((w) => w.accountId === accountId && w.status === 'complete')
-    .map((w) => ({ kind: 'visit' as const, date: w.scheduledFor, id: w.id, label: w.type, summary: w.customerSummary }));
-  const purchases = orders
+    .map((w) => ({
+      kind: 'visit',
+      date: w.scheduledFor,
+      id: w.id,
+      label: w.type,
+      summary: w.customerSummary,
+      // Carried on the entry so the timeline can render a face and a picture
+      // without every consumer re-deriving them from the work order.
+      resourceId: w.resourceId,
+      photos: w.photos,
+    }));
+  const purchases: TimelineEntry[] = orders
     .filter((o) => o.accountId === accountId)
-    .map((o) => ({ kind: 'order' as const, date: o.placedOn, id: o.id, label: 'Parts order', summary: null }));
+    .map((o) => ({
+      kind: 'order',
+      date: o.placedOn,
+      id: o.id,
+      label: 'Parts order',
+      summary: null,
+      resourceId: null,
+      photos: [],
+    }));
   return [...visits, ...purchases].sort((a, b) => b.date.localeCompare(a.date));
+};
+
+/**
+ * One entry in the merged history.
+ *
+ * Visits and parts orders arrive from different systems and the customer does
+ * not care which, so they share a shape. `kind` is what the renderer switches on
+ * and it is the only thing that betrays the two sources.
+ */
+export interface TimelineEntry {
+  kind: 'visit' | 'order';
+  date: string;
+  id: string;
+  label: string;
+  summary: string | null;
+  /** Who did the work. Null on a parts order: nobody visited. */
+  resourceId: string | null;
+  photos: string[];
+}
+
+/* ------------------------------------------------------------------ */
+/* Assumptions                                                         */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Product and pricing facts this prototype does not have, stated in one place.
+ *
+ * Every figure below is an assumption, not a fact from PTWE, and each one is
+ * load bearing for something a customer sees. They are collected here rather
+ * than spread through the screens so that correcting them is a one line edit
+ * and so that a reviewer can find all of them in ten seconds. `LIST_PRICE` was
+ * already in the build, hardcoded inside the care plan screen, which is exactly
+ * the failure mode this block exists to prevent.
+ *
+ * TODO, needs PTWE:
+ *   - mediaLifeYears: how long a set of EC-5 coconut husk media lasts before
+ *     replacement. Everything the media life ring shows is derived from it.
+ *   - listPrice: what an inspection and a media replacement would cost a
+ *     customer with no care plan. The plan value figure is derived from these,
+ *     and that figure is the renewal argument, so a wrong number here is a wrong
+ *     number in front of a customer deciding whether to renew.
+ */
+export const ASSUMPTIONS = {
+  mediaLifeYears: 4,
+  /**
+   * Household water and energy, for the environmental estimate.
+   *
+   * These are the shakiest numbers in this file and the card that uses them says
+   * "estimate" on its face for that reason. `litresPerPersonPerDay` is a
+   * household average, `householdSize` is a guess about one family we have never
+   * asked, and `aeratedKwhPerYear` is the running cost of a competing system
+   * class rather than a measurement of any particular one.
+   *
+   * TODO, needs PTWE engineering: all three, plus confirmation that comparing a
+   * passive biofilter against an aerated system is a claim PTWE is willing to
+   * put in front of a customer in a regulated market. If the answer is no, the
+   * impact card comes out rather than being softened.
+   */
+  litresPerPersonPerDay: 250,
+  householdSize: 2,
+  aeratedKwhPerYear: 1400,
+  listPrice: {
+    inspection: 145,
+    FMR: 420,
+    maintenance: 145,
+    repair: 210,
+    install: 0,
+    'soil-test': 0,
+  } as Record<WorkOrder['type'], number>,
+} as const;
+
+/**
+ * How much of the filter media's life is left, and when it is due.
+ *
+ * Derived from when it was last put in, which is either the most recent
+ * completed media replacement or, if there has never been one, the day the
+ * system was installed. There is no sensor in an Ecoflo and inventing one would
+ * be the single most misleading thing this prototype could do: a homeowner who
+ * believes a number is measured will trust it in a way they should not trust an
+ * estimate off a calendar.
+ *
+ * `remaining` is clamped at zero. Past the due date the answer a customer needs
+ * is "it is due", not a negative percentage.
+ */
+export const mediaLife = (assetId: string) => {
+  const asset = byId(assets, assetId);
+  if (!asset) return null;
+
+  const lastReplacement = workOrders
+    .filter((w) => w.assetId === assetId && w.type === 'FMR' && w.status === 'complete')
+    .sort((a, b) => b.scheduledFor.localeCompare(a.scheduledFor))[0];
+
+  const installedOn = lastReplacement?.scheduledFor ?? asset.installedOn;
+  const [y, m, d] = installedOn.split('-').map(Number);
+  const dueDate = new Date(y + ASSUMPTIONS.mediaLifeYears, m - 1, d);
+  const dueOn = `${dueDate.getFullYear()}-${String(dueDate.getMonth() + 1).padStart(2, '0')}-${String(
+    dueDate.getDate(),
+  ).padStart(2, '0')}`;
+
+  const spanMs = dueDate.getTime() - new Date(y, m - 1, d).getTime();
+  const [ty, tm, td] = TODAY_ISO.split('-').map(Number);
+  const goneMs = new Date(ty, tm - 1, td).getTime() - new Date(y, m - 1, d).getTime();
+
+  const remaining = Math.max(0, Math.min(100, Math.round(((spanMs - goneMs) / spanMs) * 100)));
+
+  return {
+    remaining,
+    dueOn,
+    lastReplacedOn: installedOn,
+    /** True when the media has never been replaced, so "last replaced" is the install. */
+    original: lastReplacement === undefined,
+    /** The visit that is going to do it, if one is booked. */
+    bookedVisit: workOrders.find(
+      (w) => w.assetId === assetId && w.type === 'FMR' && w.status !== 'complete',
+    ),
+  };
+};
+
+/**
+ * What the care plan has covered in a calendar year, against what it costs.
+ *
+ * This is the renewal defence, and it is the one figure on the customer's
+ * screens that is an argument rather than a fact, so it is computed from the
+ * record rather than asserted. Covered work is counted when it is committed, not
+ * only when it is finished: a media replacement booked for next week is value
+ * the plan has already delivered, and a customer looking at their plan in the
+ * days before that visit should not see it drop off.
+ *
+ * Both inputs are assumptions. See ASSUMPTIONS above.
+ */
+export const planValue = (accountId: string, year: number) => {
+  const contract = contracts.find((c) => c.accountId === accountId && c.status === 'active');
+  if (!contract) return null;
+
+  const covered = workOrders.filter(
+    (w) =>
+      w.accountId === accountId &&
+      w.contractId === contract.id &&
+      w.scheduledFor.startsWith(String(year)),
+  );
+
+  const visitValue = covered.reduce((sum, w) => sum + ASSUMPTIONS.listPrice[w.type], 0);
+
+  const partsDiscount = orders
+    .filter((o) => o.accountId === accountId && o.placedOn.startsWith(String(year)))
+    .reduce((sum, o) => sum + Math.round(o.total_jde * CONTRACT_PARTS_DISCOUNT), 0);
+
+  const covered_total = visitValue + partsDiscount;
+
+  return {
+    visits: covered,
+    visitValue,
+    partsDiscount,
+    covered: covered_total,
+    price: contract.annualPrice_jde,
+    /** Positive when the plan has returned more than it cost. */
+    ahead: covered_total - contract.annualPrice_jde,
+    currency: contract.currency,
+  };
+};
+
+/**
+ * The parts discount an active care plan carries.
+ *
+ * Duplicated from `commerce/adapter.ts` on purpose rather than imported: the
+ * adapter is a seam behind which a commerce platform will eventually own
+ * pricing, and seedData importing from it would make the mock data depend on
+ * the thing the mock data is meant to be independent of. When a platform is
+ * chosen this constant is deleted and the figure comes from the adapter.
+ */
+const CONTRACT_PARTS_DISCOUNT = 0.1;
+
+/**
+ * The pinned demo date, duplicated from `lib/format`.
+ *
+ * `lib/format` imports from this file, so this file cannot import from it. The
+ * value is derived the same way, from the golden thread's work order, so the two
+ * cannot drift.
+ */
+const TODAY_ISO: string =
+  workOrders.find((w) => w.id === GOLDEN.workOrderId)?.scheduledFor ?? '2026-08-12';
+
+/* ------------------------------------------------------------------ */
+/* The signed-in customer                                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Who is signed in, and what they own.
+ *
+ * A homeowner owns N properties, not one. Today Sarah owns exactly one, and the
+ * screens are built for that case, but they read the list rather than the golden
+ * constant so that the second property is a data change and not a rewrite.
+ * Retrofitting this later means touching every screen that currently reaches for
+ * `GOLDEN.accountId`, which is all of them.
+ *
+ * A property is an Account here because that is where the address lives in this
+ * object model. If the real CRM splits address off into its own object, this is
+ * the function that changes and the screens are not affected.
+ */
+export const SESSION = {
+  contactId: 'CON-008311',
+} as const;
+
+/** The properties this person owns, in the order they should be offered. */
+export const propertiesForContact = (contactId: string): Account[] => {
+  const owned = contacts.filter((c) => c.id === contactId).map((c) => c.accountId);
+  return accounts.filter((a) => owned.includes(a.id));
+};
+
+/** The system installed at a property. One today; the model allows more. */
+export const systemsForProperty = (accountId: string): Asset[] =>
+  assets.filter((a) => a.accountId === accountId);
+
+/* ------------------------------------------------------------------ */
+/* Conversations                                                       */
+/* ------------------------------------------------------------------ */
+
+export interface CaseMessage {
+  caseId: string;
+  from: 'customer' | 'team';
+  /** Null when the customer wrote it. */
+  authorId: string | null;
+  at: string;
+  body: string;
+}
+
+/**
+ * The thread, grounded in the cases above.
+ *
+ * Here rather than inside the Messages screen, and that is a classification fix
+ * rather than a tidy-up. A message somebody wrote is a record, exactly like a
+ * visit summary or an invoice line, and the copy export was counting these four
+ * paragraphs as interface copy and putting them in front of a copy reviewer as
+ * something to edit. They are also the wrong thing to translate: a customer's own
+ * words do not get rewritten into French, they stay as they were sent.
+ *
+ * The customer-facing subject comes from the case. Its queue and status never
+ * surface.
+ */
+export const caseMessages: CaseMessage[] = [
+  {
+    caseId: 'CAS-2026-2214',
+    from: 'customer',
+    authorId: null,
+    at: '2026-06-02',
+    body: 'Quick question. The driveway is not ploughed in winter and the lid is under snow. Is that a problem for the visit?',
+  },
+  {
+    caseId: 'CAS-2026-2214',
+    from: 'team',
+    authorId: 'RES-003',
+    at: '2026-06-02',
+    body: 'Good question, and thanks for flagging it early. We need a clear path to the lid on the day. If the drive is not ploughed we can either shift the visit to a thaw week or you can clear a path the day before. We will call you two days ahead either way so it is never a surprise.',
+  },
+  {
+    caseId: 'CAS-2026-2214',
+    from: 'customer',
+    authorId: null,
+    at: '2026-06-03',
+    body: 'A thaw week works better for us. Thank you.',
+  },
+  {
+    caseId: 'CAS-2026-2214',
+    from: 'team',
+    authorId: 'RES-003',
+    at: '2026-06-03',
+    body: 'Noted on your property record, so whoever is scheduling next winter will see it without you having to explain again.',
+  },
+];
+
+/** Every message on a property's conversations, oldest first. */
+export const messagesForAccount = (accountId: string): CaseMessage[] => {
+  const ids = cases.filter((c) => c.accountId === accountId).map((c) => c.id);
+  return caseMessages
+    .filter((m) => ids.includes(m.caseId))
+    .sort((a, b) => a.at.localeCompare(b.at));
+};
+
+/**
+ * What a passive biofilter has done, and not done, since it went in.
+ *
+ * Ecoflo treats by trickling through coconut husk: no blower, no aerator, no
+ * electricity in the treatment itself. That is a real difference from the system
+ * class it competes with and nobody is telling the customer about it.
+ *
+ * Every figure is an estimate off a calendar and a household size, and both of
+ * the inputs are in ASSUMPTIONS with a TODO. The card that renders this says so.
+ * There is no meter on an Ecoflo any more than there is a sensor in one.
+ */
+export const environmentalImpact = (assetId: string) => {
+  const asset = byId(assets, assetId);
+  if (!asset) return null;
+
+  const [y, m, d] = asset.installedOn.split('-').map(Number);
+  const [ty, tm, td] = TODAY_ISO.split('-').map(Number);
+  const days = Math.max(
+    0,
+    Math.round((new Date(ty, tm - 1, td).getTime() - new Date(y, m - 1, d).getTime()) / 86_400_000),
+  );
+
+  const litres =
+    days * ASSUMPTIONS.litresPerPersonPerDay * ASSUMPTIONS.householdSize;
+  const kwhAvoided = Math.round((days / 365) * ASSUMPTIONS.aeratedKwhPerYear);
+
+  return { days, years: Math.round(days / 365), litres, kwhAvoided };
 };

@@ -47,7 +47,7 @@ export const ProspectHandover = () => {
   return (
     <>
       {/* Masthead. The hero is a dark field: the statement itself. */}
-      <Section id="handover" onDark>
+      <Section id="handover">
         {/*
           "Handover" above "Your system is live" is the same idea twice, so the
           eyebrow is gone.

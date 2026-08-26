@@ -14,12 +14,15 @@
  *    direction, per DESIGN.md section 5.
  */
 
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { BlueprintPanel } from '../blueprint/BlueprintPanel';
 import { GutterOverlay } from '../dev/GutterOverlay';
 import { DeviceFrame } from './DeviceFrame';
 import { BottomNav, SheetNav, SideNav } from './Nav';
 import { TopBar } from './TopBar';
+import { useLocale } from '../i18n';
+import { isCustomerRole } from './roles';
 import { useRole } from './useRole';
 
 /**
@@ -29,11 +32,19 @@ import { useRole } from './useRole';
  */
 const FramedRole = ({ children }: { children: ReactNode }) => {
   const { role } = useRole();
+  const { pathname } = useLocation();
 
   return (
     <DeviceFrame>
       <div className="min-h-0 flex-1 overflow-y-auto" data-content-column>
-        {children}
+        {/*
+          `key` on the pathname is what replays the entry animation on every
+          route change: without it React reuses the element and the animation
+          runs once, on the first screen the reader ever sees, and never again.
+        */}
+        <div key={pathname} className="route-enter">
+          {children}
+        </div>
       </div>
       <BottomNav role={role} />
     </DeviceFrame>
@@ -63,7 +74,21 @@ const FullBleedRole = ({ children }: { children: ReactNode }) => {
 
 export const AppShell = ({ children }: { children: ReactNode }) => {
   const { role } = useRole();
+  const locale = useLocale();
   const framed = role.viewport === 'mobile';
+
+  /*
+    The register, on <body>, so the page ground behind the device frame can be
+    styled from CSS.
+
+    It is on the body rather than on <main> because the ground in question is
+    the body's own background and the top bar is a sibling of <main>, so a
+    selector rooted at <main> cannot reach either of them. Same mechanism
+    Blueprint mode already uses for the same reason.
+  */
+  useEffect(() => {
+    document.body.dataset.register = framed ? 'framed' : 'full';
+  }, [framed]);
 
   return (
     <>
@@ -82,7 +107,30 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
         cross fades and the hero re-counts. That transition is the architectural
         argument made visible, which is why it is the longest in the app.
       */}
-      <main className="pt-6" data-register={framed ? 'framed' : 'full'} key={role.key}>
+      {/*
+        `data-persona` caps the type scale for the two customer roles.
+
+        Their `hero` step was never a figure. It was the screen's own name set at
+        48px, three of four tabs opened with one, and on an iPhone SE `/system`
+        spent an entire viewport on the words "Ecoflo compact biofilter". Above
+        the fold has to carry state, not a title card.
+
+        It is an attribute remap in index.css rather than an edit to every
+        customer screen, for the same reason `data-register` is: one rule, both
+        brands, zero component changes, and a screen cannot opt out of it by
+        accident. `hero` stays available to the Global surfaces, where it sets a
+        real number against a target, which is the job DESIGN.md section 7
+        describes.
+      */}
+      <main
+        className="pt-6"
+        data-register={framed ? 'framed' : 'full'}
+        data-persona={isCustomerRole(role.key) ? 'customer' : 'operator'}
+        // Locale is in the key for the same reason role is: `t()` is a plain
+        // function with no subscription, so the language control changes module
+        // state and this remount is what makes the app read it.
+        key={`${role.key}-${locale}`}
+      >
         {framed ? <FramedRole>{children}</FramedRole> : <FullBleedRole>{children}</FullBleedRole>}
       </main>
       <BlueprintPanel />

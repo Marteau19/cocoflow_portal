@@ -1,7 +1,7 @@
 # scripts
 
-Two audits. Neither is part of the build, and neither replaces looking at the
-screens. They exist because the rules in DESIGN.md that are easy to state and
+Two audits and a camera. None of them is part of the build, and none replaces
+looking at the screens. They exist because the rules in DESIGN.md that are easy to state and
 tedious to verify by eye are exactly the ones that drift, and a reviewer who
 spots one drifted rule stops trusting the rest of the document.
 
@@ -43,3 +43,23 @@ CHROMIUM_PATH=/opt/pw-browsers/chromium npm run audit:design
 
 A rule is in this script only if a violation is unambiguous. Judgement calls
 stay with the eye, which is why `--shots` exists.
+
+## `shoot.mjs`
+
+```
+npm run dev                       # in one shell
+npm run shots                     # in another
+npm run shots -- --full --routes /home,/system
+```
+
+Screenshots the client-owner screens in both brands at iPhone 15 and iPhone SE
+widths, into `docs/shots` (gitignored). Run it after every phase and look at the
+eight pictures before calling the phase done.
+
+Both widths, because almost every composition fault in this build appeared at
+the narrow width first: a 48px heading becomes three lines and a fixed-height
+block starts eating the fold. Reviewing only the wide one reviews the easy case.
+
+Both brands, every time, because the brand switch stays a zero-component-edit
+operation only for as long as nobody hardcodes a value, and two pictures side by
+side is the cheapest way to catch the day somebody does.

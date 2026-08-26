@@ -11,11 +11,21 @@
  * because a Service Point cannot honour a time and promising one manufactures a
  * complaint. And the reason for the visit is chosen from a short list, because
  * free text cannot be routed.
+ *
+ * The action is always tappable. It used to disable itself until both steps were
+ * answered, with the explanation in 13px grey underneath it, which on an iPhone
+ * SE was below the fold: the control said no and the reason why was off screen.
+ * A disabled control cannot be tapped, so it cannot tell you anything, so the one
+ * moment a person needs an explanation is the one moment the interface has no way
+ * to give them one. Now the tap always lands, and if something is missing it
+ * takes you to the thing that is missing and says so there.
  */
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Section } from '../../blueprint/Section';
 import { GOLDEN, accounts, assets, byId, contracts, territories } from '../../data/seedData';
+import { plural, t } from '../../i18n';
+import { tick } from '../../ui/motion';
 import { dayAndDate, daysFromToday, TODAY } from '../../lib/format';
 import {
   Band,
@@ -32,10 +42,10 @@ import {
 
 /** Reasons map to a routable code. Free text cannot be dispatched. */
 const REASONS = [
-  { code: 'inspection', label: 'A check up', detail: 'Included in your care plan' },
-  { code: 'concern', label: 'Something seems wrong', detail: 'Smell, noise or a wet patch' },
-  { code: 'advice', label: 'I have a question', detail: 'About the system or the property' },
-  { code: 'other', label: 'Something else', detail: 'Tell us when we confirm' },
+  { code: 'inspection', label: 'book.reason.inspection', detail: 'book.reason.inspectionDetail' },
+  { code: 'concern', label: 'book.reason.concern', detail: 'book.reason.concernDetail' },
+  { code: 'advice', label: 'book.reason.advice', detail: 'book.reason.adviceDetail' },
+  { code: 'other', label: 'book.reason.other', detail: 'book.reason.otherDetail' },
 ] as const;
 
 /**
@@ -58,6 +68,21 @@ const SLOTS = [
   { date: nextDate(13), windows: ['13:00 to 15:00'] },
 ];
 
+/**
+ * Take the reader to a step, honouring the reduced-motion preference.
+ *
+ * A smooth scroll is the one piece of motion here that carries meaning: it shows
+ * the reader where on the page they were sent, which an instant jump does not.
+ * For someone who has asked for less of it, arriving is what matters and the
+ * journey is what causes the problem, so the jump is the right answer rather than
+ * a degraded one.
+ */
+const goTo = (element: HTMLElement | null) => {
+  if (!element) return;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  element.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+};
+
 export const OwnerBook = () => {
   const account = byId(accounts, GOLDEN.accountId)!;
   const asset = byId(assets, GOLDEN.assetId)!;
@@ -68,7 +93,31 @@ export const OwnerBook = () => {
   const [slot, setSlot] = useState<{ date: string; window: string } | null>(null);
   const [booked, setBooked] = useState(false);
 
-  const ready = reason !== null && slot !== null;
+  /**
+   * Whether the reader has asked to book yet.
+   *
+   * Errors appear on the attempt, never before it. Marking a field wrong before
+   * anyone has tried to submit is telling someone off for not having finished
+   * reading the form.
+   */
+  const [attempted, setAttempted] = useState(false);
+
+  const reasonRef = useRef<HTMLDivElement>(null);
+  const slotRef = useRef<HTMLDivElement>(null);
+
+  const missingReason = reason === null;
+  const missingSlot = slot === null;
+
+  const submit = () => {
+    if (missingReason || missingSlot) {
+      setAttempted(true);
+      // The first missing step in reading order, not the first one checked.
+      goTo(missingReason ? reasonRef.current : slotRef.current);
+      return;
+    }
+    tick();
+    setBooked(true);
+  };
 
   /* ------------------------------------------------------------------ */
   /* Confirmation. The action keeps its name: Book a visit, visit booked. */
@@ -78,28 +127,28 @@ export const OwnerBook = () => {
       <>
         <div className="contents">
           <Masthead
-            eyebrow="Visit booked"
-            subject="You are booked in"
-            lead={`We will confirm who is coming closer to the day.`}
+            eyebrow={t('book.done.eyebrow')}
+            subject={t('book.done.title')}
+            lead={t('book.done.lead')}
           />
           <Band kind="data" flush>
             <div className="px-gutter py-3">
-              <Micro>When</Micro>
+              <Micro>{t('book.done.when')}</Micro>
               <p className="mt-1 text-h1 text-ink">{dayAndDate(slot.date)}</p>
               <p className="mt-1 text-body text-ink2">{slot.window}</p>
             </div>
             <RowList className="border-t border-line">
               <Row>
                 <div className="flex items-baseline justify-between gap-3">
-                  <p className="text-caption text-ink2">Reason</p>
+                  <p className="text-caption text-ink2">{t('book.done.reason')}</p>
                   <p className="text-caption text-ink">
-                    {REASONS.find((r) => r.code === reason)?.label}
+                    {t(REASONS.find((r) => r.code === reason)!.label)}
                   </p>
                 </div>
               </Row>
               <Row>
                 <div className="flex items-baseline justify-between gap-3">
-                  <p className="text-caption text-ink2">Where</p>
+                  <p className="text-caption text-ink2">{t('book.done.where')}</p>
                   <p className="text-right text-caption text-ink">
                     {account.address}, {account.city}
                   </p>
@@ -107,15 +156,13 @@ export const OwnerBook = () => {
               </Row>
               <Row>
                 <div className="flex items-baseline justify-between gap-3">
-                  <p className="text-caption text-ink2">Team</p>
+                  <p className="text-caption text-ink2">{t('book.done.team')}</p>
                   <p className="text-caption text-ink">{servicePoint.name}</p>
                 </div>
               </Row>
             </RowList>
             <div className="border-t border-line px-gutter py-3">
-              <p className="text-caption text-ink2">
-                Need to change it? Message your team and we will move it.
-              </p>
+              <p className="text-caption text-ink2">{t('book.done.change')}</p>
             </div>
           </Band>
         </div>
@@ -128,119 +175,173 @@ export const OwnerBook = () => {
     <>
       <div className="contents">
         <Masthead
-          eyebrow="Book a visit"
-          subject="When suits you?"
-          lead={`Pick a window and ${servicePoint.name} will confirm it.`}
+          eyebrow={t('book.masthead.eyebrow')}
+          subject={t('book.masthead.title')}
+          lead={t('book.masthead.lead', { servicePoint: servicePoint.name })}
         />
 
         <Section id="booking">
           <div className="contents">
             {/* What the visit is for. */}
-            <Band kind="rail" flush>
-              <BandHead icon="message-square" eyebrow="Step one" title="What is it about?" />
-              <RowList>
-                {REASONS.map((item) => {
-                  const selected = reason === item.code;
-                  return (
-                    <button
-                      key={item.code}
-                      type="button"
-                      onClick={() => setReason(item.code)}
-                      className={`block w-full border-l-rule px-gutter py-3 text-left transition-colors duration-state ease-ease ${
-                        selected ? 'border-l-ink bg-surface-sunk' : 'border-l-transparent hover:bg-surface-sunk'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className={`text-body text-ink ${selected ? 'font-medium' : ''}`}>
-                            {item.label}
-                          </p>
-                          <p className="text-caption text-ink2">{item.detail}</p>
+            <div ref={reasonRef}>
+              <Band kind="rail" flush>
+                <BandHead
+                  icon="message-square"
+                  eyebrow={t('book.step.one')}
+                  title={t('book.reason.title')}
+                />
+                {/*
+                  The error sits with the thing it is about, above the choices
+                  rather than beside the button that reported it. `role="alert"`
+                  so a screen reader hears it on the attempt, which is the same
+                  moment the scroll delivers a sighted reader to it.
+                */}
+                {attempted && missingReason && (
+                  <div className="px-gutter pb-3" role="alert">
+                    <Flag tone="alert" icon="alert-triangle">
+                      {t('book.reason.missing')}
+                    </Flag>
+                  </div>
+                )}
+                <RowList>
+                  {REASONS.map((item) => {
+                    const selected = reason === item.code;
+                    return (
+                      <button
+                        key={item.code}
+                        type="button"
+                        onClick={() => setReason(item.code)}
+                        className={`block w-full border-l-rule px-gutter py-3 text-left transition-colors duration-state ease-ease ${
+                          selected
+                            ? 'border-l-ink bg-surface-sunk'
+                            : 'border-l-transparent hover:bg-surface-sunk'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className={`text-body text-ink ${selected ? 'font-medium' : ''}`}>
+                              {t(item.label)}
+                            </p>
+                            <p className="text-caption text-ink2">{t(item.detail)}</p>
+                          </div>
+                          {selected && (
+                            <span className="shrink-0 text-accent-ink">
+                              <Icon name="check" />
+                            </span>
+                          )}
                         </div>
-                        {selected && (
-                          <span className="shrink-0 text-accent-ink">
-                            <Icon name="check" />
-                          </span>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </RowList>
-            </Band>
+                      </button>
+                    );
+                  })}
+                </RowList>
+              </Band>
+            </div>
 
             {/* Real availability, and an arrival window rather than a time. */}
-            <Band kind="data" flush>
-              <BandHead
-                icon="calendar"
-                eyebrow="Step two"
-                title="Choose an arrival window"
-                action={<Status tone="neutral">{`${SLOTS.length} days open`}</Status>}
-              />
-              <div className="[&>*+*]:border-t [&>*+*]:border-t-line">
-                {SLOTS.map((day) => (
-                  <div key={day.date} className="px-gutter py-3">
-                    <div className="flex items-baseline justify-between gap-3">
-                      <p className="text-body text-ink">{dayAndDate(day.date)}</p>
-                      <p className="text-caption text-ink3">{`in ${daysFromToday(day.date)} days`}</p>
-                    </div>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {day.windows.map((w) => {
-                        const selected = slot?.date === day.date && slot?.window === w;
-                        return (
-                          <button
-                            key={w}
-                            type="button"
-                            onClick={() => setSlot({ date: day.date, window: w })}
-                            className={`min-h-tap rounded-pill border px-3 text-caption transition-colors duration-state ease-ease ${
-                              selected
-                                ? 'border-accent-ink bg-accent text-on-accent'
-                                : 'border-line-strong bg-surface text-ink hover:bg-surface-sunk'
-                            }`}
-                          >
-                            {w}
-                          </button>
-                        );
+            <div ref={slotRef}>
+              <Band kind="data" flush>
+                <BandHead
+                  icon="calendar"
+                  eyebrow={t('book.step.two')}
+                  title={t('book.slot.title')}
+                  action={
+                    <Status tone="neutral">
+                      {plural(SLOTS.length, {
+                        one: 'book.slot.daysOpenOne',
+                        other: 'book.slot.daysOpenOther',
                       })}
-                    </div>
+                    </Status>
+                  }
+                />
+                {attempted && missingSlot && (
+                  <div className="px-gutter pb-3" role="alert">
+                    <Flag tone="alert" icon="alert-triangle">
+                      {t('book.slot.missing')}
+                    </Flag>
                   </div>
-                ))}
-              </div>
-              <div className="border-t border-line px-gutter py-3">
-                <p className="text-caption text-ink2">
-                  A window, not a time. We would rather arrive inside two hours than miss a promise
-                  by ten minutes.
-                </p>
-              </div>
-            </Band>
+                )}
+                <div className="[&>*+*]:border-t [&>*+*]:border-t-line border-t border-line">
+                  {SLOTS.map((day) => (
+                    <div key={day.date} className="px-gutter py-3">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <p className="text-body text-ink">{dayAndDate(day.date)}</p>
+                        <p className="text-caption text-ink3">
+                          {plural(daysFromToday(day.date), {
+                            one: 'book.slot.inDaysOne',
+                            other: 'book.slot.inDaysOther',
+                          })}
+                        </p>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {day.windows.map((w) => {
+                          const selected = slot?.date === day.date && slot?.window === w;
+                          return (
+                            <button
+                              key={w}
+                              type="button"
+                              onClick={() => setSlot({ date: day.date, window: w })}
+                              className={`min-h-tap rounded-pill border px-3 text-caption transition-colors duration-state ease-ease ${
+                                selected
+                                  ? 'border-accent-ink bg-accent text-on-accent'
+                                  : 'border-line-strong bg-surface text-ink hover:bg-surface-sunk'
+                              }`}
+                            >
+                              {w}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {/*
+                  The window rationale, folded away.
+
+                  It used to sit open at the foot of the picker: "A window, not a
+                  time. We would rather arrive inside two hours than miss a
+                  promise by ten minutes." Charming on a first booking and
+                  friction on a third, and it was two sentences of brand voice
+                  standing between the reader and the button. As a question it
+                  costs one line, it answers the objection at the exact moment
+                  somebody has it, and it is silent for everybody who does not.
+                */}
+                <details className="border-t border-line px-gutter py-2">
+                  <summary className="inline-flex min-h-tap cursor-pointer list-none items-center text-control font-medium text-accent-ink transition-colors duration-state ease-ease hover:text-ink">
+                    {t('book.slot.why')}
+                  </summary>
+                  <p className="max-w-reading pb-2 text-caption text-ink2">
+                    {t('book.slot.whyAnswer')}
+                  </p>
+                </details>
+              </Band>
+            </div>
 
             {/* What this visit costs, answered before they have to ask. */}
             <Band kind="rail" flush>
               <div className="px-gutter py-3">
-                <Flag tone="neutral" icon="info">
-                  {`Covered by ${contract.name}`}
+                <Flag tone="info" icon="info">
+                  {t('book.cover.flag', { plan: contract.name })}
                 </Flag>
                 <p className="mt-2 text-caption text-ink2">
-                  Your care plan covers a check up on the {asset.model} each year, so there is
-                  nothing to pay for this visit.
+                  {t('book.cover.detail', { model: asset.model })}
                 </p>
               </div>
             </Band>
 
-            <Button
-              variant="primary"
-              icon="calendar"
-              block
-              disabled={!ready}
-              onClick={() => setBooked(true)}
-            >
-              Book a visit
-            </Button>
-            {!ready && (
-              <p className="text-caption text-ink3">
-                Choose what it is about and pick a window to continue.
-              </p>
-            )}
+            {/*
+              The action, inside a band.
+
+              It used to be a bare sibling of the bands, so it took no gutter at
+              all and rendered as a full-bleed slab whose edges were the screen
+              edges while everything above it started 20px in.
+            */}
+            <Band kind="data">
+              <div className="py-3">
+                <Button variant="primary" icon="calendar" block onClick={submit}>
+                  {t('book.cta')}
+                </Button>
+              </div>
+            </Band>
           </div>
         </Section>
       </div>

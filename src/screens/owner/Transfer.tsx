@@ -25,6 +25,7 @@ import {
   contracts,
   customerTimeline,
 } from '../../data/seedData';
+import { t } from '../../i18n';
 import { longDate } from '../../lib/format';
 import {
   Band,
@@ -43,19 +44,8 @@ import {
  * The privacy split, stated before consent is asked for. What belongs to the
  * property transfers; what belongs to the person does not.
  */
-const MOVES = [
-  { label: 'The system and its serial number', why: 'It is bolted into the ground' },
-  { label: 'Installation date and warranty', why: 'The warranty follows the system, not you' },
-  { label: 'Service visit history', why: 'The next technician needs to know what was done' },
-  { label: 'The soil test and the design', why: 'They describe the land' },
-];
-
-const STAYS = [
-  { label: 'Your name, email and phone', why: 'These belong to you, not to the land' },
-  { label: 'Your invoices and payment method', why: 'Your financial records stay with you' },
-  { label: 'Your messages with the team', why: 'A private conversation stays private' },
-  { label: 'Your parts orders', why: 'Bought by you, billed to you' },
-];
+const MOVES = ['system', 'warranty', 'history', 'design'] as const;
+const STAYS = ['contact', 'money', 'messages', 'orders'] as const;
 
 export const OwnerTransfer = () => {
   const account = byId(accounts, GOLDEN.accountId)!;
@@ -70,24 +60,26 @@ export const OwnerTransfer = () => {
   const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const ready = name.trim().length > 2 && email.includes('@') && date.length > 0 && consent;
+  /* Split, so the error can name which half is missing rather than both. */
+  const details = name.trim().length > 2 && email.includes('@') && date.length > 0;
+  const ready = details && consent;
+
+  /* Errors appear on the attempt, never before it. */
+  const [attempted, setAttempted] = useState(false);
 
   if (submitted) {
     return (
       <>
         <div className="contents">
           <Masthead
-            eyebrow="Transfer started"
-            subject="We have what we need"
-            lead={`We will contact ${name.trim()} to set up their account before ${longDate(date)}.`}
+            eyebrow={t('transfer.done.eyebrow')}
+            subject={t('transfer.done.title')}
+            lead={t('transfer.done.lead', { name: name.trim(), date: longDate(date) })}
           />
           <Band kind="data" flush>
             <div className="px-gutter py-3">
-              <Status tone="good">PENDING THE NEW OWNER</Status>
-              <p className="mt-2 max-w-reading text-body text-ink2">
-                Nothing moves until they accept. Until then your account is unchanged and you can
-                cancel the transfer by messaging the team.
-              </p>
+              <Status tone="info">{t('transfer.done.status')}</Status>
+              <p className="mt-2 max-w-reading text-body text-ink2">{t('transfer.done.detail')}</p>
             </div>
           </Band>
         </div>
@@ -126,13 +118,13 @@ export const OwnerTransfer = () => {
                 </Row>
                 <Row>
                   <div className="flex items-baseline justify-between gap-3">
-                    <p className="text-caption text-ink2">Warranty runs to</p>
+                    <p className="text-caption text-ink2">{t('transfer.stat.warranty')}</p>
                     <p className="text-caption text-ink">{longDate(asset.warrantyEndsOn)}</p>
                   </div>
                 </Row>
                 <Row>
                   <div className="flex items-baseline justify-between gap-3">
-                    <p className="text-caption text-ink2">Service visits on record</p>
+                    <p className="text-caption text-ink2">{t('transfer.stat.visits')}</p>
                     <p className="text-caption text-ink">{history.length}</p>
                   </div>
                 </Row>
@@ -141,21 +133,23 @@ export const OwnerTransfer = () => {
 
             {/* The privacy split. Before consent, not after. */}
             <Band kind="data" flush>
-              <BandHead eyebrow="Read this part" title="What transfers, and what does not" />
-
               <div className="border-b border-line bg-surface-sunk px-gutter py-2">
-                <Micro>Goes with the property</Micro>
+                <Micro>{t('transfer.moves.title')}</Micro>
               </div>
               <RowList>
-                {MOVES.map((item) => (
-                  <Row key={item.label}>
+                {MOVES.map((key) => (
+                  <Row key={key}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-ink3">
                         <Icon name="chevron-right" />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-body text-ink">{item.label}</p>
-                        <p className="text-caption text-ink2">{item.why}</p>
+                        <p className="text-body text-ink">
+                          {t(`transfer.moves.${key}` as Parameters<typeof t>[0])}
+                        </p>
+                        <p className="text-caption text-ink2">
+                          {t(`transfer.moves.${key}Why` as Parameters<typeof t>[0])}
+                        </p>
                       </div>
                     </div>
                   </Row>
@@ -163,18 +157,22 @@ export const OwnerTransfer = () => {
               </RowList>
 
               <div className="border-y border-line bg-surface-sunk px-gutter py-2">
-                <Micro>Stays with you</Micro>
+                <Micro>{t('transfer.stays.title')}</Micro>
               </div>
               <RowList>
-                {STAYS.map((item) => (
-                  <Row key={item.label}>
+                {STAYS.map((key) => (
+                  <Row key={key}>
                     <div className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-positive">
                         <Icon name="check" />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-body text-ink">{item.label}</p>
-                        <p className="text-caption text-ink2">{item.why}</p>
+                        <p className="text-body text-ink">
+                          {t(`transfer.stays.${key}` as Parameters<typeof t>[0])}
+                        </p>
+                        <p className="text-caption text-ink2">
+                          {t(`transfer.stays.${key}Why` as Parameters<typeof t>[0])}
+                        </p>
                       </div>
                     </div>
                   </Row>
@@ -184,22 +182,20 @@ export const OwnerTransfer = () => {
 
             {/* What happens to the plan. A real question, answered up front. */}
             <Band kind="rail" flush>
-              <BandHead eyebrow="Your care plan" title={contract.name} />
+              <BandHead eyebrow={t('transfer.plan.eyebrow')} title={contract.name} />
               <div className="px-gutter py-3">
                 <p className="max-w-reading text-body text-ink2">
-                  Your plan is paid to {longDate(contract.renewsOn)}. The new owner can take it over
-                  from the transfer date, or let it lapse and decide for themselves. If they take it
-                  over, we refund you the unused part.
+                  {t('transfer.plan.detail', { date: longDate(contract.renewsOn) })}
                 </p>
               </div>
             </Band>
 
             {/* Who it is going to. */}
             <Band kind="data" flush>
-              <BandHead eyebrow="The new owner" title="Who is taking it on" />
+              <BandHead eyebrow={t('transfer.owner.eyebrow')} title={t('transfer.owner.title')} />
               <div className="space-y-3 px-gutter py-3">
                 <label className="block">
-                  <span className="text-caption text-ink2">Their name</span>
+                  <span className="text-caption text-ink2">{t('transfer.owner.name')}</span>
                   <input
                     type="text"
                     value={name}
@@ -208,7 +204,7 @@ export const OwnerTransfer = () => {
                   />
                 </label>
                 <label className="block">
-                  <span className="text-caption text-ink2">Their email</span>
+                  <span className="text-caption text-ink2">{t('transfer.owner.email')}</span>
                   <input
                     type="email"
                     value={email}
@@ -217,7 +213,7 @@ export const OwnerTransfer = () => {
                   />
                 </label>
                 <label className="block">
-                  <span className="text-caption text-ink2">Completion date</span>
+                  <span className="text-caption text-ink2">{t('transfer.owner.date')}</span>
                   <input
                     type="date"
                     value={date}
@@ -232,7 +228,7 @@ export const OwnerTransfer = () => {
             <Band kind="rail" flush>
               <div className="px-gutter py-3">
                 <Flag tone="warn" icon="alert-triangle">
-                  This shares your system history
+                  {t('transfer.consent.flag')}
                 </Flag>
                 <label className="mt-3 flex items-start gap-3">
                   <input
@@ -242,27 +238,53 @@ export const OwnerTransfer = () => {
                     className="mt-1 h-3 w-3 shrink-0 rounded-control border border-line-strong"
                   />
                   <span className="max-w-reading text-caption text-ink2">
-                    I agree to transfer the system, its warranty and its service history to the
-                    person named above, and I confirm they are buying this property. My contact
-                    details, invoices and messages are not shared.
+                    {t('transfer.consent.text')}
                   </span>
                 </label>
               </div>
             </Band>
 
-            <Button
-              variant="primary"
-              icon="check"
-              block
-              disabled={!ready}
-              onClick={() => setSubmitted(true)}
-            >
-              Start the transfer
-            </Button>
-            <p className="text-caption text-ink3">
-              Signed in as {primary.firstName} {primary.lastName}. Nothing moves until the new owner
-              accepts, and you can cancel before then.
-            </p>
+            {/*
+              The same fix the booking form got, for the same defect.
+
+              This was a disabled button sitting as a bare sibling of the bands,
+              so it took no gutter and rendered as a full-bleed slab, with the
+              reason it was disabled in 13px grey underneath. A disabled control
+              cannot be tapped, so it cannot explain itself, and on a form this
+              long the explanation was well below the fold. The tap always lands
+              now, and if something is missing it says which, above the button
+              that would not have worked.
+            */}
+            <Band kind="data">
+              <div className="py-3">
+                {attempted && !ready && (
+                  <div className="mb-3" role="alert">
+                    <Flag tone="alert" icon="alert-triangle">
+                      {details ? t('transfer.consent.missing') : t('transfer.owner.missing')}
+                    </Flag>
+                  </div>
+                )}
+                <Button
+                  variant="primary"
+                  icon="check"
+                  block
+                  onClick={() => {
+                    if (!ready) {
+                      setAttempted(true);
+                      return;
+                    }
+                    setSubmitted(true);
+                  }}
+                >
+                  {t('transfer.cta')}
+                </Button>
+                <p className="mt-2 text-caption text-ink3">
+                  {t('transfer.footer', {
+                    name: `${primary.firstName} ${primary.lastName}`,
+                  })}
+                </p>
+              </div>
+            </Band>
           </div>
         </Section>
       </div>

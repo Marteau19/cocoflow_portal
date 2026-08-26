@@ -48,6 +48,12 @@ const PAIRS = [
   ['positive', 'surface'],
   ['positive', 'positiveSoft'],
   ['onNegative', 'negative'],
+  // The fourth status. Same three pairs every other status tone is held to.
+  ['onInfo', 'info'],
+  ['info', 'surface'],
+  ['info', 'infoSoft'],
+  ['info', 'canvas'],
+  ['info', 'surfaceSunk'],
   ['negative', 'surface'],
   ['negative', 'negativeSoft'],
   ['warn', 'surface'],

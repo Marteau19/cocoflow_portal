@@ -2,7 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      `viewport-fit=cover` is what makes `env(safe-area-inset-*)` resolve to
+      anything other than zero on a notched handset. Without it the insets are
+      declared, read, and always 0, so the bottom navigation renders underneath
+      the home indicator and every label sits in the gesture area.
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Ecoflo Portal</title>
     <link rel="icon" type="image/png" href="/brand/legacy/ecoflo-mark.png" />
 
